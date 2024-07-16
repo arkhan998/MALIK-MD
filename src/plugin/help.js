@@ -93,7 +93,7 @@ let mode = ethix.public ? 'public' : 'private';
               text: `╭─────────────━┈⊷
 │🤖 ʙᴏᴛ ɴᴀᴍᴇ: *ᴇᴛʜɪx-ᴍᴅ*
 │📍 ᴠᴇʀꜱɪᴏɴ: 2.0.3
-│👨‍💻 ᴏᴡɴᴇʀ : *ᴀᴅɪᴛʜ🧃*      
+│👨‍💻 ᴏᴡɴᴇʀ : *ᴇᴛʜɪx xsɪᴅ🧃*      
 │👤 ɴᴜᴍʙᴇʀ: 918075116840
 │📡 ᴘʟᴀᴛғᴏʀᴍ: *${os.platform()}*
 │🛡 ᴍᴏᴅᴇ: *${mode}*
@@ -114,7 +114,7 @@ let mode = ethix.public ? 'public' : 'private';
               buttons: [
                 {
                   "name": "single_select",
-                  "buttonParamsJson": `{"title":"🔖𝚻𝚫𝚸 𝐅𝚯𝚪 𝚯𝚸𝚵𝚴 𝚳𝚵𝚴𝐔",
+                  "buttonParamsJson": `{"title":"ᴛᴀᴘ ғᴏʀ ᴏᴘᴇɴ ᴍᴇɴᴜ",
                  "sections":
                    [{
                     "title":"😎 𝛯𝑇𝛨𝛪𝛸-𝛭𝐷 𝛥𝐿𝐿𝛭𝛯𝛮𝑈",
@@ -210,7 +210,7 @@ let mode = ethix.public ? 'public' : 'private';
 ╭─────────────━┈⊷
 │🤖 ʙᴏᴛ ɴᴀᴍᴇ: *ᴇᴛʜɪx-ᴍᴅ*
 │📍 ᴠᴇʀꜱɪᴏɴ: 2.0.3
-│👨‍💻 ᴏᴡɴᴇʀ : *ᴀᴅɪᴛʜ🧃*      
+│👨‍💻 ᴏᴡɴᴇʀ : *ᴇᴛʜɪx xsɪᴅ🧃*      
 │👤 ɴᴜᴍʙᴇʀ: 918075116840
 │💻 ᴘʟᴀᴛғᴏʀᴍ: *${os.platform()}*
 │🛡 ᴍᴏᴅᴇ: *${mode}*
