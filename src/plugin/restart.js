@@ -6,7 +6,7 @@ const restartBot = async (m) => {
   if (cmd === 'restart') {
     try {
       m.reply('Proses....')
-      process.exit()
+     await process.exit()
     } catch (error) {
       console.error(error);
       await m.React("❌");
