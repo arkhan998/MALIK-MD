@@ -1,4 +1,4 @@
-import ytdl from '@distube/ytdl-core';
+import play from 'play-dl';
 import yts from 'yt-search';
 import pkg, { prepareWAMessageMedia } from '@whiskeysockets/baileys';
 const { generateWAMessageFromContent, proto } = pkg;
@@ -7,20 +7,6 @@ const videoMap = new Map();
 let videoIndex = 1;
 
 const song = async (m, Matrix) => {
-  let selectedListId;
-  const selectedButtonId = m?.message?.templateButtonReplyMessage?.selectedId;
-  const interactiveResponseMessage = m?.message?.interactiveResponseMessage;
-
-  if (interactiveResponseMessage) {
-    const paramsJson = interactiveResponseMessage.nativeFlowResponseMessage?.paramsJson;
-    if (paramsJson) {
-      const params = JSON.parse(paramsJson);
-      selectedListId = params.id;
-    }
-  }
-
-  const selectedId = selectedListId || selectedButtonId;
-
   const prefixMatch = m.body.match(/^[\\/!#.]/);
   const prefix = prefixMatch ? prefixMatch[0] : '/';
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
@@ -29,32 +15,26 @@ const song = async (m, Matrix) => {
   const validCommands = ['ytv'];
 
   if (validCommands.includes(cmd)) {
-    if (!text || !ytdl.validateURL(text)) {
+    if (!text || !play.yt_validate(text)) {
       return m.reply('Please provide a valid YouTube URL.');
     }
 
     try {
       await m.React("🕘");
 
-      const info = await ytdl.getInfo(text);
-
+      const info = await play.video_info(text);
       const videoDetails = {
-        title: info.videoDetails.title,
-        author: info.videoDetails.author.name,
-        views: info.videoDetails.viewCount,
-        likes: info.videoDetails.likes,
-        uploadDate: formatDate(info.videoDetails.uploadDate),
-        duration: formatDuration(info.videoDetails.lengthSeconds),
-        thumbnailUrl: info.videoDetails.thumbnails[0].url,
-        videoUrl: info.videoDetails.video_url
+        title: info.video_details.title,
+        author: info.video_details.channel.name,
+        views: info.video_details.views,
+        uploadDate: formatDate(info.video_details.upload_date),
+        duration: formatDuration(info.video_details.durationInSec),
+        thumbnailUrl: info.video_details.thumbnails[0].url,
+        videoUrl: text,
       };
 
-      const videoInfo = await yts({ videoId: ytdl.getURLVideoID(videoDetails.videoUrl) });
+      const formats = info.format.filter(format => format.hasAudio && format.hasVideo);
 
-      // Filter formats to only include those with both audio and video
-      const formats = info.formats.filter(format => format.hasAudio && format.hasVideo);
-
-      // Map of quality labels to the respective format itags
       const desiredQualities = {
         '144p': formats.find(f => f.qualityLabel === '144p')?.itag,
         '240p': formats.find(f => f.qualityLabel === '240p')?.itag,
@@ -67,7 +47,7 @@ const song = async (m, Matrix) => {
       const qualityButtons = Object.entries(desiredQualities).map(([quality, itag], index) => {
         if (itag) {
           const uniqueId = videoIndex + index;
-          videoMap.set(uniqueId, { itag, videoId: info.videoDetails.videoId, ...videoDetails, quality });
+          videoMap.set(uniqueId, { itag, videoId: info.video_details.id, ...videoDetails, quality });
           return {
             "header": "",
             "title": `${quality}`,
@@ -77,28 +57,17 @@ const song = async (m, Matrix) => {
         }
       }).filter(Boolean);
 
+      // Generate and send interactive message
       const msg = generateWAMessageFromContent(m.from, {
         viewOnceMessage: {
           message: {
-            messageContextInfo: {
-              deviceListMetadata: {},
-              deviceListMetadataVersion: 2
-            },
-            interactiveMessage: proto.Message.InteractiveMessage.create({
-              body: proto.Message.InteractiveMessage.Body.create({
-                text: `> *ETHIX-MD VIDEO DOWNLOADER*\n> *TITLE:* ${videoDetails.title}\n> *AUTHOR:* ${videoDetails.author}\n> *VIEWS:* ${videoDetails.views}\n> *LIKES:* ${videoDetails.likes}\n> *UPLOAD DATE:* ${videoDetails.uploadDate}\n> *DURATION:* ${videoDetails.duration}\n`
-              }),
-              footer: proto.Message.InteractiveMessage.Footer.create({
-                text: "© Powered By Ethix-MD"
-              }),
-              header: proto.Message.InteractiveMessage.Header.create({
-                ...(await prepareWAMessageMedia({ image: { url: videoInfo.thumbnail } }, { upload: Matrix.waUploadToServer })),
-                title: "",
-                gifPlayback: true,
-                subtitle: "",
-                hasMediaAttachment: false
-              }),
-              nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+            interactiveMessage: {
+              body: {
+                text: `> *VIDEO DOWNLOADER*\n> *TITLE:* ${videoDetails.title}\n> *AUTHOR:* ${videoDetails.author}\n> *VIEWS:* ${videoDetails.views}\n> *UPLOAD DATE:* ${videoDetails.uploadDate}\n> *DURATION:* ${videoDetails.duration}\n`
+              },
+              footer: { text: "© Powered By Your Bot" },
+              header: await prepareWAMessageMedia({ image: { url: videoDetails.thumbnailUrl } }, { upload: Matrix.waUploadToServer }),
+              nativeFlowMessage: {
                 buttons: [
                   {
                     name: "single_select",
@@ -114,25 +83,14 @@ const song = async (m, Matrix) => {
                     })
                   },
                 ],
-              }),
-              contextInfo: {
-                mentionedJid: [m.sender],
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                  newsletterJid: '120363249960769123@newsletter',
-                  newsletterName: "Ethix-MD",
-                  serverMessageId: 143
-                }
-              }
-            }),
+              },
+              contextInfo: { mentionedJid: [m.sender] }
+            },
           },
         },
       }, {});
 
-      await Matrix.relayMessage(msg.key.remoteJid, msg.message, {
-        messageId: msg.key.id
-      });
+      await Matrix.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
       await m.React("✅");
 
       videoIndex += qualityButtons.length;
@@ -147,22 +105,19 @@ const song = async (m, Matrix) => {
 
     if (selectedQuality) {
       try {
-        const videoUrl = `https://www.youtube.com/watch?v=${selectedQuality.videoId}`;
-
-        const videoStream = ytdl(videoUrl, { quality: selectedQuality.itag });
-
-        const finalVideoBuffer = await streamToBuffer(videoStream);
+        const stream = await play.stream(selectedQuality.videoUrl, { quality: selectedQuality.itag });
+        const finalVideoBuffer = await streamToBuffer(stream.stream);
 
         const content = {
           document: finalVideoBuffer,
           mimetype: 'video/mp4',
           fileName: `${selectedQuality.title}.mp4`,
-          caption: `*DOWNLOADED BY 𝞢𝙏𝞖𝞘𝞦-𝞛𝘿*`,
+          caption: `*DOWNLOADED BY YOUR BOT*`,
           contextInfo: {
             externalAdReply: {
               showAdAttribution: true,
               title: selectedQuality.title,
-              body: 'Ethix-MD',
+              body: 'Your Bot',
               thumbnailUrl: selectedQuality.thumbnailUrl,
               sourceUrl: selectedQuality.videoUrl,
               mediaType: 1,

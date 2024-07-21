@@ -1,6 +1,7 @@
 import qrcode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
+import PDFDocument from 'pdfkit';
 
 const toqr = async (m, gss) => {
   try {
@@ -14,25 +15,41 @@ const toqr = async (m, gss) => {
 
     if (!validCommands.includes(cmd)) return;
 
-    if (!text) return m.reply('Please include link or text!');
+    if (!text) {
+      return m.reply('Please include link or text!');
+    }
 
-    let qyuer = await qrcode.toDataURL(text, { scale: 35 });
+    let qyuer = await qrcode.toDataURL(text, { scale: 8 });
     let data = Buffer.from(qyuer.replace('data:image/png;base64,', ''), 'base64');
-    let buff = `${Date.now()}.jpg`;
 
-    await fs.writeFileSync(path.join('./', buff), data);
-    let medi = fs.readFileSync(path.join('./', buff));
+    // Create a PDF document
+    const pdfPath = path.join('./', `${Date.now()}.pdf`);
+    const doc = new PDFDocument();
+    const writeStream = fs.createWriteStream(pdfPath);
+    doc.pipe(writeStream);
 
-    await gss.sendMessage(m.from, {
-      image: medi,
-      caption: 'QR code generated successfully!\n\n> © Powered By Ethix-MD'
-    }, {
-      quoted: m
+    // Draw the QR code on the PDF
+    doc.image(data, {
+      fit: [500, 500],
+      align: 'center',
+      valign: 'center',
     });
 
-    setTimeout(() => {
-      fs.unlinkSync(path.join('./', buff));
-    }, 10000);
+    doc.end();
+
+    writeStream.on('finish', async () => {
+      const medi = fs.readFileSync(pdfPath);
+
+      await gss.sendMessage(m.from, {
+        document: medi,
+        mimetype: 'application/pdf',
+        fileName: 'QRCode.pdf',
+      }, {
+        quoted: m
+      });
+
+      fs.unlinkSync(pdfPath);
+    });
   } catch (error) {
     console.error('Error:', error);
     m.reply('An error occurred while generating the QR code.');

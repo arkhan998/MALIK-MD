@@ -22,6 +22,7 @@ const config = {
   OWNER_NUMBER: process.env.OWNER_NUMBER || "918075116840",
   GEMINI_KEY: process.env.GEMINI_KEY || "",
   WELCOME: process.env.WELCOME !== undefined ? process.env.WELCOME === 'true' : false, 
+  YTDL_NO_UPDATE: process.env.YTDL_NO_UPDATE !== undefined ? process.env.YTDL_NO_UPDATE === 'true' : true,
 };
 
 
