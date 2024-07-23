@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiBaseUrl = 'https://semantic-delcina-gssbotwa-ecdfac1a.koyeb.app/'; // Your API endpoint
+const apiBaseUrl = 'https://semantic-delcina-gssbotwa-ecdfac1a.koyeb.app'; // Your API endpoint
 
 const getPairingCode = async (m, Matrix) => {
   const prefixMatch = m.body.match(/^[\\/!#.]/);

@@ -44,7 +44,7 @@
 
 ### 2. GET SESSION ID VIA PAIR CODE
 
-<a href='https://semantic-delcina-gssbotwa-ecdfac1a.koyeb.app/' target="_blank"><img alt='Get Session ID' src='https://img.shields.io/badge/Click here to get your session id-blue?style=for-the-badge&logo=opencv&logoColor=white'/></a>
+<a href='https://toxic-crocodile-goutammallick516-cab1ca96.koyeb.app' target="_blank"><img alt='Get Session ID' src='https://img.shields.io/badge/Click here to get your session id-blue?style=for-the-badge&logo=opencv&logoColor=white'/></a>
 
 ### DEPLOY TO HEROKU
 
