@@ -4,37 +4,58 @@ import config from '../../config.cjs';
 const stickerCommand = async (m, gss) => {
   const prefixMatch = m.body.match(/^[\\/!#.]/);
   const prefix = prefixMatch ? prefixMatch[0] : '/';
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+  const [cmd, arg] = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ') : ['', ''];
 
-  const packname = "";
-  const author = "𝐄𝐭𝐡𝐢𝐱-𝐌𝐃";
+  const packname = global.packname || "𝐄𝐭𝐡𝐢𝐱-𝐌𝐃";
+  const author = global.author || "🥵💫👿";
 
-  const validCommands = ['sticker', 's'];
+  const validCommands = ['sticker', 's', 'autosticker'];
+
+  if (cmd === 'autosticker') {
+    if (arg === 'on') {
+      config.AUTO_STICKER = true;
+      await m.reply('Auto-sticker is now enabled.');
+    } else if (arg === 'off') {
+      config.AUTO_STICKER = false;
+      await m.reply('Auto-sticker is now disabled.');
+    } else {
+      await m.reply('Usage: /autosticker on|off');
+    }
+    return;
+  }
+
+  // Auto sticker functionality using config
+  if (config.AUTO_STICKER && !m.key.fromMe) {
+    if (m.type === 'imageMessage') {
+      let mediac = await m.download();
+      await gss.sendImageAsSticker(m.from, mediac, m, { packname, author });
+      console.log(`Auto sticker detected`);
+      return;
+    } else if (m.type === 'videoMessage' && m.msg.seconds <= 11) {
+      let mediac = await m.download();
+      await gss.sendVideoAsSticker(m.from, mediac, m, { packname, author });
+      return;
+    }
+  }
 
   if (validCommands.includes(cmd)) {
-    const quoted = m.quoted || {}; // Check if there's a quoted message
+    const quoted = m.quoted || {};
 
-    // Check if the quoted message is an image or a video
     if (!quoted || (quoted.mtype !== 'imageMessage' && quoted.mtype !== 'videoMessage')) {
       return m.reply(`Send/Reply with an image or video to convert into a sticker ${prefix + cmd}`);
     }
 
-    try {
-      const media = await quoted.download(); // Download the media from the quoted message
-      if (!media) throw new Error('Failed to download media.');
+    const media = await quoted.download();
+    if (!media) throw new Error('Failed to download media.');
 
-      const filePath = `./${Date.now()}.${quoted.mtype === 'imageMessage' ? 'png' : 'mp4'}`; // Define the file path for saving the image or video
-      await fs.writeFile(filePath, media); // Save the media to the file system
+    const filePath = `./${Date.now()}.${quoted.mtype === 'imageMessage' ? 'png' : 'mp4'}`;
+    await fs.writeFile(filePath, media);
 
-      if (quoted.mtype === 'imageMessage') {
-        const stickerBuffer = await fs.readFile(filePath); // Read the saved image from the file system
-        await gss.sendImageAsSticker(m.from, stickerBuffer, m, { packname: packname, author: author });
-      } else if (quoted.mtype === 'videoMessage') {
-        await gss.sendVideoAsSticker(m.from, filePath, m, { packname: packname, author: author });
-      }
-    } catch (error) {
-      console.error("Error sending sticker:", error);
-      await m.reply('Error sending sticker.');
+    if (quoted.mtype === 'imageMessage') {
+      const stickerBuffer = await fs.readFile(filePath);
+      await gss.sendImageAsSticker(m.from, stickerBuffer, m, { packname, author });
+    } else if (quoted.mtype === 'videoMessage') {
+      await gss.sendVideoAsSticker(m.from, filePath, m, { packname, author });
     }
   }
 };
