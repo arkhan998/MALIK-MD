@@ -1,5 +1,5 @@
 import yts from 'yt-search';
-import ytdl from '@distube/ytdl-core';
+import fetch from 'node-fetch';
 import pkg, { prepareWAMessageMedia } from '@whiskeysockets/baileys';
 const { generateWAMessageFromContent, proto } = pkg;
 
@@ -68,14 +68,14 @@ const song = async (m, Matrix) => {
       });
 
       const firstVideo = topVideos[0];
-      const videoInfo = await ytdl.getBasicInfo(firstVideo.videoId);
-      const title = videoInfo.videoDetails.title;
-      const author = videoInfo.videoDetails.author.name;
-      const duration = videoInfo.videoDetails.lengthSeconds;
-      const uploadDate = videoInfo.videoDetails.uploadDate;
-      const views = videoInfo.videoDetails.viewCount;
-      const url = `https://www.youtube.com/watch?v=${firstVideo.videoId}`;
-      const size = 'N/A';
+      const videoInfo = {
+        title: firstVideo.title,
+        author: firstVideo.author.name,
+        duration: firstVideo.timestamp,
+        views: firstVideo.views,
+        url: `https://www.youtube.com/watch?v=${firstVideo.videoId}`,
+        thumbnail: firstVideo.thumbnail,
+      };
 
       const msg = generateWAMessageFromContent(m.from, {
         viewOnceMessage: {
@@ -86,13 +86,13 @@ const song = async (m, Matrix) => {
             },
             interactiveMessage: proto.Message.InteractiveMessage.create({
               body: proto.Message.InteractiveMessage.Body.create({
-                text: `*𝞢𝙏𝞖𝞘𝞦-𝞛𝘿 VIDEO DOWNLOADER*\n\n> *TITLE:* _${title}_\n> *AUTHOR:* _${author}_\n> *DURATION:* _${duration}s_\n> *VIEWS:* _${views}_\n> *URL:* _${url}_`
+                text: `*𝞢𝙏𝞖𝞘𝞦-𝞛𝘿 VIDEO DOWNLOADER*\n\n> *TITLE:* _${videoInfo.title}_\n> *AUTHOR:* _${videoInfo.author}_\n> *DURATION:* _${videoInfo.duration}_\n> *VIEWS:* _${videoInfo.views}_\n> *URL:* _${videoInfo.url}_`
               }),
               footer: proto.Message.InteractiveMessage.Footer.create({
                 text: "© Powered By Ethix-MD"
               }),
               header: proto.Message.InteractiveMessage.Header.create({
-                ...(await prepareWAMessageMedia({ image: { url: firstVideo.thumbnail } }, { upload: Matrix.waUploadToServer })),
+                ...(await prepareWAMessageMedia({ image: { url: videoInfo.thumbnail } }, { upload: Matrix.waUploadToServer })),
                 title: ``,
                 gifPlayback: true,
                 subtitle: "",
@@ -143,7 +143,6 @@ const song = async (m, Matrix) => {
       });
       await m.React("✅");
 
-
       videoIndex += topVideos.length;
       audioIndex += topVideos.length;
     } catch (error) {
@@ -158,84 +157,56 @@ const song = async (m, Matrix) => {
 
     if (selectedVideo) {
       try {
-        const videoInfo = await ytdl.getBasicInfo(selectedVideo.videoId);
-        const title = videoInfo.videoDetails.title;
-        const author = videoInfo.videoDetails.author.name;
-        const duration = videoInfo.videoDetails.lengthSeconds;
-        const uploadDate = videoInfo.videoDetails.uploadDate;
         const videoUrl = `https://www.youtube.com/watch?v=${selectedVideo.videoId}`;
-        const thumbnailUrl = selectedVideo.thumbnail;
+        const apiUrl = `https://matrix-serverless-api.vercel.app/api/ytdl?url=${encodeURIComponent(videoUrl)}&type=${isAudio ? 'audio' : 'video'}`;
 
-        if (selectedVideo.isAudio) {
-          const audioStream = ytdl(videoUrl, { filter: 'audioonly', quality: 'highestaudio' });
-          const finalAudioBuffer = await streamToBuffer(audioStream);
+        const response = await fetch(apiUrl);
+        const mediaData = await response.json();
 
-       /*  await Matrix.sendMessage(m.from,
-            {
-              image: { url: thumbnailUrl },
-              caption: `> *TITLE:* ${title}\n> *AUTHOR:* ${author}\n> *DURATION:* ${duration}\n> *© POWERED BY 𝞢𝙏𝞖𝞘𝞦-𝞛𝘿*`,
+        if (response.ok) {
+          const mediaUrl = isAudio ? mediaData.audioURL : mediaData.videoURL;
+          const buffer = await fetch(mediaUrl).then(res => res.buffer());
+
+          if (isAudio) {
+            const doc = {
+              audio: buffer,
+              mimetype: 'audio/mpeg',
+              ptt: false,
+              fileName: `${selectedVideo.title}.mp3`,
               contextInfo: {
+                mentionedJid: [m.sender],
                 externalAdReply: {
-                  showAdAttribution: true,
-                  title: title,
+                  title: "↺ |◁   II   ▷|   ♡",
+                  body: `Now playing: ${selectedVideo.title}`,
+                  thumbnailUrl: selectedVideo.thumbnail,
                   sourceUrl: videoUrl,
-                  body: author,
                   mediaType: 1,
                   renderLargerThumbnail: true
                 }
               }
-            },
-            { quoted: m }
-          );
-          */
-
-          let doc = {
-            audio: finalAudioBuffer,
-            mimetype: 'audio/mpeg',
-            ptt: false,
-            waveform: [100, 0, 100, 0, 100, 0, 100],
-            fileName: `${title}.mp3`,
-            contextInfo: {
-              mentionedJid: [m.sender],
-              externalAdReply: {
-                title: "↺ |◁   II   ▷|   ♡",
-                body: `Now playing: ${text}`,
-                thumbnailUrl: thumbnailUrl,
-                sourceUrl: videoUrl,
-                mediaType: 1,
-                renderLargerThumbnail: true
-              }
-            }
-          };
-
-          await Matrix.sendMessage(m.from, doc, { quoted: m });
+            };
+            await Matrix.sendMessage(m.from, doc, { quoted: m });
+          } else {
+            await Matrix.sendMessage(m.from,
+              {
+                video: buffer,
+                mimetype: 'video/mp4',
+                caption: `> *TITLE:* ${selectedVideo.title}\n> *AUTHOR:* ${selectedVideo.author.name}\n> *DURATION:* ${selectedVideo.timestamp}\n\n> *POWERED BY Ethix-MD*`,
+              },
+              { quoted: m }
+            );
+          }
         } else {
-          const videoStream = ytdl(videoUrl, { filter: 'audioandvideo', quality: 'highest' });
-          const finalVideoBuffer = await streamToBuffer(videoStream);
-
-          await Matrix.sendMessage(m.from,
-            {
-              video: finalVideoBuffer,
-              mimetype: 'video/mp4',
-              caption: `> *TITLE:* ${title}\n> *AUTHOR:* ${author}\n> *DURATION:* ${duration}\n\n> *POWERED BY Ethix-MD*`,
-            },
-            { quoted: m }
-          );
+          m.reply('Error fetching media.');
+          await m.React("❌");
         }
       } catch (error) {
         console.error("Error fetching video details:", error);
+        m.reply('Error fetching video details.');
+        await m.React("❌");
       }
     }
   }
-};
-
-const streamToBuffer = async (stream) => {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    stream.on('data', chunk => chunks.push(chunk));
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
-    stream.on('error', reject);
-  });
 };
 
 export default song;
