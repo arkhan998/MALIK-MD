@@ -7,7 +7,7 @@ RUN apt-get update && \
   webp && \
   apt-get upgrade -y && \
   rm -rf /var/lib/apt/lists/*
-  
+
 WORKDIR /usr/src/app
 
 COPY package.json .
@@ -18,4 +18,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["pm2", "start", "src/index.js"]
