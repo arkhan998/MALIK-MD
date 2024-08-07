@@ -18,4 +18,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["pm2", "start", "src/index.js"]
+CMD ["node", "."]
