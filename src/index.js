@@ -29,16 +29,29 @@ import config from '../config.cjs';
 import pkg from '../lib/autoreact.cjs';
 const { emojis, doReact } = pkg;
 
+const sessionName = "session";
 const app = express();
+const orange = chalk.bold.hex("#FFA500");
+const lime = chalk.bold.hex("#32CD32");
+let useQR;
+let isSessionPutted;
 let initialConnection = true;
 const PORT = process.env.PORT || 3000;
 
-// Set up logger
 const MAIN_LOGGER = pino({
     timestamp: () => `,"time":"${new Date().toJSON()}"`
 });
 const logger = MAIN_LOGGER.child({});
 logger.level = "trace";
+
+const msgRetryCounterCache = new NodeCache();
+
+const store = makeInMemoryStore({
+    logger: pino().child({
+        level: 'silent',
+        stream: 'store'
+    })
+});
 
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
@@ -51,112 +64,98 @@ if (!fs.existsSync(sessionDir)) {
 }
 
 async function downloadSessionData() {
-    if (!process.env.SESSION_ID) {
-        console.log('No SESSION_ID found in environment variables. Proceeding with QR code authentication...');
-        return false;
+    if (!config.SESSION_ID) {
+        console.error('Please add your session to SESSION_ID env !!');
+        process.exit(1);
     }
-    const sessdata = process.env.SESSION_ID.split("Ethix-MD&")[1];
+    const sessdata = config.SESSION_ID.split("Ethix-MD&")[1];
     const url = `https://pastebin.com/raw/${sessdata}`;
     try {
         const response = await axios.get(url);
         const data = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
         await fs.promises.writeFile(credsPath, data);
         console.log("🔒 Session Successfully Loaded !!");
-        return true;
     } catch (error) {
         console.error('Failed to download session data:', error);
-        return false;
+        process.exit(1);
     }
+}
+
+if (!fs.existsSync(credsPath)) {
+    downloadSessionData();
 }
 
 async function start() {
     try {
         const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
         const { version, isLatest } = await fetchLatestBaileysVersion();
-        console.log(`🤖 Bot using WA v${version.join('.')}, isLatest: ${isLatest}`);
+        console.log(`🤖 Ethix-MD using WA v${version.join('.')}, isLatest: ${isLatest}`);
         
-        const sock = makeWASocket({
+        const Matrix = makeWASocket({
             version,
             logger: pino({ level: 'silent' }),
             printQRInTerminal: true,
-            browser: Browsers.baileys('Desktop'),
+            browser: ["Ethix-MD", "safari", "3.3"],
             auth: state,
             getMessage: async (key) => {
                 if (store) {
                     const msg = await store.loadMessage(key.remoteJid, key.id);
                     return msg.message || undefined;
                 }
-                return { conversation: "Default message" };
+                return { conversation: "Ethix-MD Nonstop Testing" };
             }
         });
 
-        sock.ev.on('connection.update', (update) => {
+        Matrix.ev.on('connection.update', (update) => {
             const { connection, lastDisconnect } = update;
             if (connection === 'close') {
-                const shouldReconnect = (lastDisconnect.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-                console.log('Connection closed due to', lastDisconnect.error, ', reconnecting', shouldReconnect);
-                if (shouldReconnect) {
+                if (lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut) {
                     start();
                 }
             } else if (connection === 'open') {
                 if (initialConnection) {
-                    console.log("😃 Integration Successful️ ✅");
-                    sock.sendMessage(sock.user.id, { text: `😃 Integration Successful️ ✅` });
+                    console.log(chalk.green("😃 Integration Successful️ ✅"));
+                    Matrix.sendMessage(Matrix.user.id, { text: `😃 Integration Successful️ ✅` });
                     initialConnection = false;
                 } else {
-                    console.log("♻️ Connection reestablished after restart.");
+                    console.log(chalk.blue("♻️ Connection reestablished after restart."));
                 }
             }
         });
 
-        sock.ev.on('creds.update', saveCreds);
+        Matrix.ev.on('creds.update', saveCreds);
 
-        sock.ev.on("messages.upsert", async chatUpdate => await Handler(chatUpdate, sock, logger));
-        sock.ev.on("call", async (json) => await Callupdate(json, sock));
-        sock.ev.on("group-participants.update", async (messag) => await GroupUpdate(sock, messag));
+        Matrix.ev.on("messages.upsert", async chatUpdate => await Handler(chatUpdate, Matrix, logger));
+        Matrix.ev.on("call", async (json) => await Callupdate(json, Matrix));
+        Matrix.ev.on("group-participants.update", async (messag) => await GroupUpdate(Matrix, messag));
 
         if (config.MODE === "public") {
-            sock.public = true;
+            Matrix.public = true;
         } else if (config.MODE === "private") {
-            sock.public = false;
+            Matrix.public = false;
         }
 
-        if (config.AUTO_REACT) {
-            sock.ev.on('messages.upsert', async (chatUpdate) => {
-                try {
-                    const mek = chatUpdate.messages[0];
-                    if (!mek.key.fromMe) {
-                        console.log(mek);
-                        if (mek.message) {
-                            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-                            await doReact(randomEmoji, mek, sock);
-                        }
+        Matrix.ev.on('messages.upsert', async (chatUpdate) => {
+            try {
+                const mek = chatUpdate.messages[0];
+                if (!mek.key.fromMe && config.AUTO_REACT) {
+                    console.log(mek);
+                    if (mek.message) {
+                        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                        await doReact(randomEmoji, mek, Matrix);
                     }
-                } catch (err) {
-                    console.error('Error during auto reaction:', err);
                 }
-            });
-        }
-    } catch (err) {
-        console.error('Failed to start WhatsApp bot:', err);
+            } catch (err) {
+                console.error('Error during auto reaction:', err);
+            }
+        });
+    } catch (error) {
+        console.error('Critical Error:', error);
+        process.exit(1);
     }
 }
 
-async function init() {
-    if (fs.existsSync(credsPath)) {
-        await start();
-    } else {
-        const sessionDownloaded = await downloadSessionData();
-        if (sessionDownloaded) {
-            await start();
-        } else {
-            console.log('Session data not available, QR code will be printed for authentication.');
-            await start();
-        }
-    }
-}
-
-init();
+start();
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
