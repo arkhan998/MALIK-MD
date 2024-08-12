@@ -94,7 +94,7 @@ async function start() {
         const Matrix = makeWASocket({
             version,
             logger: pino({ level: 'silent' }),
-            printQRInTerminal: useQR,
+            printQRInTerminal: false,
             browser: ["Ethix-MD", "safari", "3.3"],
             auth: state,
             getMessage: async (key) => {
