@@ -8,17 +8,22 @@ const handleRepoCommand = async (m, Matrix) => {
     const response = await axios.get(repoUrl);
     const repoData = response.data;
 
-    const { full_name, name, forks_count, stargazers_count, created_at, updated_at, owner } = repoData;
+    const { name, forks_count, stargazers_count, created_at, updated_at, owner } = repoData;
 
     const messageText = `📊 *_Repository Information:_*
     > 🔸 *_Name:_* ${name}
-    > ⭐ *_Stars:*_ ${stargazers_count}
+    > ⭐ *_Stars:_* ${stargazers_count}
     > 🍴 *_Forks:_* ${forks_count}
     > 📅 *_Created At:_* ${new Date(created_at).toLocaleDateString()}
     > 🛠️ *_Last Updated:_* ${new Date(updated_at).toLocaleDateString()}
     > 👤 *_Owner:_* ${owner.login}`;
 
-    const repoMessage = generateWAMessageFromContent(m.from, {
+    const media = await prepareWAMessageMedia(
+      { image: { url: 'https://telegra.ph/file/fbbe1744668b44637c21a.jpg' } },
+      { upload: Matrix.waUploadToServer }
+    );
+
+    const repoMessage = generateWAMessageFromContent(m.key.remoteJid, proto.Message.fromObject({
       viewOnceMessage: {
         message: {
           messageContextInfo: {
@@ -26,18 +31,14 @@ const handleRepoCommand = async (m, Matrix) => {
             deviceListMetadataVersion: 2
           },
           interactiveMessage: proto.Message.InteractiveMessage.create({
+            header: proto.Message.InteractiveMessage.Header.create({
+              documentMessage: media.imageMessage,
+            }),
             body: proto.Message.InteractiveMessage.Body.create({
-              text: messageText
+              text: messageText,
             }),
             footer: proto.Message.InteractiveMessage.Footer.create({
-              text: "© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴇᴛʜɪx-ᴍᴅ"
-            }),
-            header: proto.MMDessage.InteractiveMessage.Header.create({
-             ...(await prepareWAMessageMedia({ image: { url: `https://telegra.ph/file/fbbe1744668b44637c21a.jpg` } }, { upload: Matrix.waUploadToServer })),
-              title: "",
-              gifPlayback: true,
-              subtitle: "",
-              hasMediaAttachment: false 
+              text: "© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴇᴛʜɪx-ᴍᴅ",
             }),
             nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
               buttons: [
@@ -72,17 +73,17 @@ const handleRepoCommand = async (m, Matrix) => {
           }),
         },
       },
-    }, {});
+    }), {});
 
     await Matrix.relayMessage(repoMessage.key.remoteJid, repoMessage.message, {
       messageId: repoMessage.key.id
     });
-    await m.React("✅");
+    await m.React('✅');
 
   } catch (error) {
     console.error("Error processing your request:", error);
-    m.reply('Error processing your request.');
-    await m.React("❌");
+    await Matrix.sendMessage(m.key.remoteJid, { text: 'Error processing your request.' });
+    await m.React('❌');
   }
 };
 
