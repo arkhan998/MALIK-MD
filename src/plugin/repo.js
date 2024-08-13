@@ -20,7 +20,7 @@ const handleRepoCommand = async (m, Matrix) => {
     } = repoData;
 
     const messageText = `
-      *_Repository Information:_*
+      *_Repository Information:_*\n
       *_Name:_* ${name}
       *_Stars:_* ${stargazers_count}
       *_Forks:_* ${forks_count}
