@@ -31,14 +31,13 @@ const handleRepoCommand = async (m, Matrix, repoUrl) => {
       owner,
     } = repoData;
 
-    const messageText = `
-      *_Repository Information:_*\n
-      *_Name:_* ${name}
-      *_Stars:_* ${stargazers_count}
-      *_Forks:_* ${forks_count}
-      *_Created At:_* ${new Date(created_at).toLocaleDateString()}
-      *_Last Updated:_* ${new Date(updated_at).toLocaleDateString()}
-      *_Owner:_* ${owner.login}
+    const messageText = `*_Repository Information:_*\n
+*_Name:_* ${name}
+*_Stars:_* ${stargazers_count}
+*_Forks:_* ${forks_count}
+*_Created At:_* ${new Date(created_at).toLocaleDateString()}
+*_Last Updated:_* ${new Date(updated_at).toLocaleDateString()}
+*_Owner:_* ${owner.login}
     `;
 
     const repoMessage = generateWAMessageFromContent(m.from, {
