@@ -5,21 +5,8 @@ import config from '../../config.cjs';
 import { smsg } from '../../lib/myfunc.cjs';
 import { handleAntilink } from './antilink.js';
 
-
-const userCommandCounts = new Map();
-
 const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
-
-const getMessage = async (key, store) => {
-    if (store) {
-        const msg = await store.loadMessage(key.remoteJid, key.id);
-        return msg.message || undefined;
-    }
-    return {
-        conversation: "Hai Im sock botwa"
-    };
-};
 
 // Function to get group admins
 export const getGroupAdmins = (participants) => {
@@ -32,7 +19,7 @@ export const getGroupAdmins = (participants) => {
     return admins || [];
 };
 
-const Handler = async (chatUpdate, sock, logger, store) => {
+const Handler = async (chatUpdate, sock, logger) => {
     try {
         if (chatUpdate.type !== 'notify') return;
 
