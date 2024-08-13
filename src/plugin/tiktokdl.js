@@ -55,14 +55,14 @@ const tiktokCommand = async (m, Matrix) => {
           "name": "quick_reply",
           "buttonParamsJson": JSON.stringify({
             display_text: "🎦 Video",
-            id: `media_video_${searchIndex}`
+            id: `mediaa_video_${searchIndex}`
           })
         },
         {
           "name": "quick_reply",
           "buttonParamsJson": JSON.stringify({
             display_text: "🎵 Audio",
-            id: `media_audio_${searchIndex}`
+            id: `mediaa_audio_${searchIndex}`
           })
         }
       ];
@@ -113,7 +113,7 @@ const tiktokCommand = async (m, Matrix) => {
       await m.React("❌");
     }
   } else if (selectedId) { 
-    if (selectedId.startsWith('media_')) {
+    if (selectedId.startsWith('mediaa_')) {
       const parts = selectedId.split('_');
       const type = parts[1];
       const key = parseInt(parts[2]);
