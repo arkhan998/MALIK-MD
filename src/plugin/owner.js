@@ -1,5 +1,5 @@
-import setEnvCommand from '../setvar.js';
 import config from '../../config.cjs';
+
 const ownerContact = async (m, gss) => {
     const ownernumber = config.OWNER_NUMBER;
     const prefixMatch = m.body.match(/^[\\/!#.]/);
@@ -9,16 +9,13 @@ const ownerContact = async (m, gss) => {
 
     if (cmd === 'owner') {
         try {
-            await gss.sendContact(m.from, [ownernumber], m);
+            await gss.sendContact(m.from, [{ number: ownernumber, name: 'Owner' }], m);
             await m.React("✅");
         } catch (error) {
             console.error('Error sending owner contact:', error);
             m.reply('Error sending owner contact.');
             await m.React("❌");
         }
-    } else if (cmd === 'setenv') {
-        const args = text.split(' ');
-        await setEnvCommand(m, args);
     }
 };
 
