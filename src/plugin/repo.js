@@ -1,5 +1,5 @@
-import pkg from '@whiskeysockets/baileys';
-import { generateWAMessageFromContent, proto } from pkg;
+import pkg, { prepareWAMessageMedia } from '@whiskeysockets/baileys';
+const { generateWAMessageFromContent, proto } = pkg;
 import axios from 'axios';
 
 const searchRepo = async (m, Matrix) => {
