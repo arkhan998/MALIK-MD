@@ -4,8 +4,9 @@ import fs from 'fs/promises';
 import config from '../../config.cjs';
 import { smsg } from '../../lib/myfunc.cjs';
 import { handleAntilink } from './antilink.js';
+import { fileURLToPath } from 'url';
 
-const __filename = new URL(import.meta.url).pathname;
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Function to get group admins
@@ -31,7 +32,6 @@ const Handler = async (chatUpdate, sock, logger) => {
         const botId = sock.user.id.split(':')[0] + '@s.whatsapp.net';
         const isBotAdmins = m.isGroup ? groupAdmins.includes(botId) : false;
         const isAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false;
-
 
         const PREFIX = /^[\\/!#.]/;
         const isCOMMAND = (body) => PREFIX.test(body);
@@ -60,18 +60,27 @@ const Handler = async (chatUpdate, sock, logger) => {
             }
         }
 
-await handleAntilink(m, sock, logger, isBotAdmins, isAdmins, isCreator); 
+        await handleAntilink(m, sock, logger, isBotAdmins, isAdmins, isCreator);
 
         const { isGroup, type, sender, from, body } = m;
         console.log(m);
 
-        const pluginFiles = await fs.readdir(path.join(__dirname, '..', 'plugin'));
+        const pluginDir = path.join(__dirname, '..', 'plugin');
+        const pluginFiles = await fs.readdir(pluginDir);
 
         for (const file of pluginFiles) {
             if (file.endsWith('.js')) {
-                const pluginModule = await import(path.join(__dirname, '..', 'plugin', file));
-                const loadPlugins = pluginModule.default;
-                await loadPlugins(m, sock);
+                const pluginPath = path.join(pluginDir, file);
+                console.log(`Attempting to load plugin: ${pluginPath}`);
+
+                try {
+                    const pluginModule = await import(`file://${pluginPath}`);
+                    const loadPlugins = pluginModule.default;
+                    await loadPlugins(m, sock);
+                    console.log(`Successfully loaded plugin: ${pluginPath}`);
+                } catch (err) {
+                    console.error(`Failed to load plugin: ${pluginPath}`, err);
+                }
             }
         }
     } catch (e) {
