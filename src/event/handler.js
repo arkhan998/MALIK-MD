@@ -71,13 +71,13 @@ const Handler = async (chatUpdate, sock, logger) => {
         for (const file of pluginFiles) {
             if (file.endsWith('.js')) {
                 const pluginPath = path.join(pluginDir, file);
-                console.log(`Attempting to load plugin: ${pluginPath}`);
+               // console.log(`Attempting to load plugin: ${pluginPath}`);
 
                 try {
                     const pluginModule = await import(`file://${pluginPath}`);
                     const loadPlugins = pluginModule.default;
                     await loadPlugins(m, sock);
-                    console.log(`Successfully loaded plugin: ${pluginPath}`);
+                   // console.log(`Successfully loaded plugin: ${pluginPath}`);
                 } catch (err) {
                     console.error(`Failed to load plugin: ${pluginPath}`, err);
                 }
