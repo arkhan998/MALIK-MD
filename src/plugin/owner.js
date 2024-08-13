@@ -9,7 +9,7 @@ const ownerContact = async (m, gss) => {
 
     if (cmd === 'owner') {
         try {
-            await gss.sendContact(m.from, [{ number: ownernumber, name: 'Owner' }], m);
+            await gss.sendContact(m.from, [ownernumber], m);
             await m.React("✅");
         } catch (error) {
             console.error('Error sending owner contact:', error);
