@@ -83,7 +83,7 @@ async function start() {
                     const msg = await store.loadMessage(key.remoteJid, key.id);
                     return msg.message || undefined;
                 }
-                return { conversation: "Ethix-MD Nonstop Testing" };
+                return { conversation: "Ethix-MD whatsapp user bot" };
             }
         });
 
