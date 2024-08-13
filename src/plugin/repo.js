@@ -10,7 +10,7 @@ const searchRepo = async (m, Matrix) => {
   const validCommands = ['repo', 'sc', 'script'];
 
   if (validCommands.includes(cmd)) {
-    const repoUrl = `https://api.github.com/repos/${m.body.split(' ')[1]}`;
+    const repoUrl = `https://api.github.com/repos/Ethix-Xsid/Ethix-MD`;
     
     await handleRepoCommand(m, Matrix, repoUrl);
   }
