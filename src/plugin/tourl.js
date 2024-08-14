@@ -79,15 +79,11 @@ const tourl = async (m, gss) => {
         },
       }, {});
 
-      const mediaType = getMediaType(m.quoted.mtype);
       const mediaUrl = response.url || response; // Extract the URL from the response
 
-      const message = {
-        [mediaType]: { url: mediaUrl },
-        caption: `*Hey ${m.pushName} Here Is Your Media*\n*url:* ${mediaUrl}`,
-      };
+      // Only send the URL as a reply
+      await m.reply(`*Hey ${m.pushName} Here Is Your Media*\n*url:* ${mediaUrl}`);
 
-      await gss.sendMessage(m.from, message, { quoted: m }); // Send the media with the URL as the caption
       await unlink(filePath); // Delete the downloaded media file
     } catch (error) {
       console.error('Error processing media:', error);
