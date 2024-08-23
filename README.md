@@ -7,88 +7,50 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/arkhan998/MALIK-MD"><img title="MALIK-MD" src="https://img.shields.io/badge/MALIK--MD-black?style=for-the-badge&logo=github"></a>
+  <a href="https://github.com/arkhan998/MALIK-MD"><img title="MALIK-MD" src="https://img.shields.io/badge/MALIK_MD-v1.0-brightgreen?style=for-the-badge&logo=whatsapp"></a>
+  <a href="https://github.com/arkhan998/MALIK-MD/network/members"><img title="Forks" src="https://img.shields.io/github/forks/arkhan998/MALIK-MD?color=orange&style=for-the-badge"></a>
+  <a href="https://github.com/arkhan998/MALIK-MD/stargazers"><img title="Stars" src="https://img.shields.io/github/stars/arkhan998/MALIK-MD?color=yellow&style=for-the-badge"></a>
+  <a href="https://github.com/arkhan998/MALIK-MD/watchers"><img title="Watchers" src="https://img.shields.io/github/watchers/arkhan998/MALIK-MD?label=Watchers&color=blue&style=for-the-badge"></a>
+  <a href="https://github.com/arkhan998/MALIK-MD"><img title="Open Source" src="https://img.shields.io/badge/Author-ARKHAN998-red?style=for-the-badge"></a>
+  <a href="https://github.com/arkhan998/MALIK-MD/issues"><img title="Issues" src="https://img.shields.io/github/issues/arkhan998/MALIK-MD?color=critical&style=for-the-badge"></a>
 </p>
 
-<p align="center">Introducing MALIK-MD, a powerful and exciting bot designed to enhance your WhatsApp experience.</p>
+<p align="center">🌟 MALIK-MD: A powerful and exciting bot designed to enhance your WhatsApp experience! 🌟</p>
 
 <p align="center">
-  <a aria-label="MALIK-MD YouTube Channel" href="https://youtube.com/@technicalmalikoffical" target="_blank">
-    <img alt="MALIK-MD YouTube" src="https://img.shields.io/youtube/channel/subscribers/UCWHA-PreVSVaYhDTAiUipCA?style=social" target="_blank" />
-  </a>
-</p>
-
-<p align="center"><img src="https://profile-counter.glitch.me/MALIK-MD/count.svg" alt="MALIK-MD Visitor's Count" /></p>
-
-<p align="center">
-  <a href="https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P"><img src="https://img.shields.io/badge/Connect%20on%20WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
-  <a href="https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc"><img src="https://img.shields.io/badge/Join%20WhatsApp%20Group-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/arkhan998/MALIK-MD/followers"><img title="Followers" src="https://img.shields.io/github/followers/arkhan998?color=red&style=flat-square"></a>
-  <a href="https://github.com/arkhan998/MALIK-MD/stargazers"><img title="Stars" src="https://img.shields.io/github/stars/arkhan998/MALIK-MD?color=blue&style=flat-square"></a>
-  <a href="https://github.com/arkhan998/MALIK-MD/network/members"><img title="Forks" src="https://img.shields.io/github/forks/arkhan998/MALIK-MD?color=red&style=flat-square"></a>
-  <a href="https://github.com/arkhan998/MALIK-MD/watchers"><img title="Watching" src="https://img.shields.io/github/watchers/arkhan998/MALIK-MD?label=Watchers&color=blue&style=flat-square"></a>
-  <a href="https://github.com/arkhan998/MALIK-MD"><img title="Open Source" src="https://img.shields.io/badge/Author-🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝-red?v=103"></a>
-  <a href="https://github.com/arkhan998/MALIK-MD"><img title="Size" src="https://img.shields.io/github/repo-size/arkhan998/MALIK-MD?style=flat-square&color=green"></a>
-  <a href="https://github.com/arkhan998/MALIK-MD/graphs/commit-activity"><img height="20" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg"></a>
+  <a href="https://youtube.com/@technicalmalikoffical"><img alt="YouTube Channel" src="https://img.shields.io/youtube/channel/subscribers/UCWHA-PreVSVaYhDTAiUipCA?style=social"></a>
+  <img src="https://profile-counter.glitch.me/{MALIK-MD}/count.svg" alt="Visitor Count" />
 </p>
 
 ---
 
-## Setup Guide
+## 📜 Table of Contents
 
-### 1. 🍴 Fork This Repo
-
-<a href='https://github.com/arkhan998/MALIK-MD/fork' target="_blank"><img alt='Fork repo' src='https://img.shields.io/badge/Fork%20This%20Repo-black?style=for-the-badge&logo=git&logoColor=white'/></a>
-
-### 2. 🔑 Get Session ID via Pair Code
-
-<a href='https://session-id-generator.example.com' target="_blank"><img alt='Get Session ID' src='https://img.shields.io/badge/Click%20here%20to%20get%20your%20session%20id-blue?style=for-the-badge&logo=opencv&logoColor=white'/></a>
-
-### 3. 🚀 Deploy to Heroku
-
-1. If you don't have a Heroku account, create one.
-    <br>
-    <a href='https://signup.heroku.com/' target="_blank"><img alt='Heroku' src='https://img.shields.io/badge/-Create-black?style=for-the-badge&logo=heroku&logoColor=white'/></a>
-2. Deploy the bot.
-    <br>
-    <a href='https://heroku.com/deploy' target="_blank"><img alt='Deploy' src='https://img.shields.io/badge/-DEPLOY-black?style=for-the-badge&logo=heroku&logoColor=white'/></a>
-
-### 4. 🌍 Deploy to Koyeb
-
-<a href="https://app.koyeb.com/services/deploy/?type=git&repository=github.com%2Farkhan998%2FMALIK-MD&branch=main&name=malik-md&builder=dockerfile&env%5BAUTO_BLOCK=false%5D=&env%5BSESSION_ID%5D=your%20sessionid%20here&env%5BMODE%5D=public&env=%5BAUTO_READ%5D%3Dfalse&env%5BAUTO_STATUS_SEEN%5D=true" target="blank"><img align="center" src="https://i.imgur.com/PNoLtFq.png" width="300" height="100" alt="Deploy bot"/></a>
+- [Features](#features)
+- [Setup Guide](#setup-guide)
+- [Deployment Options](#deployment-options)
+- [Developer](#developer)
+- [Disclaimer](#disclaimer)
+- [Contact](#contact)
 
 ---
 
-## Developer
+## 🚀 Features
 
-<div align="left">
-  <a href="https://github.com/arkhan998"><img src="https://github.com/arkhan998.png?size=100" width="130" height="100"></a>
-
-  | [🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝](https://github.com/arkhan998) |
-  | ----------------------------------- |
-  | Owner, Developer, Bug Fixer, Maintainer, Updates |
-</div>
+- **Automated Commands:** Provides a wide range of WhatsApp automation commands.
+- **User-Friendly:** Easy to set up and manage.
+- **Customizable:** Tailor the bot to meet your specific needs.
+- **Open Source:** Actively maintained and improved by the community.
 
 ---
 
-## Reminder
+## 🛠️ Setup Guide
 
-- This bot is not made by `WhatsApp Inc.` and using it may result in your account being banned. (Though your WhatsApp account can be unbanned only once.)
-- The developers are not responsible for any bans or issues that arise from using this bot.
-- Use at your own risk.
+Follow these steps to get MALIK-MD up and running on your system:
 
----
+### 1. Fork the Repository 🍴
 
-<h1 align="center">💪 Keep Supporting 💪</h1>
+Fork this repo to your GitHub account.
 
----
+<a href='https://github.com/arkhan998/MALIK-MD/fork'><img alt='Fork repo' src='https://img.shields.io/badge/Fork-This_Repo-blue?style=for-the-badge&logo=github'></a>
 
-## Contact
-
-<p align="left">
-  <a href="mailto:akk728492@gmail.com"><img title="Contact Developer" src="https://img.shields.io/badge/GMAIL-ME-black?style=for-the-badge&logo=Gmail"></a>
-  <a href="https://wa.me/message/SXENY2UB35T2G1"><img title="WhatsApp Support" src="https://img.shields.io/badge/WHATSAPP-ME-red?style=for-the-badge&logo=WhatsApp"></a>
-</p>
