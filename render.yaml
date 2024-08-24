@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: malik-md-bot
+    env: docker
+    plan: free
+    buildCommand: "docker build -t malik-md-bot ."
+    startCommand: "docker run malik-md-bot"
+    dockerfilePath: ./Dockerfile
+    gitRepo:
+      branch: main
+      repo: https://github.com/arkhan998/MALIK-MD
+    autoDeploy: true
+    healthCheckPath: /health
+    # Optional: Specify environment variables
+    envVars:
+      - key: SESSION_ID
+        value: "your_session_id_here"
+      - key: AUTO_BLOCK
+        value: "false"
+      - key: MODE
+        value: "public"
+      - key: AUTO_READ
+        value: "false"
+      - key: AUTO_STATUS_SEEN
+        value: "true"
