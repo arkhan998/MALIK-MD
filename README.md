@@ -63,6 +63,11 @@
 
 <a href="https://app.koyeb.com/services/deploy/?type=git&repository=github.com%2FMALIK-MD%2FMALIK-MD&branch=main&name=malik-md&builder=dockerfile&env%5BAUTO_BLOCK=false%5D=&env%5BSESSION_ID%5D=your%20sessionid%20here&env%5BMODE%5D=public&env=%5BAUTO_READ%5D%3Dfalse&env%5BAUTO_STATUS_SEEN%5D=true" target="blank"><img align="center" src="https://i.imgur.com/PNoLtFq.png" width="300" height="100" alt="Deploy bot"/></a>
 
+<p align="center">
+  <a href="https://render.com/deploy?repo=https://github.com/arkhan998/MALIK-MD">
+    <img src="https://img.shields.io/badge/Deploy%20to-Render-blue?style=for-the-badge&logo=render&logoColor=white" alt="Deploy to Render">
+  </a>
+</p>
 ---
 
 ## 🦋 Developers
