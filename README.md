@@ -34,26 +34,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/arkhan998/MALIK-MD/followers">
-    <img title="Followers" src="https://img.shields.io/github/followers/arkhan998?color=FF5733&style=for-the-badge">
-  </a>
-  <a href="https://github.com/arkhan998/MALIK-MD/stargazers">
-    <img title="Stars" src="https://img.shields.io/github/stars/arkhan998/MALIK-MD?color=1E90FF&style=for-the-badge">
-  </a>
-  <a href="https://github.com/arkhan998/MALIK-MD/network/members">
-    <img title="Forks" src="https://img.shields.io/github/forks/arkhan998/MALIK-MD?color=FF1493&style=for-the-badge">
-  </a>
-  <a href="https://github.com/arkhan998/MALIK-MD/watchers">
-    <img title="Watchers" src="https://img.shields.io/github/watchers/arkhan998/MALIK-MD?label=Watchers&color=4B0082&style=for-the-badge">
-  </a>
-  <a href="https://github.com/arkhan998/MALIK-MD">
-    <img title="Repo Size" src="https://img.shields.io/github/repo-size/arkhan998/MALIK-MD?style=for-the-badge&color=32CD32">
-  </a>
-  <a href="https://github.com/arkhan998/MALIK-MD/graphs/commit-activity">
-    <img title="Maintained?" src="https://img.shields.io/badge/Maintained%3F-yes-32CD32?style=for-the-badge">
-  </a>
+  <a href="#"><img title="Followers" src="https://img.shields.io/badge/Followers-10k-FF5733?style=for-the-badge"></a>
+  <a href="#"><img title="Stars" src="https://img.shields.io/badge/Stars-500-1E90FF?style=for-the-badge"></a>
+  <a href="#"><img title="Forks" src="https://img.shields.io/badge/Forks-250-FF1493?style=for-the-badge"></a>
+  <a href="#"><img title="Watchers" src="https://img.shields.io/badge/Watchers-100-4B0082?style=for-the-badge"></a>
+  <a href="#"><img title="Repo Size" src="https://img.shields.io/badge/Repo%20Size-5MB-32CD32?style=for-the-badge"></a>
+  <a href="#"><img title="Maintained?" src="https://img.shields.io/badge/Maintained%3F-yes-32CD32?style=for-the-badge"></a>
 </p>
-
 ---
 
 ## 🚀 Setup Guide
