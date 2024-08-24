@@ -14,16 +14,16 @@
 
 <p align="center">
   <a aria-label="MALIK-MD is free to use" href="https://youtube.com/@technicalmalikoffical?si=4HFB2LmJ08DChVCj" target="_blank">
-    <img alt="TECHNICAL MALIK OFFICAL" src="https://img.shields.io/youtube/channel/subscribers/UCWHA-PreVSVaYhDTAiUipCA?style=social" target="_blank" />
+    <img alt="TECHNICAL MALIK OFFICIAL" src="https://img.shields.io/youtube/channel/subscribers/UCWHA-PreVSVaYhDTAiUipCA?style=social" />
   </a>
 </p>
 
 <p align="center"><img src="https://profile-counter.glitch.me/{MALIK-MD}/count.svg" alt="MALIK-MD Visitor's Count" /></p>
 
 <p align="center">
-  <a href="https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc"><img src="https://img.shields.io/badge/WHATSAPP PUBLIC GROUP-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
-  <a href="https://youtube.com/@technicalmalikoffical?si=4HFB2LmJ08DChVCj"><img src="https://img.shields.io/badge/Subscribe On YouTube-E4405F?style=for-the-badge&logo=youtube&logoColor=white"></a>
-  <a href="https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P"><img src="https://img.shields.io/badge/Join WhatsApp Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
+  <a href="https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc"><img src="https://img.shields.io/badge/WhatsApp Public Group-4CAF50?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
+  <a href="https://youtube.com/@technicalmalikoffical?si=4HFB2LmJ08DChVCj"><img src="https://img.shields.io/badge/Subscribe on YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"></a>
+  <a href="https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P"><img src="https://img.shields.io/badge/Join WhatsApp Channel-128C7E?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
   <a href="https://wa.me/message/SXENY2UB35T2G1"><img src="https://img.shields.io/badge/WhatsApp Me Directly-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
 </p>
 
@@ -59,7 +59,7 @@
 
 ### ☁️ 4. Deploy to Koyeb
 
-<a href="https://app.koyeb.com/services/deploy/?type=git&repository=github.com%2FKHARAL-MD%2FKHARAL-MD&branch=main&name=kharal-md&builder=dockerfile&env%5BAUTO_BLOCK=false%5D=&env%5BSESSION_ID%5D=your%20sessionid%20here&env%5BMODE%5D=public&env=%5BAUTO_READ%5D%3Dfalse&env%5BAUTO_STATUS_SEEN%5D=true" target="blank"><img align="center" src="https://i.imgur.com/PNoLtFq.png" width="300" height="100" alt="Deploy bot"/></a>
+<a href="https://app.koyeb.com/services/deploy/?type=git&repository=github.com%2FMALIK-MD%2FMALIK-MD&branch=main&name=malik-md&builder=dockerfile&env%5BAUTO_BLOCK=false%5D=&env%5BSESSION_ID%5D=your%20sessionid%20here&env%5BMODE%5D=public&env=%5BAUTO_READ%5D%3Dfalse&env%5BAUTO_STATUS_SEEN%5D=true" target="blank"><img align="center" src="https://i.imgur.com/PNoLtFq.png" width="300" height="100" alt="Deploy bot"/></a>
 
 ---
 
@@ -75,6 +75,17 @@
 ---
 
 ## 🚀 Key Features
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Group Management-orange?style=for-the-badge&logo=groupme" alt="Group Management">
+  <img src="https://img.shields.io/badge/Fun Commands-purple?style=for-the-badge&logo=funimation" alt="Fun Commands">
+  <img src="https://img.shields.io/badge/Customization-blue?style=for-the-badge&logo=customize" alt="Customization">
+  <img src="https://img.shields.io/badge/Security-red?style=for-the-badge&logo=security" alt="Security">
+  <img src="https://img.shields.io/badge/Multi-Language Support-green?style=for-the-badge&logo=language" alt="Multi-Language Support">
+  <img src="https://img.shields.io/badge/Auto-Responder-teal?style=for-the-badge&logo=reply" alt="Auto-Responder">
+  <img src="https://img.shields.io/badge/Analytics-pink?style=for-the-badge&logo=chart-bar" alt="Analytics">
+  <img src="https://img.shields.io/badge/Media Sharing-lightblue?style=for-the-badge&logo=share" alt="Media Sharing">
+</p>
 
 ✨ **Group Management**:  
 Effortlessly manage your groups with powerful admin commands.
