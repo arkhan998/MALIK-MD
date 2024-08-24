@@ -21,7 +21,7 @@
 <p align="center"><img src="https://profile-counter.glitch.me/{MALIK-MD}/count.svg" alt="MALIK-MD Visitor's Count" /></p>
 
 <p align="center">
-  <a href="https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc"><img src="https://img.shields.io/badge/Connect on WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
+  <a href="https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc"><img src="https://img.shields.io/badge/WHATSAPP PUBLIC GROUP-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
   <a href="https://youtube.com/@technicalmalikoffical?si=4HFB2LmJ08DChVCj"><img src="https://img.shields.io/badge/Subscribe On YouTube-E4405F?style=for-the-badge&logo=youtube&logoColor=white"></a>
   <a href="https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P"><img src="https://img.shields.io/badge/Join WhatsApp Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
   <a href="https://wa.me/message/SXENY2UB35T2G1"><img src="https://img.shields.io/badge/WhatsApp Me Directly-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
@@ -74,20 +74,31 @@
 
 ---
 
-## 🙌 Helpers
+## 🚀 Key Features
 
-<div align="center">
-  <a href="https://github.com/arkhan998"><img src="https://github.com/arkhan998.png?size=100" width="100" height="100"></a>  
-  <a href="https://github.com/Skharal"><img src="https://github.com/Skharal.png?size=100" width="100" height="100"></a>  
-</div>
+✨ **Group Management**:  
+Effortlessly manage your groups with powerful admin commands.
 
-<div align="center">
+🎉 **Fun Commands**:  
+Keep your group members engaged with a variety of fun commands like memes, jokes, and more.
 
-| **[ATTA UR REHMAN](https://github.com/arkhan998)** | **[BABLO KHARAL](https://github.com/Skharal)** |
-| --- | --- |
-| Promotion | Groups Management |
+🛠 **Customization**:  
+Personalize your bot experience with custom settings and features.
 
-</div>
+🔐 **Security**:  
+Enjoy enhanced security features like anti-spam, anti-fake links, and more to keep your groups safe.
+
+🌐 **Multi-Language Support**:  
+Interact with the bot in multiple languages for a global experience.
+
+🤖 **Auto-Responder**:  
+Set up auto-responses to automate replies when you're busy.
+
+📊 **Analytics**:  
+Track your group's activity with detailed analytics and usage statistics.
+
+🖼 **Media Sharing**:  
+Easily share images, videos, GIFs, and more with your contacts or groups.
 
 ---
 
@@ -106,6 +117,6 @@
 ## 📞 Contact
 
 <p align="left">
-  <a href="MALIK-SAHAB:akk728492@gmail.com"><img title="Contact Developer" src="https://img.shields.io/badge/Email Developer-black?style=for-the-badge&logo=Gmail"></a>
-  <a href="https://wa.me/923306144630?text=Hi+MALIK+MD+Team...+I+need+some+help+in+MALIK-MD"><img title="WhatsApp Support" src="https://img.shields.io/badge/WhatsApp Developer-red?style=for-the-badge&logo=WhatsApp"></a>
+  <a href="mailto:akk728492@gmail.com"><img title="Contact Developer" src="https://img.shields.io/badge/Email Developer-black?style=for-the-badge&logo=Gmail"></a>
+  <a href="https://wa.me/923306144630?text=Hi+KHARAL+MD+Team...+I+need+some+help+in+MALIK-MD"><img title="WhatsApp Support" src="https://img.shields.io/badge/WhatsApp Developer-red?style=for-the-badge&logo=WhatsApp"></a>
 </p>
