@@ -14,7 +14,9 @@
 
 <p align="center">
   <a aria-label="MALIK-MD is free to use" href="https://youtube.com/@technicalmalikoffical?si=4HFB2LmJ08DChVCj" target="_blank">
-    <img alt="TECHNICAL MALIK OFFICIAL" src="https://img.shields.io/youtube/channel/subscribers/UCWHA-PreVSVaYhDTAiUipCA?style=social" />
+    <img alt="1K Subscribers" src="https://img.shields.io/badge/1K%20Subscribers-red?style=for-the-badge&logo=youtube&logoColor=white" />
+  </a>
+</p>
   </a>
 </p>
 
