@@ -141,7 +141,7 @@
 
 ### 🔑 2. Get Session ID via Pair Code
 
-<a href='https://session-id-generator.example.com' target="_blank"><img alt='Get Session ID' src='https://img.shields.io/badge/Get Your Session ID-blue?style=for-the-badge&logo=opencv&logoColor=white'/></a>
+<a href='https://malik-pair-web.vercel.app/' target="_blank"><img alt='Get Session ID' src='https://img.shields.io/badge/Get Your Session ID-blue?style=for-the-badge&logo=opencv&logoColor=white'/></a>
 
 ### 🚀 3. Deploy to Heroku
 
