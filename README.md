@@ -29,7 +29,7 @@
 <p align="center">
   <a href="https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc"><img src="https://img.shields.io/badge/WhatsApp Public Group-4CAF50?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
   <a href="https://youtube.com/@technicalmalikoffical?si=4HFB2LmJ08DChVCj"><img src="https://img.shields.io/badge/Subscribe on YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white"></a>
-  <a href="https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P"><img src="https://img.shields.io/badge/Join WhatsApp Channel-128C7E?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
+  <a href="https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P"><img src="https://img.shields.io/badge/Follow WhatsApp Channel-128C7E?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
   <a href="https://wa.me/message/SXENY2UB35T2G1"><img src="https://img.shields.io/badge/WhatsApp Me Directly-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"></a>
 </p>
 
@@ -229,5 +229,5 @@ Easily share images, videos, GIFs, and more with your contacts or groups.
 
 <p align="left">
   <a href="mailto:akk728492@gmail.com"><img title="Contact Developer" src="https://img.shields.io/badge/Email Developer-black?style=for-the-badge&logo=Gmail"></a>
-  <a href="https://wa.me/923306144630?text=Hi+KHARAL+MD+Team...+I+need+some+help+in+MALIK-MD"><img title="WhatsApp Support" src="https://img.shields.io/badge/WhatsApp Developer-red?style=for-the-badge&logo=WhatsApp"></a>
+  <a href="https://wa.me/923306144630?text=Hi+𓆩ꨄ︎𓆪+𝐌𝐚𝐥𝐢𝐤+◆+𝗦𝗮𝗛𝗮𝗕+𓆩ᥫ᭡𓆪...+I+need+some+help+in+MALIK-MD"><img title="WhatsApp Support" src="https://img.shields.io/badge/WhatsApp Developer-red?style=for-the-badge&logo=WhatsApp"></a>
 </p>
