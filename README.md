@@ -231,3 +231,13 @@ Easily share images, videos, GIFs, and more with your contacts or groups.
   <a href="mailto:akk728492@gmail.com"><img title="Contact Developer" src="https://img.shields.io/badge/Email Developer-black?style=for-the-badge&logo=Gmail"></a>
   <a href="https://wa.me/923306144630?text=Hi+𓆩ꨄ︎𓆪+𝐌𝐚𝐥𝐢𝐤+◆+𝗦𝗮𝗛𝗮𝗕+𓆩ᥫ᭡𓆪...+I+need+some+help+in+MALIK-MD"><img title="WhatsApp Support" src="https://img.shields.io/badge/WhatsApp Developer-red?style=for-the-badge&logo=WhatsApp"></a>
 </p>
+
+# ⚠️ WARNING ⚠️
+
+This repository, **MALIK-MD**, is the original work of [🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝](https://github.com/arkhan998). Unauthorized copying, modification, or use of this code without permission is strictly prohibited. If you want to use this code, make sure to provide proper credits and contact the owner for authorization.
+
+## ❌ Unauthorized Use Penalties:
+- Legal actions may be taken against those who copy or modify the code without permission.
+- We have systems in place to track unauthorized usage.
+
+Please respect the developer's work and avoid copying this code without prior consent. **Play fair, code responsibly!**
