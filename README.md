@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://youtu.be/F3Cgi8ied1o">
-    <img alt="MALIK-MD" height="300" src="https://telegra.ph/file/6e0ad047cc88c1db5cc2c.jpg">
+    <img alt="MALIK-MD" height="300" src="https://files.catbox.moe/b170la.jpg">
   </a>
 </p>
 <div align="center">
