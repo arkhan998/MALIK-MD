@@ -21,6 +21,9 @@ import config from './config.cjs';
 import pkg from './lib/autoreact.cjs';
 const { emojis, doReact } = pkg;
 
+// Importing AI generator
+import { generateImage } from './src/plugins/ai-generate.js'; // Ensure this path is correct
+
 const sessionName = "session";
 const app = express();
 const orange = chalk.bold.hex("#FFA500");
@@ -157,6 +160,14 @@ init();
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
+});
+
+// Route for generating images
+app.post('/generate-image', async (req, res) => {
+    const prompt = req.body.prompt; // Make sure to parse the body in your middleware
+    const message = req.body.message; // The message object from WhatsApp
+    await generateImage(Matrix, message, prompt);
+    res.send('Image generation in progress...');
 });
 
 app.listen(PORT, () => {
