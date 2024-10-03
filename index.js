@@ -21,9 +21,6 @@ import config from './config.cjs';
 import pkg from './lib/autoreact.cjs';
 const { emojis, doReact } = pkg;
 
-// Importing AI generator
-import { generateImage } from './src/plugins/ai-generate.js'; // Ensure this path is correct
-
 const sessionName = "session";
 const app = express();
 const orange = chalk.bold.hex("#FFA500");
