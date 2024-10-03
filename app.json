@@ -1,10 +1,10 @@
 {
-  "name": "whatsapp-bot (Ethix-MD)",
+  "name": "whatsapp-bot (MALIK-MD)",
   "description": " Whatsapp bot.",
   "keywords": [
     "whatsapp bot"
   ],
-  "repository": "https://github.com/Ethix-Xsid/Ethix-MD",
+  "repository": "https://github.com/arkhan998/MALIK-MD",
   "stack": "container",
   "env": { 
       "SESSION_ID": {
