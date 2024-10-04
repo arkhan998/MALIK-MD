@@ -61,7 +61,7 @@ async function downloadSessionData() {
         console.log("🔒 Session Successfully Loaded !!");
         return true;
     } catch (error) {
-        // console.error('Failed to download session data:', error);
+       // console.error('Failed to download session data:', error);
         return false;
     }
 }
@@ -157,14 +157,6 @@ init();
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
-});
-
-// Route for generating images
-app.post('/generate-image', async (req, res) => {
-    const prompt = req.body.prompt; // Make sure to parse the body in your middleware
-    const message = req.body.message; // The message object from WhatsApp
-    await generateImage(Matrix, message, prompt);
-    res.send('Image generation in progress...');
 });
 
 app.listen(PORT, () => {
