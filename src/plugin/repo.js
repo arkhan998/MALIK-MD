@@ -10,7 +10,7 @@ const searchRepo = async (m, Matrix) => {
   const validCommands = ['repo', 'sc', 'script'];
 
   if (validCommands.includes(cmd)) {
-    const repoUrl = `https://api.github.com/repos/Ethix-Xsid/Ethix-MD`;
+    const repoUrl = `https://api.github.com/repos/arkhan998/MALIK-MD`;
     
     await handleRepoCommand(m, Matrix, repoUrl);
   }
@@ -52,12 +52,12 @@ const handleRepoCommand = async (m, Matrix, repoUrl) => {
               text: messageText,
             }),
             footer: proto.Message.InteractiveMessage.Footer.create({
-              text: '© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴇᴛʜɪx-ᴍᴅ',
+              text: '© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴍᴀʟɪᴋ-ᴍᴅ',
             }),
             header: proto.Message.InteractiveMessage.Header.create({
               ...(await prepareWAMessageMedia({
                 image: {
-                  url: 'https://telegra.ph/file/fbbe1744668b44637c21a.jpg',
+                  url: 'https://files.catbox.moe/b170la.jpg',
                 },
               }, { upload: Matrix.waUploadToServer })),
               title: '',
@@ -85,7 +85,7 @@ const handleRepoCommand = async (m, Matrix, repoUrl) => {
                   name: 'cta_url',
                   buttonParamsJson: JSON.stringify({
                     display_text: 'Join Our Community',
-                    url: 'https://whatsapp.com/channel/0029VaWJMi3GehEE9e1YsI1S',
+                    url: 'https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P',
                   }),
                 },
               ],
