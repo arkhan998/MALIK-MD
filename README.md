@@ -196,7 +196,7 @@
   <a href="mailto:akk728492@gmail.com">
     <img title="Contact Developer" src="https://img.shields.io/badge/📧_EMAIL-D14836?style=for-the-badge&logo=gmail&logoColor=white&border=FF0000&stroke=FF0000">
   </a>
-  <a href="https://wa.me/923306144630?text=Hi+𓆩ꨄ︎𓆪+𝐌𝐚𝐥𝐢𝐤+◆+𝗦𝗮𝗛𝗮𝗕+𓆩ᥫ᭡𓆪...+I+need+some+help+in+MALIK-MD">
+  <a href="https://wa.me/923322964709?text=Hi+𓆩ꨄ︎𓆪+𝐌𝐚𝐥𝐢𝐤+◆+𝗦𝗮𝗛𝗮𝗕+𓆩ᥫ᭡𓆪...+I+need+some+help+in+MALIK-MD">
     <img title="WhatsApp Support" src="https://img.shields.io/badge/💬_WHATSAPP-25D366?style=for-the-badge&logo=whatsapp&logoColor=white&border=FF0000&stroke=FF0000">
   </a>
 </div>
