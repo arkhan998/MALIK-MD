@@ -90,17 +90,17 @@ let mode = ethix.public ? 'public' : 'private';
           interactiveMessage: proto.Message.InteractiveMessage.create({
             body: proto.Message.InteractiveMessage.Body.create({
               text: `╭─────────────━┈⊷
-│🤖 ʙᴏᴛ ɴᴀᴍᴇ: *ᴇᴛʜɪx-ᴍᴅ*
-│📍 ᴠᴇʀꜱɪᴏɴ: 2.0.3
-│👨‍💻 ᴏᴡɴᴇʀ : *ᴇᴛʜɪx xsɪᴅ*      
-│👤 ɴᴜᴍʙᴇʀ: 919142294671
+│🤖 ʙᴏᴛ ɴᴀᴍᴇ: *ᴍᴀʟɪᴋ-ᴍᴅ*
+│📍 ᴠᴇʀꜱɪᴏɴ: 3.0.0
+│👨‍💻 ᴏᴡɴᴇʀ : *ᴍᴀʟɪᴋ ꜱᴀʜᴀʙ*      
+│👤 ɴᴜᴍʙᴇʀ: 923310195292
 │📡 ᴘʟᴀᴛғᴏʀᴍ: *${os.platform()}*
 │🛡 ᴍᴏᴅᴇ: *${mode}*
 │💫 ᴘʀᴇғɪx: *[Multi-Prefix]*
 ╰─────────────━┈⊷ `
             }),
             footer: proto.Message.InteractiveMessage.Footer.create({
-              text: "© Powered By MALIK-MD"
+              text: "© Powered by 🦋⃟ᴍᴀʟɪᴋ-ᴍᴅ"
             }),
             header: proto.Message.InteractiveMessage.Header.create({
                 ...(await prepareWAMessageMedia({ image : fs.readFileSync('./src/malik.jpg')}, { upload: Matrix.waUploadToServer})), 
@@ -207,10 +207,10 @@ let mode = ethix.public ? 'public' : 'private';
         const mode = process.env.MODE;
         const str = `hey ${m.pushName} ${pushwish}
 ╭─────────────━┈⊷
-│🤖 ʙᴏᴛ ɴᴀᴍᴇ: *ᴇᴛʜɪx-ᴍᴅ*
-│📍 ᴠᴇʀꜱɪᴏɴ: 2.0.3
-│👨‍💻 ᴏᴡɴᴇʀ : *ᴇᴛʜɪx xsɪᴅ*      
-│👤 ɴᴜᴍʙᴇʀ: 919142294671
+│🤖 ʙᴏᴛ ɴᴀᴍᴇ: *ᴍᴀʟɪᴋ-ᴍᴅ*
+│📍 ᴠᴇʀꜱɪᴏɴ: 3.0.0
+│👨‍💻 ᴏᴡɴᴇʀ : *ᴍᴀʟɪᴋ ꜱᴀʜᴀʙ*      
+│👤 ɴᴜᴍʙᴇʀ: 923310195292
 │💻 ᴘʟᴀᴛғᴏʀᴍ: *${os.platform()}*
 │🛡 ᴍᴏᴅᴇ: *${mode}*
 │💫 ᴘʀᴇғɪx: *[Multi-Prefix]*
