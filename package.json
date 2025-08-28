@@ -1,0 +1,22 @@
+{
+  "name": "malik-md-bot",
+  "version": "1.0.0",
+  "description": "A Node.js-based WhatsApp bot using @whiskeysockets/baileys.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "whatsapp-bot",
+    "nodejs",
+    "baileys"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.8",
+    "express": "^4.19.2",
+    "pino": "^8.21.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
