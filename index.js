@@ -25,22 +25,34 @@ async function startMalikBot() {
     const sock = makeWASocket({
         version,
         auth: state,
-        printQRInTerminal: false, // Important: Keep this false
+        printQRInTerminal: false, // QR is no longer needed
         logger: pino({ level: "silent" }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
 
-    sock.ev.on("connection.update", (update) => {
-        const { connection, lastDisconnect, qr } = update;
-        if (qr) {
-            // Log the QR string directly
-            console.log("------------------------------------------------");
-            console.log("             SCAN THIS QR CODE");
-            console.log("------------------------------------------------\n");
-            console.log("QR Code String (copy this and use an online generator): \n\n", qr, "\n");
-            console.log("Website to generate QR from text: https://www.the-qrcode-generator.com/");
-            console.log("\n------------------------------------------------");
+    // Pairing Code Logic
+    if (!sock.authState.creds.registered) {
+        // Check if bot number is provided
+        if (!config.bot_number) {
+            console.error("Error: Bot number not found in config.js. Please add it to use pairing code.");
+            return;
         }
+        
+        console.log("Requesting Pairing Code...");
+        // Delay to ensure the request is sent
+        setTimeout(async () => {
+            const code = await sock.requestPairingCode(config.bot_number);
+            console.log("------------------------------------------------");
+            console.log("           YOUR PAIRING CODE");
+            console.log("------------------------------------------------");
+            console.log(`             ${code}`);
+            console.log("------------------------------------------------");
+            console.log("Open WhatsApp > Settings > Linked Devices > Link with phone number and enter this code.");
+        }, 3000); // 3-second delay
+    }
+
+    sock.ev.on("connection.update", (update) => {
+        const { connection, lastDisconnect } = update;
         if (connection === "close") {
             const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log("Connection closed, reconnecting:", shouldReconnect);
@@ -78,4 +90,3 @@ startMalikBot();
 
 app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
 app.listen(port, () => console.log(`Server is listening on port ${port}`));
-
