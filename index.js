@@ -37,7 +37,7 @@ async function startMalikBot() {
         const credsData = Buffer.from(SESSION_ID, 'base64').toString('utf-8');
         fs.writeFileSync(path.join(sessionPath, 'creds.json'), credsData);
         console.log("Session file created successfully.");
-    } catch (err). {
+    } catch (err) { // Corrected this line, removed the extra dot
         console.error("Failed to decode or write session file:", err);
         return;
     }
@@ -51,7 +51,7 @@ async function startMalikBot() {
         auth: state,
         printQRInTerminal: false,
         logger: pino({ level: "silent" }),
-        // IMPORTANT CHANGE: Using the browser name from the other bot's session
+        // Using the browser name from the other bot's session
         browser: ["SHABAN-MD", "Safari", "1.0.0"],
     });
     
