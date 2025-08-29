@@ -2,12 +2,11 @@
 
 const config = {
     // Bot Owner's JID
-    // Aapka WhatsApp number
+    // Aapka WhatsApp number yahan daalein
     owner_jid: "923322964709@s.whatsapp.net",
 
-    // Bot Number for Pairing Code
-    // Aapka WhatsApp number (bina '+' ke)
-    bot_number: "923322964709",
+    // Bot Number ab Heroku ki settings se set hoga, isko khali rehne dein
+    bot_number: "",
 
     // Bot Prefix
     prefix: "!",
@@ -16,7 +15,7 @@ const config = {
     bot_name: "MALIK-MD",
 
     // Owner Name
-    owner_name: "🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝",
+    owner_name: "Arkhan",
 };
 
 module.exports = config;
