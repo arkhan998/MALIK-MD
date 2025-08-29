@@ -12,7 +12,7 @@
     "baileys",
     "malik-md"
   ],
-  "author": "arkhan998,
+  "author": "arkhan998"
   "license": "MIT",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
