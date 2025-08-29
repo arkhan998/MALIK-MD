@@ -1,9 +1,10 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeInMemoryStore, jidNormalizedUser, proto } = require("@whiskeysockets/baileys");
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require("@whiskeysockets/baileys");
 const pino = require("pino");
 const { Boom } = require("@hapi/boom");
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const qrcode = require("qrcode-terminal"); // New library import
 const config = require("./config");
 const handler = require("./handler");
 
@@ -28,7 +29,7 @@ async function startMalikBot() {
     const sock = makeWASocket({
         version,
         auth: state,
-        printQRInTerminal: true,
+        printQRInTerminal: false, // Set this to false
         logger: pino({ level: "silent" }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
@@ -38,6 +39,8 @@ async function startMalikBot() {
         const { connection, lastDisconnect, qr } = update;
         if (qr) {
             console.log("QR code received, scan with your phone.");
+            // Generate QR code in terminal
+            qrcode.generate(qr, { small: true });
         }
         if (connection === "close") {
             const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
