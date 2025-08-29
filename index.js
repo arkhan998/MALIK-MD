@@ -10,6 +10,9 @@ const handler = require("./handler");
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Get bot number from Heroku Environment Variables
+const BOT_NUMBER = process.env.BOT_NUMBER || config.bot_number;
+
 // Path to store session files
 const sessionPath = path.join(__dirname, 'session');
 if (!fs.existsSync(sessionPath)) {
@@ -25,7 +28,7 @@ async function startMalikBot() {
     const sock = makeWASocket({
         version,
         auth: state,
-        printQRInTerminal: false, // QR is no longer needed
+        printQRInTerminal: false,
         logger: pino({ level: "silent" }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
@@ -33,22 +36,24 @@ async function startMalikBot() {
     // Pairing Code Logic
     if (!sock.authState.creds.registered) {
         // Check if bot number is provided
-        if (!config.bot_number) {
-            console.error("Error: Bot number not found in config.js. Please add it to use pairing code.");
+        if (!BOT_NUMBER) {
+            console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            console.error("!!!               ERROR                      !!!");
+            console.error("!!! Bot number not found. Please set it in   !!!");
+            console.error("!!! Heroku > Settings > Config Vars > BOT_NUMBER !!!");
+            console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             return;
         }
         
-        console.log("Requesting Pairing Code...");
-        // Delay to ensure the request is sent
+        console.log(`Requesting Pairing Code for number: ${BOT_NUMBER}`);
         setTimeout(async () => {
-            const code = await sock.requestPairingCode(config.bot_number);
+            const code = await sock.requestPairingCode(BOT_NUMBER);
             console.log("------------------------------------------------");
             console.log("           YOUR PAIRING CODE");
             console.log("------------------------------------------------");
             console.log(`             ${code}`);
             console.log("------------------------------------------------");
-            console.log("Open WhatsApp > Settings > Linked Devices > Link with phone number and enter this code.");
-        }, 3000); // 3-second delay
+        }, 3000);
     }
 
     sock.ev.on("connection.update", (update) => {
@@ -90,3 +95,4 @@ startMalikBot();
 
 app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
 app.listen(port, () => console.log(`Server is listening on port ${port}`));
+
