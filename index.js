@@ -1,115 +1,89 @@
-// index.js
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, makeInMemoryStore, jidNormalizedUser, proto } = require("@whiskeysockets/baileys");
+const pino = require("pino");
+const { Boom } = require("@hapi/boom");
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const config = require("./config");
+const handler = require("./handler");
 
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    DisconnectReason,
-    fetchLatestBaileysVersion,
-    makeInMemoryStore,
-} = require('@whiskeysockets/baileys');
-const pino = require('pino');
-const { Boom } = require('@hapi/boom');
-const express = require('express');
-const qrcode = require('qrcode-terminal');
-const fs = require('fs');
-const path = require('path');
-const config = require('./config');
-const commandHandler = require('./handler');
-
-// Setup logger
-const logger = pino({ level: 'silent' }); // Use 'info' for detailed logs
-
-// Setup in-memory store for chat data
-const store = makeInMemoryStore({ logger });
-store?.readFromFile('./baileys_store_multi.json');
-// Save store data every 10 seconds
-setInterval(() => {
-    store?.writeToFile('./baileys_store_multi.json');
-}, 10_000);
-
-// Setup Express server
 const app = express();
-const port = config.server_port;
+const port = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-    res.send(`<h1>${config.bot_name} is alive!</h1>`);
-});
+// Path to store session files
+const sessionPath = path.join(__dirname, 'session');
+if (!fs.existsSync(sessionPath)) {
+    fs.mkdirSync(sessionPath);
+}
 
-app.listen(port, () => {
-    console.log(`${config.bot_name} server listening on port ${port}`);
-});
+// Function to start the bot
+async function startMalikBot() {
+    // New authentication method
+    const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
 
-// Main connection function
-async function connectToWhatsApp() {
-    const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
+    // Fetch the latest version of Baileys
     const { version, isLatest } = await fetchLatestBaileysVersion();
-    console.log(`Using Baileys version ${version}, isLatest: ${isLatest}`);
+    console.log(`Using Baileys version: ${version}, isLatest: ${isLatest}`);
 
     const sock = makeWASocket({
         version,
         auth: state,
         printQRInTerminal: true,
-        logger,
-        browser: ['MALIK-MD', 'Safari', '1.0.0'] // Custom browser name
+        logger: pino({ level: "silent" }),
+        browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
 
-    store?.bind(sock.ev);
-
     // Handle connection updates
-    sock.ev.on('connection.update', (update) => {
+    sock.ev.on("connection.update", (update) => {
         const { connection, lastDisconnect, qr } = update;
-
         if (qr) {
-            console.log("QR code generated. Scan it with your phone.");
-            // qrcode.generate(qr, { small: true }); // Optionally display QR in terminal
+            console.log("QR code received, scan with your phone.");
         }
-
-        if (connection === 'close') {
-            const shouldReconnect = (lastDisconnect.error instanceof Boom) ?
-                lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut :
-                true;
-            console.log('Connection closed. Reconnecting:', shouldReconnect);
+        if (connection === "close") {
+            const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log("Connection closed due to ", lastDisconnect?.error, ", reconnecting ", shouldReconnect);
             if (shouldReconnect) {
-                connectToWhatsApp();
+                startMalikBot();
             }
-        } else if (connection === 'open') {
-            console.log('Connected to WhatsApp!');
+        } else if (connection === "open") {
+            console.log("Connected successfully!");
         }
     });
 
     // Save credentials on update
-    sock.ev.on('creds.update', saveCreds);
+    sock.ev.on("creds.update", saveCreds);
 
-    // Handle incoming messages
-    sock.ev.on('messages.upsert', async (m) => {
-        const msg = m.messages[0];
-        if (!msg.message) return;
-
-        // Pass the message to the command handler
-        await commandHandler(sock, msg);
+    // Listen for incoming messages
+    sock.ev.on("messages.upsert", async (mek) => {
+        try {
+            const m = mek.messages[0];
+            if (!m.message) return;
+            // Pass the message to the handler
+            await handler(sock, m, config);
+        } catch (err) {
+            console.error("Error in messages.upsert event:", err);
+        }
     });
 
-    // Handle group participant updates (for welcome messages)
+    // Welcome message for new group members
     sock.ev.on('group-participants.update', async (update) => {
-        if (!config.auto_welcome) return;
-
         const { id, participants, action } = update;
         if (action === 'add') {
-            const newUser = participants[0];
-            const welcomeText = config.welcome_message.replace('@user', `@${newUser.split('@')[0]}`);
-            try {
-                await sock.sendMessage(id, {
-                    text: welcomeText,
-                    mentions: [newUser]
-                });
-            } catch (err) {
-                console.error("Failed to send welcome message:", err);
-            }
+            const welcomeMsg = `🎉 Welcome to the group, @${participants[0].split('@')[0]}! Enjoy your stay.`;
+            sock.sendMessage(id, { text: welcomeMsg, mentions: participants });
         }
     });
 
     return sock;
 }
 
-// Start the bot
-connectToWhatsApp().catch(err => console.error("Failed to connect to WhatsApp:", err));
+startMalikBot();
+
+// Express server to keep the bot alive on Heroku
+app.get('/', (req, res) => {
+    res.send('MALIK-MD Bot is running!');
+});
+
+app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+});
