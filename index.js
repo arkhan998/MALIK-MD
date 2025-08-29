@@ -4,7 +4,6 @@ const { Boom } = require("@hapi/boom");
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const qrcode = require("qrcode-terminal");
 const config = require("./config");
 const handler = require("./handler");
 
@@ -19,34 +18,32 @@ if (!fs.existsSync(sessionPath)) {
 
 // Function to start the bot
 async function startMalikBot() {
-    // New authentication method
     const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
-
-    // Fetch the latest version of Baileys
     const { version, isLatest } = await fetchLatestBaileysVersion();
     console.log(`Using Baileys version: ${version}, isLatest: ${isLatest}`);
 
     const sock = makeWASocket({
         version,
         auth: state,
-        printQRInTerminal: false,
+        printQRInTerminal: false, // Important: Keep this false
         logger: pino({ level: "silent" }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
 
-    // Handle connection updates
     sock.ev.on("connection.update", (update) => {
         const { connection, lastDisconnect, qr } = update;
         if (qr) {
-            console.log("\nQR code received, scan with your phone.");
-            // Generate a small QR code that fits in Heroku logs
-            qrcode.generate(qr, { small: true }, function (qrcode) {
-                console.log(qrcode)
-            });
+            // Log the QR string directly
+            console.log("------------------------------------------------");
+            console.log("             SCAN THIS QR CODE");
+            console.log("------------------------------------------------\n");
+            console.log("QR Code String (copy this and use an online generator): \n\n", qr, "\n");
+            console.log("Website to generate QR from text: https://www.the-qrcode-generator.com/");
+            console.log("\n------------------------------------------------");
         }
         if (connection === "close") {
             const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log("Connection closed due to ", lastDisconnect?.error, ", reconnecting ", shouldReconnect);
+            console.log("Connection closed, reconnecting:", shouldReconnect);
             if (shouldReconnect) {
                 startMalikBot();
             }
@@ -55,22 +52,17 @@ async function startMalikBot() {
         }
     });
 
-    // Save credentials on update
     sock.ev.on("creds.update", saveCreds);
-
-    // Listen for incoming messages
     sock.ev.on("messages.upsert", async (mek) => {
         try {
             const m = mek.messages[0];
             if (!m.message) return;
-            // Pass the message to the handler
             await handler(sock, m, config);
         } catch (err) {
             console.error("Error in messages.upsert event:", err);
         }
     });
-
-    // Welcome message for new group members
+    
     sock.ev.on('group-participants.update', async (update) => {
         const { id, participants, action } = update;
         if (action === 'add') {
@@ -84,11 +76,6 @@ async function startMalikBot() {
 
 startMalikBot();
 
-// Express server to keep the bot alive on Heroku
-app.get('/', (req, res) => {
-    res.send('MALIK-MD Bot is running!');
-});
+app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
+app.listen(port, () => console.log(`Server is listening on port ${port}`));
 
-app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
-});
