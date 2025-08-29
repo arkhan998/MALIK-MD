@@ -6,12 +6,13 @@ const fs = require("fs");
 const path = require("path");
 const config = require("./config");
 const handler = require("./handler");
+const { Buffer } = require("buffer");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Get bot number from Heroku Environment Variables
-const BOT_NUMBER = process.env.BOT_NUMBER || config.bot_number;
+// Get SESSION_ID from Heroku Environment Variables
+const SESSION_ID = process.env.SESSION_ID;
 
 // Path to store session files
 const sessionPath = path.join(__dirname, 'session');
@@ -21,6 +22,26 @@ if (!fs.existsSync(sessionPath)) {
 
 // Function to start the bot
 async function startMalikBot() {
+    // Check for SESSION_ID
+    if (!SESSION_ID) {
+        console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.error("!!!               ERROR                      !!!");
+        console.error("!!!        SESSION_ID not found.           !!!");
+        console.error("!!! Please set it in Heroku Config Vars.     !!!");
+        console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        return;
+    }
+
+    // Decode and write the session file
+    try {
+        const credsData = Buffer.from(SESSION_ID, 'base64').toString('utf-8');
+        fs.writeFileSync(path.join(sessionPath, 'creds.json'), credsData);
+        console.log("Session file created successfully.");
+    } catch (err). {
+        console.error("Failed to decode or write session file:", err);
+        return;
+    }
+
     const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
     const { version, isLatest } = await fetchLatestBaileysVersion();
     console.log(`Using Baileys version: ${version}, isLatest: ${isLatest}`);
@@ -30,32 +51,10 @@ async function startMalikBot() {
         auth: state,
         printQRInTerminal: false,
         logger: pino({ level: "silent" }),
-        browser: ["MALIK-MD", "Safari", "1.0.0"],
+        // IMPORTANT CHANGE: Using the browser name from the other bot's session
+        browser: ["SHABAN-MD", "Safari", "1.0.0"],
     });
-
-    // Pairing Code Logic
-    if (!sock.authState.creds.registered) {
-        // Check if bot number is provided
-        if (!BOT_NUMBER) {
-            console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            console.error("!!!               ERROR                      !!!");
-            console.error("!!! Bot number not found. Please set it in   !!!");
-            console.error("!!! Heroku > Settings > Config Vars > BOT_NUMBER !!!");
-            console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            return;
-        }
-        
-        console.log(`Requesting Pairing Code for number: ${BOT_NUMBER}`);
-        setTimeout(async () => {
-            const code = await sock.requestPairingCode(BOT_NUMBER);
-            console.log("------------------------------------------------");
-            console.log("           YOUR PAIRING CODE");
-            console.log("------------------------------------------------");
-            console.log(`             ${code}`);
-            console.log("------------------------------------------------");
-        }, 3000);
-    }
-
+    
     sock.ev.on("connection.update", (update) => {
         const { connection, lastDisconnect } = update;
         if (connection === "close") {
@@ -65,7 +64,8 @@ async function startMalikBot() {
                 startMalikBot();
             }
         } else if (connection === "open") {
-            console.log("Connected successfully!");
+            console.log("Connected directly using SESSION_ID!");
+            console.log(`Welcome, ${config.owner_name}! Bot is ready to use.`);
         }
     });
 
@@ -80,14 +80,6 @@ async function startMalikBot() {
         }
     });
     
-    sock.ev.on('group-participants.update', async (update) => {
-        const { id, participants, action } = update;
-        if (action === 'add') {
-            const welcomeMsg = `🎉 Welcome to the group, @${participants[0].split('@')[0]}! Enjoy your stay.`;
-            sock.sendMessage(id, { text: welcomeMsg, mentions: participants });
-        }
-    });
-
     return sock;
 }
 
