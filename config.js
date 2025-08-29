@@ -1,33 +1,26 @@
-// config.js
+// Bot Configuration File
 
 const config = {
-    // Bot Owner's JID (e.g., "923001234567@s.whatsapp.net")
-    // Replace with your actual WhatsApp number JID
+    // Bot Owner's JID
+    // Put your WhatsApp number here (e.g., 923001234567@s.whatsapp.net)
     owner_jid: "923322964709@s.whatsapp.net",
 
-    // Bot Name
-    bot_name: "MALIK-MD",
+    // Bot Number for Pairing Code
+    // Enter the WhatsApp number you want to use for the bot.
+    // Use your country code without the '+' sign. (e.g., 923001234567)
+    bot_number: "923322964709",
 
-    // Prefix for commands
-    // You can choose any prefix, like '!', '.', or '#'
+    // Bot Prefix
+    // The prefix for bot commands (e.g., !, ., #)
     prefix: "!",
 
-    // Auto-welcome message for new group members
-    // Set to false to disable
-    auto_welcome: true,
-    welcome_message: "Hi @user, welcome to the group!",
+    // Bot Name
+    // The name of your bot
+    bot_name: "MALIK-MD",
 
-    // OpenAI or Gemini API settings (optional)
-    // Set 'use_ai' to true to enable AI-powered replies
-    use_ai: false, // Switch to true to enable AI
-    ai_provider: "gemini", // or "openai"
-    api_keys: {
-        openai: "YOUR_OPENAI_API_KEY",
-        gemini: "7506067954:AAGY7Zo9Whe9IqMv7liT1h1n2Ez3RgJVybg"
-    },
-
-    // Port for the Express server
-    server_port: process.env.PORT || 3000
+    // Owner Name
+    // Your name
+    owner_name: "🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝",
 };
 
 module.exports = config;
