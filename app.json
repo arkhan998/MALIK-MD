@@ -1,0 +1,69 @@
+{
+  "name": "MALIK-MD WhatsApp Bot",
+  "description": "A powerful, multi-device WhatsApp bot built with Node.js and @whiskeysockets/baileys. Deployable on Heroku.",
+  "keywords": [
+    "whatsapp",
+    "whatsapp-bot",
+    "baileys",
+    "nodejs",
+    "malik-md"
+  ],
+  "repository": "https://github.com/arkhan998/MALIK-MD",
+  "stack": "heroku-22",
+  "env": {
+    "SESSION_ID": {
+      "description": "Your Base64 encoded SESSION_ID. Generate this from a session generator app.",
+      "required": true,
+      "value": ""
+    },
+    "MODE": {
+      "description": "Set bot's working mode. Use 'public' for everyone or 'private' for only the owner.",
+      "required": true,
+      "value": "public"
+    },
+    "AUTO_STATUS_SEEN": {
+      "description": "Set to 'true' if you want the bot to automatically view statuses.",
+      "required": false,
+      "value": "false"
+    },
+    "AUTO_READ": {
+      "description": "Set to 'true' if you want the bot to automatically read messages.",
+      "required": false,
+      "value": "false"
+    },
+    "AUTO_TYPING": {
+      "description": "Set to 'true' if you want the bot to show 'typing...' before replying.",
+      "required": false,
+      "value": "false"
+    },
+    "AUTO_RECORDING": {
+      "description": "Set to 'true' if you want the bot to show 'recording...' before replying.",
+      "required": false,
+      "value": "false"
+    },
+    "ALWAYS_ONLINE": {
+      "description": "Set to 'true' to keep the bot's status always online.",
+      "required": false,
+      "value": "false"
+    },
+    "REJECT_CALL": {
+      "description": "Set to 'true' to automatically reject incoming calls.",
+      "required": false,
+      "value": "true"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/DuckyTeam/heroku-buildpack-imagemagick.git"
+    },
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+    },
+    {
+      "url": "https://github.com/clhuang/heroku-buildpack-webp-binaries.git"
+    }
+  ]
+}
