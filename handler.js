@@ -1,69 +1,48 @@
-// handler.js
+import { readdirSync } from 'fs';
+import path from 'path';
 
-const fs = require('fs');
-const path = require('path');
-const config = require('./config');
-
-// A Map to store all the commands from the plugins folder
 const commands = new Map();
+const pluginsDir = path.join(process.cwd(), 'plugins');
 
-// Function to load all command plugins from the 'plugins' directory
-function loadCommands() {
-    const pluginsDir = path.join(__dirname, 'plugins');
-    const commandFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-
+// Dynamically load all command files from the 'plugins' directory
+try {
+    const commandFiles = readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
-        try {
-            const command = require(path.join(pluginsDir, file));
-            if (command.name) {
-                commands.set(command.name, command);
-                console.log(`Loaded command: ${command.name}`);
-            }
-        } catch (error) {
-            console.error(`Failed to load command from ${file}:`, error);
+        // Use dynamic import for ES modules
+        const commandModule = await import(`file://${path.join(pluginsDir, file)}`);
+        const command = commandModule.default; // Assuming default export
+        if (command && command.name) {
+            commands.set(command.name, command);
+            console.log(`Loaded command: ${command.name}`);
         }
     }
+} catch (error) {
+    console.error("Error loading plugins:", error);
 }
 
-// Load commands on startup
-loadCommands();
+export const handler = async (sock, m, config) => {
+    if (!m.message) return;
 
-// The main handler function
-async function commandHandler(sock, msg) {
-    const messageType = Object.keys(msg.message)[0];
-    const messageText = msg.message.conversation || msg.message.extendedTextMessage?.text || '';
+    const messageType = Object.keys(m.message)[0];
+    const messageText = m.message.conversation || m.message.extendedTextMessage?.text || '';
 
-    // Ignore messages that are not text or don't start with the prefix
     if (!messageText.startsWith(config.prefix)) {
         return;
     }
 
-    // Parse the command and arguments
     const args = messageText.slice(config.prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    // Get the command from the Map
     const command = commands.get(commandName);
 
     if (!command) {
-        // Optionally, you can send a "command not found" message
-        // await sock.sendMessage(msg.key.remoteJid, { text: "Command not found." });
-        return;
-    }
-
-    // Check for admin-only commands
-    if (command.isAdmin && msg.key.remoteJid !== config.owner_jid) {
-        await sock.sendMessage(msg.key.remoteJid, { text: "This command can only be used by the owner." });
         return;
     }
 
     try {
-        // Execute the command
-        await command.execute({ sock, msg, args });
+        await command.execute({ sock, m, args, config, commands });
     } catch (error) {
         console.error(`Error executing command ${commandName}:`, error);
-        await sock.sendMessage(msg.key.remoteJid, { text: `An error occurred while executing the command.` });
+        sock.sendMessage(m.key.remoteJid, { text: 'An error occurred while executing this command.' }, { quoted: m });
     }
-}
-
-module.exports = commandHandler;
+};
