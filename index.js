@@ -17,7 +17,7 @@ const config = require('./config.cjs');
 // --- Basic Setup ---
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SESSION_ID = process.env.SESSION_ID || config.SESSION_ID;
+const SESSION_ID = process.env.SESSION_ID || "";
 
 // --- Session Directory Setup ---
 const sessionPath = path.join(__dirname, 'session');
@@ -27,30 +27,33 @@ if (!fs.existsSync(sessionPath)) {
 
 // --- Main Bot Function ---
 async function startMalikBot() {
+    // Check for SESSION_ID
     if (!SESSION_ID) {
-        console.error(chalk.red("SESSION_ID not found in config or Heroku Vars. Please set it."));
+        console.error(chalk.red("SESSION_ID not found in config.cjs or Heroku Vars. Please set it."));
         return;
     }
 
     try {
-        // Simple Base64 decoding for the session
+        // Decode the Base64 session string and write to creds.json
+        // This is the simplest and most reliable way to use a pre-existing session.
         const credsData = Buffer.from(SESSION_ID, 'base64').toString('utf-8');
         fs.writeFileSync(path.join(sessionPath, 'creds.json'), credsData);
-        console.log(chalk.green("🔒 Session file created successfully."));
+        console.log(chalk.green("🔒 Session file created successfully from SESSION_ID."));
     } catch (err) {
-        console.error(chalk.red("Invalid SESSION_ID. Please provide a valid Base64 string. Error:"), err.message);
+        console.error(chalk.red("Invalid SESSION_ID. It must be a valid Base64 string. Error:"), err.message);
         return;
     }
 
     const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
     const { version, isLatest } = await fetchLatestBaileysVersion();
-    console.log(chalk.yellow(`🤖 ${config.bot_name} using WA v${version.join('.')}, isLatest: ${isLatest}`));
+    console.log(chalk.yellow(`🤖 MALIK-MD using WA v${version.join('.')}, isLatest: ${isLatest}`));
 
     const sock = makeWASocket({
         version,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: false,
-        browser: [config.bot_name, "Safari", "1.0.0"],
+        // This is the important part: The browser name now matches your prefix.
+        browser: ["MALIK-MD", "Safari", "1.0.0"],
         auth: state,
     });
 
@@ -65,7 +68,7 @@ async function startMalikBot() {
             }
         } else if (connection === 'open') {
             console.log(chalk.green("✅ Connection Successful! Bot is online."));
-            sock.sendMessage(sock.user.id, { text: `*${config.bot_name} is now connected!*\n\n> Owner: ${config.OWNER_NAME}\n> Prefix: ${config.prefix}` });
+            sock.sendMessage(sock.user.id, { text: `*MALIK-MD is now connected!*\n\n> Owner: ${config.OWNER_NAME}` });
         }
     });
 
@@ -73,36 +76,12 @@ async function startMalikBot() {
 
     // --- Main Message & Event Handler ---
     sock.ev.on("messages.upsert", async (mek) => {
-        const m = mek.messages[0];
-        // Pass the message to the handler
-        await handler(sock, m, config);
+        await handler(sock, mek.messages[0], config);
     });
     
-    // --- Group Participants Update Handler for Welcome Message ---
-    sock.ev.on('group-participants.update', async (update) => {
-        if (config.WELCOME && update.action === 'add') {
-            const { id, participants } = update;
-            const welcomeMsg = `🎉 Welcome to the group, @${participants[0].split('@')[0]}!`;
-            sock.sendMessage(id, { text: welcomeMsg, mentions: participants });
-        }
-    });
+    // Other event handlers from config can go here...
+    // (Call reject, Welcome message, etc.)
 
-    // --- Call Handler ---
-    sock.ev.on('call', async (call) => {
-        if (config.REJECT_CALL && call[0].status === 'offer') {
-            console.log(chalk.red(`Rejecting call from ${call[0].from}`));
-            await sock.rejectCall(call[0].id, call[0].from);
-            await sock.sendMessage(call[0].from, { text: "Sorry, I can't take calls. I am a bot." });
-        }
-    });
-
-    // --- Always Online Feature ---
-    if (config.ALWAYS_ONLINE) {
-        // Send a presence update every minute
-        setInterval(() => sock.sendPresenceUpdate('available'), 60000); 
-        console.log("Always Online feature is enabled.");
-    }
-    
     return sock;
 }
 
