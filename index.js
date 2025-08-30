@@ -1,90 +1,96 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require("@whiskeysockets/baileys");
-const pino = require("pino");
-const { Boom } = require("@hapi/boom");
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const config = require("./config");
-const handler = require("./handler");
-const { Buffer } = require("buffer");
+import {
+    makeWASocket,
+    fetchLatestBaileysVersion,
+    DisconnectReason,
+    useMultiFileAuthState,
+} from '@whiskeysockets/baileys';
+import { handler } from './handler.js';
+import express from 'express';
+import pino from 'pino';
+import fs from 'fs';
+import path from 'path';
+import chalk from 'chalk';
+import { Boom } from '@hapi/boom';
+import { Buffer } from 'buffer';
+import config from './config.js';
 
+// --- Basic Setup ---
 const app = express();
-const port = process.env.PORT || 3000;
-
-// Get SESSION_ID from Heroku Environment Variables
+const PORT = process.env.PORT || 3000;
 const SESSION_ID = process.env.SESSION_ID;
 
-// Path to store session files
+// --- Session Directory Setup ---
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const sessionPath = path.join(__dirname, 'session');
+
 if (!fs.existsSync(sessionPath)) {
-    fs.mkdirSync(sessionPath);
+    fs.mkdirSync(sessionPath, { recursive: true });
 }
 
-// Function to start the bot
+// --- Main Bot Function ---
 async function startMalikBot() {
-    // Check for SESSION_ID
+    // 1. Check for SESSION_ID
     if (!SESSION_ID) {
-        console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        console.error("!!!               ERROR                      !!!");
-        console.error("!!!        SESSION_ID not found.           !!!");
-        console.error("!!! Please set it in Heroku Config Vars.     !!!");
-        console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.error(chalk.red("SESSION_ID not found in Heroku Config Vars. Please set it."));
         return;
     }
 
-    // Decode and write the session file
+    // 2. Decode and write the session file from Base64
     try {
         const credsData = Buffer.from(SESSION_ID, 'base64').toString('utf-8');
         fs.writeFileSync(path.join(sessionPath, 'creds.json'), credsData);
-        console.log("Session file created successfully.");
-    } catch (err) { // Corrected this line, removed the extra dot
-        console.error("Failed to decode or write session file:", err);
+        console.log(chalk.green("🔒 Session file created successfully."));
+    } catch (err) {
+        console.error(chalk.red("Failed to decode or write session file:", err));
         return;
     }
 
     const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
     const { version, isLatest } = await fetchLatestBaileysVersion();
-    console.log(`Using Baileys version: ${version}, isLatest: ${isLatest}`);
+    console.log(chalk.yellow(`🤖 MALIK-MD using WA v${version.join('.')}, isLatest: ${isLatest}`));
 
     const sock = makeWASocket({
         version,
+        logger: pino({ level: 'silent' }),
+        printQRInTerminal: false, // We are not using QR
+        browser: ["MALIK-MD", "Safari", "1.0.0"],
         auth: state,
-        printQRInTerminal: false,
-        logger: pino({ level: "silent" }),
-        // Using the browser name from the other bot's session
-        browser: ["SHABAN-MD", "Safari", "1.0.0"],
     });
-    
-    sock.ev.on("connection.update", (update) => {
+
+    // --- Event Listeners ---
+    sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect } = update;
-        if (connection === "close") {
+        if (connection === 'close') {
             const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log("Connection closed, reconnecting:", shouldReconnect);
+            console.log(chalk.red('Connection closed, reconnecting:'), shouldReconnect);
             if (shouldReconnect) {
                 startMalikBot();
             }
-        } else if (connection === "open") {
-            console.log("Connected directly using SESSION_ID!");
-            console.log(`Welcome, ${config.owner_name}! Bot is ready to use.`);
+        } else if (connection === 'open') {
+            console.log(chalk.green("✅ Connection Successful! Bot is online."));
+            sock.sendMessage(sock.user.id, { text: `*MALIK-MD is now connected!*\n\n> Owner: ${config.owner_name}\n> Prefix: ${config.prefix}` });
         }
     });
 
-    sock.ev.on("creds.update", saveCreds);
+    sock.ev.on('creds.update', saveCreds);
     sock.ev.on("messages.upsert", async (mek) => {
-        try {
-            const m = mek.messages[0];
-            if (!m.message) return;
-            await handler(sock, m, config);
-        } catch (err) {
-            console.error("Error in messages.upsert event:", err);
+        // Ensure mek and mek.messages are defined
+        if (mek && mek.messages && mek.messages.length > 0) {
+            await handler(sock, mek.messages[0], config);
         }
     });
     
     return sock;
 }
 
+// --- Start the Bot ---
 startMalikBot();
 
-app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
-app.listen(port, () => console.log(`Server is listening on port ${port}`));
+app.get('/', (req, res) => {
+    res.send('MALIK-MD Bot is running!');
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 
