@@ -14,7 +14,6 @@ const command = {
     aliases: ["help", "list"],
     exec: async (sock, m, args) => {
         try {
-            // Get all command files from the plugins folder
             const pluginsPath = path.join(__dirname);
             const commandFiles = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
 
@@ -22,13 +21,15 @@ const command = {
             for (const file of commandFiles) {
                 const commandModule = await import (path.join('file://', pluginsPath, file));
                 const cmd = commandModule.default;
-                if (cmd && cmd.name) {
+                if (cmd && cmd.name && cmd.name !== 'menu') {
                     commandList += `│ • ${config.prefix}${cmd.name}\n`;
                 }
             }
 
             const uptime = process.uptime();
             const uptimeString = new Date(uptime * 1000).toISOString().substr(11, 8);
+            const imagePath = path.join(__dirname, '..', 'src', 'malikmd.jpeg');
+            const imageBuffer = fs.readFileSync(imagePath);
 
             const menuText = `╭─「 *${config.OWNER_NAME}'s BOT* 」
 │
@@ -42,22 +43,16 @@ const command = {
 ${commandList.trim()}
 ╰───────────⭓`;
 
-            // Read the local image file
-            const imagePath = path.join(__dirname, '..', 'src', 'malikmd.jpeg');
-            const imageBuffer = fs.readFileSync(imagePath);
-
             const buttons = [{
                 buttonId: `${config.prefix}ping`,
                 buttonText: {
                     displayText: '🚀 Ping'
-                },
-                type: 1
+                }
             }, {
-                buttonId: `${config.prefix}owner`,
+                buttonId: `${config.prefix}alive`,
                 buttonText: {
-                    displayText: '👑 Owner'
-                },
-                type: 1
+                    displayText: 'Status'
+                }
             }, ];
 
             const buttonMessage = {
@@ -72,9 +67,6 @@ ${commandList.trim()}
 
         } catch (error) {
             console.error("Error in menu command:", error);
-            await sock.sendMessage(m.key.remoteJid, {
-                text: "Sorry, an error occurred while fetching the menu."
-            });
         }
     },
 };
