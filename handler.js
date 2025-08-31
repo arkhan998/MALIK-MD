@@ -1,93 +1,73 @@
-const fs = require('fs');
-const path = require('path');
-const config = require('./config.cjs');
+const fs = require("fs");
+const path = require("path");
+const chalk = require("chalk");
+const botEvents = require('./lib/events.js'); // Naya Event Emitter import kiya gaya hai
 
-// Load all commands from the plugins folder
 const commands = new Map();
-const pluginsDir = path.join(__dirname, 'plugins');
 
-try {
-    const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-    for (const file of pluginFiles) {
-        const command = require(path.join(pluginsDir, file));
-        if (command.name && typeof command.exec === 'function') {
-            commands.set(command.name, command);
-            if (command.alias) {
-                command.alias.forEach(alias => commands.set(alias, command));
+// Plugins folder se saari commands ko load karne ka function
+function loadCommands() {
+    const pluginsPath = path.join(__dirname, 'plugins');
+    const commandFiles = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
+
+    for (const file of commandFiles) {
+        try {
+            const command = require(path.join(pluginsPath, file));
+            if (command.name) {
+                commands.set(command.name, command);
+                // Command ke aliases (doosre naam) bhi load karna
+                if (command.aliases && Array.isArray(command.aliases)) {
+                    command.aliases.forEach(alias => commands.set(alias, command));
+                }
             }
+        } catch (error) {
+            console.error(chalk.red(`❌ Error loading plugin ${file}:`), error);
         }
     }
-    console.log(`✅ Found ${commands.size} commands.`);
-} catch (error) {
-    console.error("Error loading plugins:", error);
+    console.log(chalk.green(`✅ Found ${commands.size / 2} commands.`)); // Divide by 2 to account for aliases
 }
 
-// --- Helper function to check for subscription ---
-const hasAccess = (senderJid) => {
-    const ownerJid = `${config.OWNER_NUMBER}@s.whatsapp.net`;
-    if (senderJid === ownerJid) return true; // Owner always has access
-
-    const subscribedUsers = config.SUBSCRIBED_USERS.split(',').map(num => `${num.trim()}@s.whatsapp.net`);
-    return subscribedUsers.includes(senderJid);
-};
+// Initial command load
+loadCommands();
 
 
-const handler = async (sock, m) => {
+// "new-message" event ko sun'na
+botEvents.on('new-message', async ({ sock, m, config }) => {
     try {
-        const messageType = Object.keys(m.message)[0];
-        if (messageType === 'protocolMessage' || messageType === 'senderKeyDistributionMessage') return;
+        const body = m.message?.conversation || m.message?.extendedTextMessage?.text || "";
+        const args = body.slice(1).trim().split(/ +/).slice(1);
+        const commandName = body.split(/ +/)[0].slice(1).toLowerCase();
+        const sender = m.key.remoteJid;
+        const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
 
-        const senderJid = m.key.remoteJid.endsWith('@g.us') ? m.key.participant : m.key.remoteJid;
-        
-        // --- SUBSCRIPTION CHECK ---
-        // If mode is not public, check if the user has access.
-        if (config.MODE !== 'public' && !hasAccess(senderJid)) {
-            return await sock.sendMessage(m.key.remoteJid, { text: "⚠️ *Access Denied*\n\nYou are not a subscribed user. Please contact the owner to get access." }, { quoted: m });
-        }
-        // --- END OF SUBSCRIPTION CHECK ---
+        // Auto-actions (typing, recording, etc.)
+        if (config.AUTO_TYPING) await sock.sendPresenceUpdate('composing', sender);
+        if (config.AUTO_RECORDING) await sock.sendPresenceUpdate('recording', sender);
+        if (config.AUTO_READ) await sock.readMessages([m.key]);
 
+        // Command prefix check
+        if (!body.startsWith(config.prefix)) return;
 
-        // Determine message body (for text commands and button clicks)
-        let body = "";
-        let commandName = "";
-        let args = [];
-        const prefix = '!';
-
-        // Check for button click response
-        if (m.message.templateButtonReplyMessage) {
-            body = m.message.templateButtonReplyMessage.selectedId;
-        } 
-        // Check for regular text messages
-        else {
-            body = m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.imageMessage?.caption || m.message?.videoMessage?.caption || "";
+        // Subscription check
+        if (config.MODE === 'private' && !isOwner) {
+            const isSubscribed = config.SUBSCRIBED_USERS && config.SUBSCRIBED_USERS.some(user => sender.startsWith(user));
+            if (!isSubscribed) {
+                return sock.sendMessage(sender, {
+                    text: "❌ *Access Denied!*\n\nYou are not a subscribed user. Please contact the owner to get access."
+                });
+            }
         }
 
-        if (!body.startsWith(prefix)) return;
-
-        args = body.slice(prefix.length).trim().split(/ +/);
-        commandName = args.shift().toLowerCase();
-        
         const command = commands.get(commandName);
 
-        if (!command) return;
-
-        // --- Owner Only Command Check ---
-        const isOwner = senderJid === `${config.OWNER_NUMBER}@s.whatsapp.net`;
-        if (command.ownerOnly && !isOwner) {
-             return await sock.sendMessage(m.key.remoteJid, { text: "⚠️ *Owner Command*\n\nThis command can only be used by the bot owner." }, { quoted: m });
-        }
-
-        // Execute command
-        if (typeof command.exec === 'function') {
-            await command.exec(sock, m, args);
-        } else {
-             console.error(`Command ${commandName} is missing the 'exec' function.`);
+        if (command) {
+            await command.exec(sock, m, args, config);
         }
 
     } catch (error) {
-        console.error("Error in handler:", error);
+        console.error(chalk.red(`❌ Error in handler:`), error);
     }
-};
+});
 
-module.exports = { handler, hasAccess };
+console.log(chalk.magenta("🔧 Handler is listening for events..."));
 
