@@ -2,73 +2,92 @@ const fs = require('fs');
 const path = require('path');
 const config = require('./config.cjs');
 
+// Load all commands from the plugins folder
 const commands = new Map();
-
-// --- Command Loader ---
-// This section reads all .js files from the /plugins directory at startup.
-// It loads each valid command into the 'commands' Map for easy access.
 const pluginsDir = path.join(__dirname, 'plugins');
-try {
-    const commandFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-    console.log(`🔍 Found ${commandFiles.length} commands.`);
 
-    for (const file of commandFiles) {
-        try {
-            const command = require(path.join(pluginsDir, file));
-            // A valid command must have a name and an exec function.
-            if (command.name && typeof command.exec === 'function') {
-                commands.set(command.name, command);
-                // If the command has aliases (short names), load them too.
-                if (command.alias) {
-                    command.alias.forEach(alias => commands.set(alias, command));
-                }
-            } else {
-                console.error(`❌ Invalid command structure in ${file}. Skipping.`);
+try {
+    const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
+    for (const file of pluginFiles) {
+        const command = require(path.join(pluginsDir, file));
+        if (command.name && typeof command.exec === 'function') {
+            commands.set(command.name, command);
+            if (command.alias) {
+                command.alias.forEach(alias => commands.set(alias, command));
             }
-        } catch (error) {
-            console.error(`Error loading plugin ${file}:`, error);
         }
     }
+    console.log(`✅ Found ${commands.size} commands.`);
 } catch (error) {
-    console.error("Error reading plugins directory:", error);
+    console.error("Error loading plugins:", error);
 }
 
-// --- Main Message Handler Function ---
-// This function is called by index.js for every new message.
-const handleMessage = async (sock, m) => {
+// --- Helper function to check for subscription ---
+const hasAccess = (senderJid) => {
+    const ownerJid = `${config.OWNER_NUMBER}@s.whatsapp.net`;
+    if (senderJid === ownerJid) return true; // Owner always has access
+
+    const subscribedUsers = config.SUBSCRIBED_USERS.split(',').map(num => `${num.trim()}@s.whatsapp.net`);
+    return subscribedUsers.includes(senderJid);
+};
+
+
+const handler = async (sock, m) => {
     try {
-        // Perform auto-actions based on config settings.
-        if (config.AUTO_TYPING) await sock.sendPresenceUpdate('composing', m.key.remoteJid);
-        if (config.AUTO_RECORDING) await sock.sendPresenceUpdate('recording', m.key.remoteJid);
-        if (config.AUTO_READ) await sock.readMessages([m.key]);
+        const messageType = Object.keys(m.message)[0];
+        if (messageType === 'protocolMessage' || messageType === 'senderKeyDistributionMessage') return;
 
-        // Determine the message content from various possible message types.
-        const messageText = m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.buttonsResponseMessage?.selectedButtonId || '';
+        const senderJid = m.key.remoteJid.endsWith('@g.us') ? m.key.participant : m.key.remoteJid;
         
-        // Ignore messages that don't start with the command prefix.
-        if (!messageText.startsWith(config.prefix)) return;
+        // --- SUBSCRIPTION CHECK ---
+        // If mode is not public, check if the user has access.
+        if (config.MODE !== 'public' && !hasAccess(senderJid)) {
+            return await sock.sendMessage(m.key.remoteJid, { text: "⚠️ *Access Denied*\n\nYou are not a subscribed user. Please contact the owner to get access." }, { quoted: m });
+        }
+        // --- END OF SUBSCRIPTION CHECK ---
 
-        // Parse the command and arguments from the message text.
-        const args = messageText.slice(config.prefix.length).trim().split(/ +/);
-        const commandName = args.shift().toLowerCase();
+
+        // Determine message body (for text commands and button clicks)
+        let body = "";
+        let commandName = "";
+        let args = [];
+        const prefix = '!';
+
+        // Check for button click response
+        if (m.message.templateButtonReplyMessage) {
+            body = m.message.templateButtonReplyMessage.selectedId;
+        } 
+        // Check for regular text messages
+        else {
+            body = m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.imageMessage?.caption || m.message?.videoMessage?.caption || "";
+        }
+
+        if (!body.startsWith(prefix)) return;
+
+        args = body.slice(prefix.length).trim().split(/ +/);
+        commandName = args.shift().toLowerCase();
+        
         const command = commands.get(commandName);
 
-        // Enforce private mode: only the owner can use the bot.
-        const isOwner = m.key.remoteJid.startsWith(config.OWNER_NUMBER);
-        if (config.MODE === 'private' && !isOwner) {
-            return; // Silently ignore commands from non-owners in private mode.
+        if (!command) return;
+
+        // --- Owner Only Command Check ---
+        const isOwner = senderJid === `${config.OWNER_NUMBER}@s.whatsapp.net`;
+        if (command.ownerOnly && !isOwner) {
+             return await sock.sendMessage(m.key.remoteJid, { text: "⚠️ *Owner Command*\n\nThis command can only be used by the bot owner." }, { quoted: m });
         }
 
-        // Execute the command if it exists and is a valid function.
-        if (command && typeof command.exec === 'function') {
+        // Execute command
+        if (typeof command.exec === 'function') {
             await command.exec(sock, m, args);
+        } else {
+             console.error(`Command ${commandName} is missing the 'exec' function.`);
         }
+
     } catch (error) {
-        // Catch any errors during command execution to prevent the bot from crashing.
-        console.error(`Error executing command:`, error);
-        await sock.sendMessage(m.key.remoteJid, { text: 'An unexpected error occurred while running the command.' }, { quoted: m });
+        console.error("Error in handler:", error);
     }
 };
 
-module.exports = handleMessage;
+module.exports = { handler, hasAccess };
 
