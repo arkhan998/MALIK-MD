@@ -2,12 +2,12 @@ const fs = require("fs");
 require("dotenv").config();
 
 const config = {
-  SESSION_ID: process.env.SESSION_ID || "",
-  SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS || "AIzaSyA_AuZSidaQ7J0-JgYpqikOX_Sz-PuN51k", 
+  SESSION_ID: process.env.SESSION_ID || "MALIK-MD~7Ec2zYhS#gKxxxGNOpYD9m7Hn9p05btR3milwMT4mBq4z-184GJk",
+  SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS || "", 
   
   // --- Google Gemini API Key ---
   // Get your key from Google AI Studio and add it to Heroku Config Vars
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "AIzaSyA_AuZSidaQ7J0-JgYpqikOX_Sz-PuN51k",
 
   AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN !== undefined ? process.env.AUTO_STATUS_SEEN === 'true' : false, 
   AUTO_DL: process.env.AUTO_DL !== undefined ? process.env.AUTO_DL === 'true' : false,
