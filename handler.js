@@ -1,28 +1,27 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {
+    fileURLToPath
+} from 'url';
 import chalk from 'chalk';
 import botEvents from './lib/events.js';
 import config from './config.js';
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = fileURLToPath(
+    import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const commands = new Map();
 
-// Plugins folder se saari commands ko load karne ka function
+// ... (loadCommands function bilkul wesa hi rahega)
 async function loadCommands() {
     const pluginsPath = path.join(__dirname, 'plugins');
-    if (!fs.existsSync(pluginsPath)) {
-        console.error(chalk.red(`❌ Plugins directory not found at: ${pluginsPath}`));
-        return;
-    }
+    if (!fs.existsSync(pluginsPath)) return;
     const commandFiles = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
-
     for (const file of commandFiles) {
         try {
-            // Use dynamic import for ESM with a file URL
-            const commandModule = await import (path.join('file://', pluginsPath, file));
+            const commandModule = await
+            import (path.join('file://', pluginsPath, file));
             const command = commandModule.default;
             if (command && command.name) {
                 commands.set(command.name, command);
@@ -36,9 +35,8 @@ async function loadCommands() {
     }
     console.log(chalk.green(`✅ Found and loaded ${commands.size} commands/aliases.`));
 }
-
-// Initial command load
 loadCommands();
+
 
 // "new-message" event ko sun'na
 botEvents.on('new-message', async ({ sock, m }) => {
@@ -48,16 +46,18 @@ botEvents.on('new-message', async ({ sock, m }) => {
 
         const args = body.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
-        
-        const sender = m.key.remoteJid;
-        
+
+        // Sahi sender ka number nikalna (private aur group chat ke liye)
+        const isGroup = m.key.remoteJid.endsWith('@g.us');
+        const sender = isGroup ? m.key.participant : m.key.remoteJid;
+
         // Owner aur Subscribed Users ka check
         const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
         const isSubscribed = config.SUBSCRIBED_USERS && config.SUBSCRIBED_USERS.some(user => sender.startsWith(user));
 
         // Private mode me access check karna
         if (config.MODE === 'private' && !isOwner && !isSubscribed) {
-            return sock.sendMessage(sender, {
+            return sock.sendMessage(m.key.remoteJid, {
                 text: "❌ *Access Denied!*\n\nYou are not a subscribed user. Please contact the owner to get access."
             });
         }
@@ -65,14 +65,10 @@ botEvents.on('new-message', async ({ sock, m }) => {
         const command = commands.get(commandName);
 
         if (command) {
-            // Auto-actions
-            if (config.AUTO_TYPING) await sock.sendPresenceUpdate('composing', sender);
+            if (config.AUTO_TYPING) await sock.sendPresenceUpdate('composing', m.key.remoteJid);
             if (config.AUTO_READ) await sock.readMessages([m.key]);
-
             await command.exec(sock, m, args);
-
-            if (config.AUTO_TYPING) await sock.sendPresenceUpdate('paused', sender);
-
+            if (config.AUTO_TYPING) await sock.sendPresenceUpdate('paused', m.key.remoteJid);
         }
 
     } catch (error) {
