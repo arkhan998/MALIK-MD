@@ -1,82 +1,61 @@
-// plugins/menu.js
-
-const config = require('../config');
+// Path to config file is now correct
+const config = require('../config.cjs');
+const { commands } = require('../handler.js'); 
 const { performance } = require('perf_hooks');
 
-// Function to format uptime
-function formatUptime(uptime) {
-    const seconds = Math.floor(uptime % 60);
-    const minutes = Math.floor((uptime / 60) % 60);
-    const hours = Math.floor((uptime / (60 * 60)) % 24);
-    const days = Math.floor(uptime / (60 * 60 * 24));
-
-    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-}
-
 module.exports = {
-    name: 'menu', // Command name
-    description: 'Shows the main menu of the bot.',
-    isAdmin: false,
-    execute: async ({ sock, msg }) => {
-        const remoteJid = msg.key.remoteJid;
-        const startTime = performance.now(); // Start timing for ping
-
-        // Get current date and time
-        const now = new Date();
-        const date = now.toLocaleDateString('en-GB'); // Format: DD/MM/YYYY
-        const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-        // Calculate uptime (process.uptime() returns seconds)
-        const uptime = formatUptime(process.uptime());
+    name: 'menu',
+    description: 'Displays the bot menu.',
+    aliases: ['help', 'commands'],
+    execute: async (sock, m, args) => {
+        const startTime = performance.now();
         
-        // End timing and calculate ping
+        let commandList = '';
+        const categories = {
+            'General': [],
+            'Group': [],
+            // Add more categories as needed
+        };
+
+        commands.forEach(cmd => {
+            const category = cmd.category || 'General';
+            if (!categories[category]) {
+                categories[category] = [];
+            }
+            categories[category].push(cmd.name);
+        });
+
+        for (const category in categories) {
+            if (categories[category].length > 0) {
+                commandList += `╭─「 *${category}* 」\n`;
+                commandList += categories[category].map(cmd => `│ • ${config.prefix}${cmd}`).join('\n');
+                commandList += `\n╰───────────⭓\n\n`;
+            }
+        }
+        
         const endTime = performance.now();
         const ping = (endTime - startTime).toFixed(2);
+        const uptime = process.uptime();
+        const uptimeString = new Date(uptime * 1000).toISOString().substr(11, 8);
 
         const menuText = `
-╭─⬣「 *${config.bot_name}* 」⬣
+╭─「 *MALIK-MD BOT* 」
 │
-├ ❖  *Owner* : Malik
-├ ❖  *Bot Name* : ${config.bot_name}
-├ ❖  *Uptime* : ${uptime}
-├ ❖  *Ping* : ${ping} ms
-├ ❖  *Date* : ${date}
-├ ❖  *Time* : ${time}
+│  ❖  *Owner:* ${config.OWNER_NAME}
+│  ❖  *Mode:* ${config.MODE}
+│  ❖  *Prefix:* ${config.prefix}
+│  ❖  *Uptime:* ${uptimeString}
+│  ❖  *Ping:* ${ping} ms
 │
-├─⬣「 *GENERAL COMMANDS* 」
-│
-├ ≻ ${config.prefix}ping
-├ ≻ ${config.prefix}status
-├ ≻ ${config.prefix}owner
-│
-├─⬣「 *GROUP COMMANDS* 」
-│
-├ ≻ ${config.prefix}promote @user
-├ ≻ ${config.prefix}demote @user
-├ ≻ ${config.prefix}kick @user
-├ ≻ ${config.prefix}add <number>
-├ ≻ ${config.prefix}groupinfo
-│
-├─⬣「 *FUN COMMANDS* 」
-│
-├ ≻ ${config.prefix}sticker
-├ ≻ ${config.prefix}joke
-│
-╰─⬣「 *Powered By Malik* 」`;
+╰───────────⭓
 
-        // Send the menu with a context info for a professional look
-        await sock.sendMessage(remoteJid, {
-            text: menuText.trim(),
-            contextInfo: {
-                externalAdReply: {
-                    title: config.bot_name,
-                    body: "Select a command from the menu",
-                    thumbnail: null, // You can add a URL to an image here
-                    sourceUrl: "https://github.com/your-repo", // Optional: Link to your GitHub
-                    mediaType: 1,
-                    renderLargerThumbnail: true
-                }
-            }
-        });
-    }
+${commandList}
+        `;
+
+        await sock.sendMessage(
+            m.key.remoteJid, 
+            { text: menuText.trim() },
+            { quoted: m }
+        );
+    },
 };
