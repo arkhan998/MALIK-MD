@@ -1,22 +1,25 @@
-const { performance } = require('perf_hooks');
-
 module.exports = {
-    name: 'ping',
-    description: 'Checks the bot response speed.',
-    category: 'General', // Added category for menu
-    execute: async (sock, m, args) => {
-        const startTime = performance.now();
-        
-        // A simple message to measure round-trip time
-        const sentMsg = await sock.sendMessage(m.key.remoteJid, { text: 'Pinging...' }, { quoted: m });
-        
-        const endTime = performance.now();
-        const responseTime = (endTime - startTime).toFixed(2);
-        
-        // Edit the message with the response time
-        await sock.sendMessage(m.key.remoteJid, { 
-            text: `*Pong!* 🏓\n*Response Time:* ${responseTime} ms`,
-            edit: sentMsg.key 
-        });
-    },
+    name: "ping",
+    exec: async (sock, m) => {
+        try {
+            // Calculate latency by comparing the current timestamp with the message's timestamp.
+            // performance.now() is more accurate for measuring time intervals.
+            const startTime = new Date();
+            const messageTimestamp = new Date(m.messageTimestamp * 1000); // Convert Unix timestamp to milliseconds
+            const latency = startTime - messageTimestamp;
+
+            const responseText = `*Pong!* 🏓\n*Response Time:* ${latency}ms`;
+
+            // Send the response back to the user with a stylish footer.
+            await sock.sendMessage(m.key.remoteJid, {
+                text: responseText,
+                footer: 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴍᴀʟɪᴋ-ᴍᴅ' // Stylish Footer
+            }, { quoted: m });
+
+        } catch (error) {
+            console.error("Error in ping command:", error);
+            await sock.sendMessage(m.key.remoteJid, { text: "Sorry, I couldn't measure the ping right now." });
+        }
+    }
 };
+
