@@ -1,7 +1,7 @@
 {
   "name": "malik-md",
   "version": "1.0.0",
-  "description": "A powerful WhatsApp bot.",
+  "description": "A powerful WhatsApp bot built with Node.js",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -11,12 +11,15 @@
   "dependencies": {
     "@whiskeysockets/baileys": "github:Jeliostarr/DEV-Baileys",
     "@hapi/boom": "^10.0.1",
-    "axios": "^1.7.2",
-    "chalk": "^4.1.2",
+    "axios": "^1.6.8",
+    "chalk": "^5.3.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "fluent-ffmpeg": "^2.1.2",  
     "megajs": "^1.1.4",
-    "pino": "^8.21.0"
+    "pino": "^8.19.0",
+    "yt-search": "^2.10.4",      
+    "ytdl-core": "^4.11.5"       
   }
 }
 
