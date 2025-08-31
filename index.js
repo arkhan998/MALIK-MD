@@ -1,153 +1,87 @@
-import makeWASocket, {
-    useMultiFileAuthState,
-    DisconnectReason,
-    fetchLatestBaileysVersion
-} from "@whiskeysockets/baileys";
-import { Boom } from "@hapi/boom";
-import pino from "pino";
-import express from "express";
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
 import { fileURLToPath } from 'url';
-import { File } from 'megajs';
-import chalk from "chalk";
-import config from "./config.js";
+import chalk from 'chalk';
 import botEvents from './lib/events.js';
-
-// Handler ko yahan import karna zaroori hai taake woh events sun'na shuru kar de
-import './handler.js';
+import config from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
-const port = process.env.PORT || 3000;
+const commands = new Map();
 
-const sessionPath = path.join(__dirname, 'sessions');
-if (!fs.existsSync(sessionPath)) {
-    fs.mkdirSync(sessionPath, { recursive: true });
-}
-
-// Mega.nz se session download karne ka function
-async function downloadSession() {
-    console.log(chalk.yellow("📥 Attempting to download session from Mega.nz..."));
-    if (!config.SESSION_ID) {
-        console.error(chalk.red("❌ Error: SESSION_ID not found. Please set it in Heroku Vars."));
-        return false;
+// Plugins folder se saari commands ko load karne ka function
+async function loadCommands() {
+    const pluginsPath = path.join(__dirname, 'plugins');
+    if (!fs.existsSync(pluginsPath)) {
+        console.error(chalk.red(`❌ Plugins directory not found at: ${pluginsPath}`));
+        return;
     }
-    const credsPath = path.join(sessionPath, 'creds.json');
-    if (!fs.existsSync(credsPath)) {
+    const commandFiles = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
+
+    for (const file of commandFiles) {
         try {
-            const sessdata = config.SESSION_ID.replace("MALIK-MD~", '');
-            const file = File.fromURL(`https://mega.nz/file/${sessdata}`);
-            const data = await file.downloadBuffer();
-            fs.writeFileSync(credsPath, data);
-            console.log(chalk.green("✅ Session downloaded successfully from Mega.nz!"));
-            return true;
-        } catch (err) {
-            console.error(chalk.red("❌ Failed to download session:"), err);
-            return false;
-        }
-    }
-    console.log(chalk.blue("ℹ️ Session file already exists. Skipping download."));
-    return true;
-}
-
-// Bot ko start karne ka function
-async function startMalikBot() {
-    const sessionDownloaded = await downloadSession();
-    if (!sessionDownloaded && !fs.existsSync(path.join(sessionPath, 'creds.json'))) {
-        console.log(chalk.red("Session download failed and no local session found. Exiting."));
-        process.exit(1);
-    }
-
-    const {
-        state,
-        saveCreds
-    } = await useMultiFileAuthState(sessionPath);
-    const {
-        version,
-        isLatest
-    } = await fetchLatestBaileysVersion();
-    console.log(chalk.cyan(`🔄 Using Baileys version: ${version.join('.')}, isLatest: ${isLatest}`));
-
-    const sock = makeWASocket({
-        version,
-        auth: state,
-        printQRInTerminal: false,
-        logger: pino({
-            level: "silent"
-        }),
-        browser: ["MALIK-MD", "Safari", "1.0.0"],
-    });
-
-    sock.ev.on("connection.update", (update) => {
-        const {
-            connection,
-            lastDisconnect
-        } = update;
-        if (connection === "close") {
-            const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log(chalk.red("❌ Connection closed, reconnecting:"), shouldReconnect);
-            if (shouldReconnect) {
-                startMalikBot();
-            }
-        } else if (connection === "open") {
-            console.log(chalk.green("✅ Integration Successful! Bot is online."));
-        }
-    });
-
-    sock.ev.on("creds.update", saveCreds);
-
-    // Message aane par event announce karna
-    sock.ev.on("messages.upsert", (mek) => {
-        try {
-            const m = mek.messages[0];
-            if (!m.message || m.key.fromMe) return; // Apne hi messages ko ignore karna
-            botEvents.emit('new-message', { sock, m });
-        } catch (err) {
-            console.error(chalk.red("Error in messages.upsert event:"), err);
-        }
-    });
-    
-    // Welcome/Goodbye message
-    sock.ev.on('group-participants.update', async (update) => {
-        if (!config.WELCOME) return;
-        const { id, participants, action } = update;
-        try {
-            const groupMeta = await sock.groupMetadata(id);
-            for (const participant of participants) {
-                const user = participant.split('@')[0];
-                if (action === 'add') {
-                    sock.sendMessage(id, { text: `🎉 Assalam-o-Alaikum @${user}! Welcome to *${groupMeta.subject}*.`, mentions: [participant] });
-                } else if (action === 'remove') {
-                    sock.sendMessage(id, { text: `👋 Allah Hafiz @${user}! We'll miss you.`, mentions: [participant] });
+            // Use dynamic import for ESM with a file URL
+            const commandModule = await import (path.join('file://', pluginsPath, file));
+            const command = commandModule.default;
+            if (command && command.name) {
+                commands.set(command.name, command);
+                if (command.aliases && Array.isArray(command.aliases)) {
+                    command.aliases.forEach(alias => commands.set(alias, command));
                 }
             }
-        } catch (err) {
-            console.log("Error in group-participants.update:", err);
+        } catch (error) {
+            console.error(chalk.red(`❌ Error loading plugin ${file}:`), error);
         }
-    });
-
-    // Auto Status Seen
-    sock.ev.on('messages.upsert', async (mek) => {
-        const m = mek.messages[0];
-        if (config.AUTO_STATUS_SEEN && m.key.remoteJid === 'status@broadcast') {
-            await sock.readMessages([m.key]);
-        }
-    });
-
-    // Reject Call
-    sock.ev.on('call', async (json) => {
-        if (config.REJECT_CALL) {
-            for (const id of json) {
-                if (id.status === 'offer') {
-                    await sock.rejectCall(id.id, id.from);
-                }
-            }
-        }
-    });
+    }
+    console.log(chalk.green(`✅ Found and loaded ${commands.size} commands/aliases.`));
 }
+
+// Initial command load
+loadCommands();
+
+// "new-message" event ko sun'na
+botEvents.on('new-message', async ({ sock, m }) => {
+    try {
+        const body = m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.buttonsResponseMessage?.selectedButtonId || "";
+        if (!body.startsWith(config.prefix)) return;
+
+        const args = body.slice(config.prefix.length).trim().split(/ +/);
+        const commandName = args.shift().toLowerCase();
+        
+        const sender = m.key.remoteJid;
+        
+        // Owner aur Subscribed Users ka check
+        const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
+        const isSubscribed = config.SUBSCRIBED_USERS && config.SUBSCRIBED_USERS.some(user => sender.startsWith(user));
+
+        // Private mode me access check karna
+        if (config.MODE === 'private' && !isOwner && !isSubscribed) {
+            return sock.sendMessage(sender, {
+                text: "❌ *Access Denied!*\n\nYou are not a subscribed user. Please contact the owner to get access."
+            });
+        }
+
+        const command = commands.get(commandName);
+
+        if (command) {
+            // Auto-actions
+            if (config.AUTO_TYPING) await sock.sendPresenceUpdate('composing', sender);
+            if (config.AUTO_READ) await sock.readMessages([m.key]);
+
+            await command.exec(sock, m, args);
+
+            if (config.AUTO_TYPING) await sock.sendPresenceUpdate('paused', sender);
+
+        }
+
+    } catch (error) {
+        console.error(chalk.red(`❌ Error in handler:`), error);
+    }
+});
+
+console.log(chalk.magenta("🔧 Handler is listening for events..."));
+
 
 startMalikBot();
 
