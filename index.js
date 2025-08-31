@@ -69,11 +69,23 @@ async function startMalikBot() {
 
     sock.ev.on("creds.update", saveCreds);
 
+    // Main message handler
     sock.ev.on("messages.upsert", async (mek) => {
         try {
             const m = mek.messages[0];
             if (!m.message) return;
-            await handler(sock, m); 
+
+            // Call the main command handler
+            await handler(sock, m);
+
+            // Handle other message-related events from config
+            if (config.AUTO_STATUS_SEEN && m.key.remoteJid === 'status@broadcast') {
+                await sock.readMessages([m.key]);
+            }
+            if (config.AUTO_BLOCK && m.key.remoteJid.startsWith('212')) {
+               await sock.updateBlockStatus(m.key.remoteJid, 'block');
+            }
+
         } catch (err) {
             console.error(chalk.red("❌ Error in messages.upsert event:"), err);
         }
@@ -100,16 +112,6 @@ async function startMalikBot() {
         if (config.ALWAYS_ONLINE) {
              sock.sendPresenceUpdate('available');
         }
-    });
-
-    sock.ev.on('messages.upsert', async (mek) => {
-         const m = mek.messages[0];
-         if (config.AUTO_STATUS_SEEN && m.key.remoteJid === 'status@broadcast') {
-             await sock.readMessages([m.key]);
-         }
-         if (config.AUTO_BLOCK && m.key.remoteJid.startsWith('212')) {
-            await sock.updateBlockStatus(m.key.remoteJid, 'block');
-         }
     });
 
     return sock;
