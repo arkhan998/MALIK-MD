@@ -1,76 +1,73 @@
-const { readdirSync } = require('fs');
+const fs = require('fs');
 const path = require('path');
-const config = require('./config.cjs');
+// Address theek kar diya gaya hai
+const config = require('./config.cjs'); 
 
+const pluginsDir = path.join(__dirname, 'plugins');
 const commands = new Map();
-const pluginsDir = path.join(process.cwd(), 'plugins');
 
-// Dynamically load all command files from the 'plugins' directory
+// --- Load all commands from plugins folder ---
 try {
-    const commandFiles = readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-    for (const file of commandFiles) {
-        const command = require(path.join(pluginsDir, file));
-        if (command && command.name) {
-            commands.set(command.name, command);
-            console.log(`Loaded command: ${command.name}`);
+    const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
+    for (const file of pluginFiles) {
+        try {
+            const command = require(path.join(pluginsDir, file));
+            if (command.name && command.execute) {
+                commands.set(command.name, command);
+                if (command.aliases && Array.isArray(command.aliases)) {
+                    command.aliases.forEach(alias => commands.set(alias, command));
+                }
+            }
+        } catch (err) {
+            console.error(`Error loading plugin ${file}:`, err);
         }
     }
 } catch (error) {
-    console.error("Error loading plugins:", error);
+    console.error("Error reading plugins directory:", error);
 }
 
-// Helper function to check if the sender is the owner
-const isOwner = (m) => {
-    // Check for both private and group messages
-    const senderJid = m.key.remoteJid.endsWith('@g.us') ? m.key.participant : m.key.remoteJid;
-    return config.owner_jid === senderJid;
-};
+async function handler(sock, m, config) {
+    // Ignore if message is empty or not from a user
+    if (!m.message || !m.key.remoteJid) return;
+    const messageType = Object.keys(m.message)[0];
+    const from = m.key.remoteJid;
+    const isGroup = from.endsWith('@g.us');
+    const sender = isGroup ? m.key.participant : m.key.remoteJid;
 
-
-const handler = async (sock, m, config) => {
-    if (!m || !m.message) return;
-    
-    const sender = m.key.remoteJid;
-
-    // --- Auto Features ---
+    // --- Auto Actions ---
     if (config.AUTO_READ) {
         await sock.readMessages([m.key]);
     }
     if (config.AUTO_TYPING) {
-        await sock.sendPresenceUpdate('composing', sender);
+        await sock.sendPresenceUpdate('composing', from);
     }
     if (config.AUTO_RECORDING) {
-        await sock.sendPresenceUpdate('recording', sender);
+        await sock.sendPresenceUpdate('recording', from);
     }
 
-    const messageText = m.message.conversation || m.message.extendedTextMessage?.text || '';
+    // --- Command Logic ---
+    const body = m.message.conversation || m.message.extendedTextMessage?.text || '';
+    if (!body || !body.startsWith(config.prefix)) return;
 
-    if (!messageText.startsWith(config.prefix)) {
-        return;
-    }
-    
-    // --- Mode Check (Public/Private) ---
-    if (config.MODE === 'private' && !isOwner(m)) {
-        console.log(`Blocked command from non-owner [${sender}] in private mode.`);
-        return;
-    }
-
-    const args = messageText.slice(config.prefix.length).trim().split(/ +/);
+    const args = body.slice(config.prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
-
     const command = commands.get(commandName);
 
-    if (!command) {
-        return;
+    // --- Mode Check (Public/Private) ---
+    const ownerJid = `${config.OWNER_NUMBER}@s.whatsapp.net`;
+    if (config.MODE === 'private' && sender !== ownerJid) {
+        return; // In private mode, only owner can use commands
     }
 
-    try {
-        await command.execute({ sock, m, args, config, commands });
-    } catch (error) {
-        console.error(`Error executing command ${commandName}:`, error);
-        sock.sendMessage(m.key.remoteJid, { text: 'An error occurred while executing this command.' }, { quoted: m });
+    if (command) {
+        try {
+            await command.execute(sock, m, args);
+        } catch (error) {
+            console.error(`Error executing command ${commandName}:`, error);
+            sock.sendMessage(from, { text: 'An error occurred while executing the command.' }, { quoted: m });
+        }
     }
-};
+}
 
-module.exports = { handler };
+module.exports = { handler, commands };
 
