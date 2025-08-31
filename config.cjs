@@ -3,10 +3,11 @@ require("dotenv").config();
 
 const config = {
   SESSION_ID: process.env.SESSION_ID || "",
-  
-  // --- List of Subscribed Users (from Heroku) ---
-  // A comma-separated list of numbers, e.g., 923001234567,923127654321
   SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS || "", 
+  
+  // --- Google Gemini API Key ---
+  // Get your key from Google AI Studio and add it to Heroku Config Vars
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
 
   AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN !== undefined ? process.env.AUTO_STATUS_SEEN === 'true' : false, 
   AUTO_DL: process.env.AUTO_DL !== undefined ? process.env.AUTO_DL === 'true' : false,
@@ -21,7 +22,6 @@ const config = {
   MODE: process.env.MODE || "public",
   OWNER_NAME: process.env.OWNER_NAME || "🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝",
   OWNER_NUMBER: process.env.OWNER_NUMBER || "923322964709",
-  GEMINI_KEY: process.env.GEMINI_KEY || "",
   WELCOME: process.env.WELCOME !== undefined ? process.env.WELCOME === 'true' : false, 
 };
 
