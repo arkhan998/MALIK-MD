@@ -1,25 +1,27 @@
-module.exports = {
-    name: "ping",
-    exec: async (sock, m) => {
+const command = {
+    name: 'ping',
+    aliases: ['speed'],
+    exec: async (sock, m, args) => {
         try {
-            // Calculate latency by comparing the current timestamp with the message's timestamp.
-            // performance.now() is more accurate for measuring time intervals.
-            const startTime = new Date();
-            const messageTimestamp = new Date(m.messageTimestamp * 1000); // Convert Unix timestamp to milliseconds
-            const latency = startTime - messageTimestamp;
-
-            const responseText = `*Pong!* 🏓\n*Response Time:* ${latency}ms`;
-
-            // Send the response back to the user with a stylish footer.
-            await sock.sendMessage(m.key.remoteJid, {
-                text: responseText,
-                footer: 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴍᴀʟɪᴋ-ᴍᴅ' // Stylish Footer
-            }, { quoted: m });
+            const startTime = Date.now();
+            
+            // Send an initial message to calculate the round trip time
+            const sentMsg = await sock.sendMessage(m.key.remoteJid, { text: 'Pinging...' });
+            
+            const endTime = Date.now();
+            const speed = endTime - startTime;
+            
+            // Edit the initial message with the final response time
+            await sock.sendMessage(m.key.remoteJid, { 
+                text: `*Pong!* 🏓\n_Response Time: ${speed} ms_`,
+                edit: sentMsg.key 
+            });
 
         } catch (error) {
             console.error("Error in ping command:", error);
-            await sock.sendMessage(m.key.remoteJid, { text: "Sorry, I couldn't measure the ping right now." });
         }
     }
 };
+
+export default command;
 
