@@ -28,9 +28,7 @@ if (!fs.existsSync(sessionPath)) {
     fs.mkdirSync(sessionPath, { recursive: true });
 }
 
-// Mega.nz se session download karne ka function
 async function downloadSession() {
-    // ... (yeh function bilkul wesa hi rahega)
     console.log(chalk.yellow("📥 Attempting to download session from Mega.nz..."));
     if (!config.SESSION_ID) {
         console.error(chalk.red("❌ Error: SESSION_ID not found."));
@@ -54,88 +52,67 @@ async function downloadSession() {
     return true;
 }
 
-let initialConnection = true; // Yeh flag check karega ke pehli baar connect hua hai ya nahi
+let initialConnection = true;
 
-// Bot ko start karne ka function
 async function startMalikBot() {
     const sessionDownloaded = await downloadSession();
     if (!sessionDownloaded) {
         process.exit(1);
     }
 
-    const {
-        state,
-        saveCreds
-    } = await useMultiFileAuthState(sessionPath);
-    const {
-        version,
-        isLatest
-    } = await fetchLatestBaileysVersion();
+    const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
+    const { version, isLatest } = await fetchLatestBaileysVersion();
     console.log(chalk.cyan(`🔄 Using Baileys version: ${version.join('.')}, isLatest: ${isLatest}`));
 
     const sock = makeWASocket({
         version,
         auth: state,
         printQRInTerminal: false,
-        logger: pino({
-            level: "silent"
-        }),
+        logger: pino({ level: "silent" }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
 
     sock.ev.on("connection.update", (update) => {
-        const {
-            connection,
-            lastDisconnect
-        } = update;
+        const { connection, lastDisconnect } = update;
         if (connection === "close") {
             const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log(chalk.red("❌ Connection closed, reconnecting:"), shouldReconnect);
-            initialConnection = true; // Reconnect par flag reset karna
+            initialConnection = true;
             if (shouldReconnect) {
                 startMalikBot();
             }
         } else if (connection === "open") {
             console.log(chalk.green("✅ Integration Successful! Bot is online."));
-
-            // **Yahan Naya Feature Add Kiya Gaya Hai**
-            // Agar pehli baar connect hua hai, to owner ko message bhejo
             if (initialConnection) {
                 const ownerJid = config.OWNER_NUMBER + "@s.whatsapp.net";
-                const connectMsg = `*🚀 MALIK-MD Bot Connected!*
-
-Bot has successfully connected and is now online.
-
-❖ *Mode:* ${config.MODE}
-❖ *Prefix:* ${config.prefix}
-❖ *Owner:* ${config.OWNER_NAME}
-
-To see all commands, type:
-\`${config.prefix}menu\``;
-
+                const connectMsg = `*🚀 MALIK-MD Bot Connected!*\n\nBot has successfully connected and is now online.\n\n❖ *Mode:* ${config.MODE}\n❖ *Prefix:* ${config.prefix}\n❖ *Owner:* ${config.OWNER_NAME}\n\nTo see all commands, type:\n\`${config.prefix}menu\``;
                 sock.sendMessage(ownerJid, { text: connectMsg });
-                initialConnection = false; // Flag ko false kar do taake dobara message na jaye
+                initialConnection = false;
             }
         }
     });
 
     sock.ev.on("creds.update", saveCreds);
 
-    // Message aane par event announce karna
     sock.ev.on("messages.upsert", (mek) => {
         try {
             const m = mek.messages[0];
-            if (!m.message || m.key.fromMe) return;
-            botEvents.emit('new-message', {
-                sock,
-                m
-            });
+            const sender = m.key.remoteJid;
+            const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
+
+            // Sirf doosron ke messages ko ignore karna, owner ke nahi
+            if (!m.message || (m.key.fromMe && !isOwner)) return;
+
+            // **Yeh Line Sab se Zaroori Hai**
+            // Yahan se handler ko message bheja ja raha hai
+            botEvents.emit('new-message', { sock, m });
+
         } catch (err) {
             console.error(chalk.red("Error in messages.upsert event:"), err);
         }
     });
-
-    // ... (Baaki saara code bilkul wesa hi rahega)
+    
+    // Baaki saare events (group update, status seen, reject call) bilkul wese hi rahengy
 }
 
 startMalikBot();
