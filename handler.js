@@ -8,7 +8,7 @@ const commands = new Map();
 // --- Load all commands from plugins folder ---
 try {
     const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-    console.log(`Found ${pluginFiles.length} plugins.`);
+    console.log(`✅ Found ${pluginFiles.length} commands.`);
     for (const file of pluginFiles) {
         try {
             const command = require(path.join(pluginsDir, file));
@@ -19,19 +19,20 @@ try {
                 }
             }
         } catch (err) {
-            console.error(`Error loading plugin ${file}:`, err);
+            console.error(`❌ Error loading command ${file}:`, err);
         }
     }
 } catch (error) {
-    console.error("Error reading plugins directory:", error);
+    console.error("❌ Error reading plugins directory:", error);
 }
 
-async function handler(sock, m) { // config yahan zaroori nahi
+async function handler(sock, m) {
     if (!m.message || !m.key.remoteJid) return;
     const from = m.key.remoteJid;
     const isGroup = from.endsWith('@g.us');
     const sender = isGroup ? m.key.participant : m.key.remoteJid;
 
+    // --- Auto actions ---
     if (config.AUTO_READ) await sock.readMessages([m.key]);
     if (config.AUTO_TYPING) await sock.sendPresenceUpdate('composing', from);
     if (config.AUTO_RECORDING) await sock.sendPresenceUpdate('recording', from);
@@ -50,12 +51,12 @@ async function handler(sock, m) { // config yahan zaroori nahi
         try {
             await command.execute(sock, m, args);
         } catch (error) {
-            console.error(`Error executing command ${commandName}:`, error);
-            sock.sendMessage(from, { text: 'Command execution failed!' }, { quoted: m });
+            console.error(`❌ Error executing command ${commandName}:`, error);
+            sock.sendMessage(from, { text: 'An error occurred while executing the command.' }, { quoted: m });
         }
     }
 }
 
-// Ab hum commands ko export nahi kar rahe
+// Handler is the only export
 module.exports = { handler };
 
