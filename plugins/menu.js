@@ -1,69 +1,83 @@
-const fs = require('fs');
-const path = require('path');
-const config = require('../config.cjs'); // Correct path to config file
+import fs from 'fs';
+import path from 'path';
+import {
+    fileURLToPath
+} from 'url';
+import config from '../config.js';
 
-// --- Uptime Calculation ---
-// This function calculates how long the bot has been running.
-function getUptime() {
-    const uptime = process.uptime();
-    const days = Math.floor(uptime / (24 * 60 * 60));
-    const hours = Math.floor((uptime % (24 * 60 * 60)) / (60 * 60));
-    const minutes = Math.floor((uptime % (60 * 60)) / 60);
-    const seconds = Math.floor(uptime % 60);
-    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-}
+const __filename = fileURLToPath(
+    import.meta.url);
+const __dirname = path.dirname(__filename);
 
-module.exports = {
+const command = {
     name: "menu",
-    alias: ["help"],
-    exec: async (sock, m) => {
+    aliases: ["help", "list"],
+    exec: async (sock, m, args) => {
         try {
-            // --- Dynamically Read Commands ---
-            const pluginsDir = path.join(__dirname); // Current directory is /plugins
-            const commandFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js') && file !== 'menu.js');
-            
-            let commandList = '';
-            commandFiles.forEach(file => {
-                const commandName = path.basename(file, '.js');
-                commandList += `│ • ${config.prefix}${commandName}\n`;
-            });
+            // Get all command files from the plugins folder
+            const pluginsPath = path.join(__dirname);
+            const commandFiles = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
 
-            // --- Menu Content ---
-            const menuText = `
-╭─「 *${config.OWNER_NAME}'s BOT* 」
+            let commandList = '';
+            for (const file of commandFiles) {
+                const commandModule = await import (path.join('file://', pluginsPath, file));
+                const cmd = commandModule.default;
+                if (cmd && cmd.name) {
+                    commandList += `│ • ${config.prefix}${cmd.name}\n`;
+                }
+            }
+
+            const uptime = process.uptime();
+            const uptimeString = new Date(uptime * 1000).toISOString().substr(11, 8);
+
+            const menuText = `╭─「 *${config.OWNER_NAME}'s BOT* 」
 │
 │  ❖  *Mode:* ${config.MODE}
 │  ❖  *Prefix:* ${config.prefix}
-│  ❖  *Owner:* ${config.OWNER_NAME}
-│  ❖  *Uptime:* ${getUptime()}
+│  ❖  *Uptime:* ${uptimeString}
 │
 ╰───────────⭓
 
 ╭─「 *Commands* 」
 ${commandList.trim()}
-╰───────────⭓
-            `;
+╰───────────⭓`;
 
-            const menuButtons = [
-                { buttonId: `${config.prefix}ping`, buttonText: { displayText: 'Ping' }, type: 1 },
-                { buttonId: `${config.prefix}sticker`, buttonText: { displayText: 'Sticker' }, type: 1 },
-                { buttonId: `${config.prefix}song`, buttonText: { displayText: 'Song' }, type: 1 }
-            ];
+            // Read the local image file
+            const imagePath = path.join(__dirname, '..', 'src', 'malikmd.jpeg');
+            const imageBuffer = fs.readFileSync(imagePath);
+
+            const buttons = [{
+                buttonId: `${config.prefix}ping`,
+                buttonText: {
+                    displayText: '🚀 Ping'
+                },
+                type: 1
+            }, {
+                buttonId: `${config.prefix}owner`,
+                buttonText: {
+                    displayText: '👑 Owner'
+                },
+                type: 1
+            }, ];
 
             const buttonMessage = {
-                image: { url: 'https://telegra.ph/file/a2ae6cbfa40f473f0f631.jpg' }, // Watermark Image
+                image: imageBuffer,
                 caption: menuText,
-                footer: 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴍᴀʟɪᴋ-ᴍᴅ', // Stylish Footer
-                buttons: menuButtons,
-                headerType: 4
+                footer: `Powered by 🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝`,
+                buttons: buttons,
+                headerType: 4,
             };
 
-            await sock.sendMessage(m.key.remoteJid, buttonMessage, { quoted: m });
+            await sock.sendMessage(m.key.remoteJid, buttonMessage);
 
         } catch (error) {
             console.error("Error in menu command:", error);
-            await sock.sendMessage(m.key.remoteJid, { text: "Sorry, I couldn't display the menu right now." });
+            await sock.sendMessage(m.key.remoteJid, {
+                text: "Sorry, an error occurred while fetching the menu."
+            });
         }
-    }
+    },
 };
+
+export default command;
 
