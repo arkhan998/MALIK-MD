@@ -1,82 +1,97 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require("@whiskeysockets/baileys");
+const {
+    default: makeWASocket,
+    useMultiFileAuthState,
+    DisconnectReason,
+    fetchLatestBaileysVersion
+} = require("@whiskeysockets/baileys");
+const {
+    Boom
+} = require("@hapi/boom");
 const pino = require("pino");
-const { Boom } = require("@hapi/boom");
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const {
+    File
+} = require('megajs');
 const chalk = require("chalk");
-const { File } = require("megajs");
 const config = require("./config.cjs");
-const handleMessage = require("./handler.js");
+const botEvents = require('./lib/events.js'); // Naya Event Emitter import kiya gaya hai
+
+// Handler ko yahan se hata diya gaya hai, usko ab index.js ki zaroorat nahi
+// require('./handler.js');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// --- Session Directory Setup ---
-const sessionDir = path.join(__dirname, 'sessions');
-if (!fs.existsSync(sessionDir)) {
-    fs.mkdirSync(sessionDir, { recursive: true });
+// Sessions folder ka path
+const sessionPath = path.join(__dirname, 'sessions');
+if (!fs.existsSync(sessionPath)) {
+    fs.mkdirSync(sessionPath);
 }
 
-// --- Mega.nz Session Downloader ---
+// Mega.nz se session download karne ka function
 async function downloadSession() {
-    return new Promise(async (resolve, reject) => {
-        if (!config.SESSION_ID) {
-            console.error(chalk.red("❌ Error: SESSION_ID not found in config. Please add it."));
-            return resolve(false);
-        }
-
-        if (fs.existsSync(path.join(sessionDir, 'creds.json'))) {
-            console.log(chalk.green("✅ Session file found locally."));
-            return resolve(true);
-        }
-
-        console.log(chalk.yellow("📥 No session file found. Attempting to download from Mega.nz..."));
-        const sessionID = config.SESSION_ID.replace("MALIK-MD~", '').trim();
-        
+    console.log(chalk.yellow("📥 Attempting to download session from Mega.nz..."));
+    if (!config.SESSION_ID) {
+        console.error(chalk.red("❌ Error: SESSION_ID not found in config.cjs or Heroku Vars."));
+        return false;
+    }
+    if (!fs.existsSync(sessionPath + '/creds.json')) {
         try {
-            const file = File.fromURL(`https://mega.nz/file/${sessionID}`);
-            await file.loadAttributes(); // Necessary to get file details
+            const sessdata = config.SESSION_ID.replace("MALIK-MD~", '');
+            const file = File.fromURL(`https://mega.nz/file/${sessdata}`);
             const data = await file.downloadBuffer();
-            fs.writeFileSync(path.join(sessionDir, 'creds.json'), data);
+            fs.writeFileSync(sessionPath + '/creds.json', data);
             console.log(chalk.green("✅ Session downloaded successfully from Mega.nz!"));
-            resolve(true);
-        } catch (error) {
-            console.error(chalk.red("❌ Failed to download session from Mega.nz:"), error.message || error);
-            console.error(chalk.red("Please ensure your SESSION_ID is correct and the Mega link is valid."));
-            resolve(false);
+            return true;
+        } catch (err) {
+            console.error(chalk.red("❌ Failed to download session:"), err);
+            return false;
         }
-    });
+    }
+    return true; // Session pehle se mojood hai
 }
 
 
-// --- Main Bot Function ---
+// Bot ko start karne ka function
 async function startMalikBot() {
     const sessionDownloaded = await downloadSession();
-    if (!sessionDownloaded) return; // Stop if session fails
+    if (!sessionDownloaded && !fs.existsSync(sessionPath + '/creds.json')) {
+        console.log(chalk.red("Initial session download failed and no local session found. Exiting."));
+        process.exit(1);
+    }
 
-    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-    const { version, isLatest } = await fetchLatestBaileysVersion();
-    console.log(chalk.cyan(`🤖 MALIK-MD using WA v${version.join('.')}, isLatest: ${isLatest}`));
+    const {
+        state,
+        saveCreds
+    } = await useMultiFileAuthState(sessionPath);
+    const {
+        version,
+        isLatest
+    } = await fetchLatestBaileysVersion();
+    console.log(chalk.cyan(`🔄 Using Baileys version: ${version.join('.')}, isLatest: ${isLatest}`));
 
     const sock = makeWASocket({
         version,
         auth: state,
         printQRInTerminal: false,
-        logger: pino({ level: "silent" }),
+        logger: pino({
+            level: "silent"
+        }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
 
-    // --- Event Handlers ---
     sock.ev.on("connection.update", (update) => {
-        const { connection, lastDisconnect } = update;
+        const {
+            connection,
+            lastDisconnect
+        } = update;
         if (connection === "close") {
             const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log(chalk.red("❌ Connection closed, reconnecting:"), shouldReconnect);
             if (shouldReconnect) {
-                console.log(chalk.yellow("Connection closed, reconnecting..."));
                 startMalikBot();
-            } else {
-                console.log(chalk.red("Connection closed permanently. You have been logged out."));
             }
         } else if (connection === "open") {
             console.log(chalk.green("✅ Integration Successful! Bot is online."));
@@ -85,42 +100,78 @@ async function startMalikBot() {
 
     sock.ev.on("creds.update", saveCreds);
 
+    // Message aane par event announce karna
     sock.ev.on("messages.upsert", async (mek) => {
         try {
             const m = mek.messages[0];
-            if (!m.message || m.key.id.startsWith('BAE5')) return;
-            await handleMessage(sock, m);
-        } catch (error) {
-            console.error("Error in messages.upsert event:", error);
+            if (!m.message) return;
+
+            // Yahan se handler ko direct call karne ke bajaye event emit kiya ja raha hai
+            botEvents.emit('new-message', {
+                sock,
+                m,
+                config
+            });
+
+        } catch (err) {
+            console.error(chalk.red("Error in messages.upsert event:"), err);
         }
     });
-    
-    // Call rejection
-    if (config.REJECT_CALL) {
-        sock.ev.on('call', async (call) => {
-            if (call[0].status === 'offer') {
-                await sock.rejectCall(call[0].id, call[0].from);
-                await sock.sendMessage(call[0].from, { text: "Sorry, I can't take calls. I am an AI Bot." });
-            }
-        });
-    }
 
-    // Welcome message
-    if (config.WELCOME) {
-        sock.ev.on('group-participants.update', async (update) => {
-            const { id, participants, action } = update;
-            if (action === 'add') {
-                const welcomeMsg = `🎉 Welcome to the group, @${participants[0].split('@')[0]}! Enjoy your stay.`;
-                sock.sendMessage(id, { text: welcomeMsg, mentions: participants });
+    // Welcome/Goodbye message
+    sock.ev.on('group-participants.update', async (update) => {
+        if (!config.WELCOME) return;
+        const {
+            id,
+            participants,
+            action
+        } = update;
+        try {
+            const groupMeta = await sock.groupMetadata(id);
+            for (const participant of participants) {
+                const user = participant.split('@')[0];
+                if (action === 'add') {
+                    sock.sendMessage(id, {
+                        text: `🎉 Assalam-o-Alaikum @${user}! Welcome to *${groupMeta.subject}*.`,
+                        mentions: [participant]
+                    });
+                } else if (action === 'remove') {
+                    sock.sendMessage(id, {
+                        text: `👋 Allah Hafiz @${user}! We'll miss you.`,
+                        mentions: [participant]
+                    });
+                }
             }
-        });
-    }
+        } catch (err) {
+            console.log("Error in group-participants.update:", err);
+        }
+    });
+
+
+    // Auto Status Seen
+    sock.ev.on('messages.upsert', async (mek) => {
+        const m = mek.messages[0];
+        if (config.AUTO_STATUS_SEEN && m.key.remoteJid === 'status@broadcast') {
+            await sock.readMessages([m.key]);
+        }
+    });
+
+    // Reject Call
+    sock.ev.on('call', async (json) => {
+        if (config.REJECT_CALL) {
+            for (const id of json) {
+                if (id.status === 'offer') {
+                    await sock.rejectCall(id.id, id.from);
+                }
+            }
+        }
+    });
+
+    return sock;
 }
 
-// --- Start Server and Bot ---
+startMalikBot();
+
 app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
-app.listen(port, () => {
-    console.log(chalk.blue(`🚀 Server is listening on port ${port}`));
-    startMalikBot();
-});
+app.listen(port, () => console.log(chalk.blue(`🚀 Server is listening on port ${port}`)));
 
