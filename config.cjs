@@ -3,29 +3,19 @@ const fs = require("fs");
 require("dotenv").config();
 
 const config = {
-  // Session ID from Heroku Vars
-  SESSION_ID: process.env.SESSION_ID || "MALIK-MD~6NNxwAgI#WpLHHecCj8w3I-p4gvqvZxP2FFRbTstwzKHEmpeQRHY",
-
-  // Bot Features (can be controlled from Heroku Vars)
-  AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN === 'true', // Default: false
-  AUTO_READ: process.env.AUTO_READ === 'true', // Default: false
-  AUTO_TYPING: process.env.AUTO_TYPING === 'true', // Default: false
-  AUTO_RECORDING: process.env.AUTO_RECORDING === 'true', // Default: false
-  ALWAYS_ONLINE: process.env.ALWAYS_ONLINE === 'true', // Default: false
-  REJECT_CALL: process.env.REJECT_CALL === 'true', // Default: true
-  WELCOME: process.env.WELCOME === 'true', // Default: true for welcome messages
-  
-  // Bot Settings
+  SESSION_ID: process.env.SESSION_ID || "",
+  AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN !== undefined ? process.env.AUTO_STATUS_SEEN === 'true' : true, 
+  AUTO_READ: process.env.AUTO_READ !== undefined ? process.env.AUTO_READ === 'true' : false,
+  AUTO_TYPING: process.env.AUTO_TYPING !== undefined ? process.env.AUTO_TYPING === 'true' : false,
+  AUTO_RECORDING: process.env.AUTO_RECORDING !== undefined ? process.env.AUTO_RECORDING === 'true' : false,
+  ALWAYS_ONLINE: process.env.ALWAYS_ONLINE !== undefined ? process.env.ALWAYS_ONLINE === 'true' : true,
+  REJECT_CALL: process.env.REJECT_CALL !== undefined ? process.env.REJECT_CALL === 'true' : true, 
   MODE: process.env.MODE || "public",
-  
-  // Owner Details
-  OWNER_NAME: process.env.OWNER_NAME || "arkhan998",
+  OWNER_NAME: process.env.OWNER_NAME || "🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝",
   OWNER_NUMBER: process.env.OWNER_NUMBER || "923322964709",
-  
-  // Fixed Bot Details
-  prefix: "!",
-  bot_name: "MALIK-MD",
-  owner_jid: "923322964709@s.whatsapp.net",
+  WELCOME: process.env.WELCOME !== undefined ? process.env.WELCOME === 'true' : true, 
+  // Add a prefix for commands
+  prefix: process.env.PREFIX || "!",
 };
 
 module.exports = config;
