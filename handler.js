@@ -13,11 +13,15 @@ const commands = new Map();
 // Plugins folder se saari commands ko load karne ka function
 async function loadCommands() {
     const pluginsPath = path.join(__dirname, 'plugins');
+    if (!fs.existsSync(pluginsPath)) {
+        console.error(chalk.red(`❌ Plugins directory not found at: ${pluginsPath}`));
+        return;
+    }
     const commandFiles = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
 
     for (const file of commandFiles) {
         try {
-            // Use dynamic import for ESM
+            // Use dynamic import for ESM with a file URL
             const commandModule = await import (path.join('file://', pluginsPath, file));
             const command = commandModule.default;
             if (command && command.name) {
@@ -39,14 +43,13 @@ loadCommands();
 // "new-message" event ko sun'na
 botEvents.on('new-message', async ({ sock, m }) => {
     try {
-        const body = m.message?.conversation || m.message?.extendedTextMessage?.text || "";
+        const body = m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.buttonsResponseMessage?.selectedButtonId || "";
         if (!body.startsWith(config.prefix)) return;
 
         const args = body.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
         
         const sender = m.key.remoteJid;
-        const fromMe = m.key.fromMe;
         
         // Owner aur Subscribed Users ka check
         const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
