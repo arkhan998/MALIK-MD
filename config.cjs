@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const config = {
   // Session ID from Heroku Vars
-  SESSION_ID: process.env.SESSION_ID || "MAFIA-MD~6NNxwAgI#WpLHHecCj8w3I-p4gvqvZxP2FFRbTstwzKHEmpeQRHY",
+  SESSION_ID: process.env.SESSION_ID || "MALIK-MD~6NNxwAgI#WpLHHecCj8w3I-p4gvqvZxP2FFRbTstwzKHEmpeQRHY",
 
   // Bot Features (can be controlled from Heroku Vars)
   AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN === 'true', // Default: false
