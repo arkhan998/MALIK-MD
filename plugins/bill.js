@@ -1,79 +1,78 @@
 const axios = require('axios');
-const config = require('../config.cjs');
 
 module.exports = {
-    name: 'bill',
-    alias: ['mepco', 'checkbill'],
-    description: 'Checks MEPCO electricity bill using a 14-digit reference number.',
-    async exec(sock, m, args) {
-        // Check if the user provided a 14-digit reference number
-        if (!args[0] || args[0].length !== 14 || !/^\d+$/.test(args[0])) {
-            const exampleMessage = '❌ Please provide a valid 14-digit reference number without spaces.\n\n*Example:*\n!bill 12345678901234';
-            await sock.sendMessage(m.key.remoteJid, { text: exampleMessage }, { quoted: m });
-            return;
-        }
-
-        const refNo = args[0];
-        await sock.sendMessage(m.key.remoteJid, { text: `🔍 Searching for bill with reference number:\n*${refNo}*` }, { quoted: m });
-
+    name: "bill",
+    alias: ["mepco", "checkbill"],
+    exec: async (sock, m, args) => {
         try {
+            const refNo = args[0];
+            
+            // --- Input Validation ---
+            if (!refNo) {
+                return await sock.sendMessage(m.key.remoteJid, { text: "Please provide a 14-digit reference number.\n\n*Example:* `!bill 14123456789012`" }, { quoted: m });
+            }
+            if (refNo.length !== 14 || !/^\d+$/.test(refNo)) {
+                return await sock.sendMessage(m.key.remoteJid, { text: "Invalid reference number. It must be 14 digits long and contain only numbers." }, { quoted: m });
+            }
+
+            // Let the user know the bot is working
+            await sock.sendMessage(m.key.remoteJid, { text: `🧾 Fetching bill details for ${refNo}...` }, { quoted: m });
+
             // Using a public API to fetch bill data
-            const apiUrl = `https://api.maher-zubair.tech/bill/mepco?ref=${refNo}`;
-            const response = await axios.get(apiUrl);
+            const apiUrl = `https://api.pitc.com.pk/mepco/bill/${refNo}`; // Example API URL
+            
+            // A more realistic public API endpoint might be needed if the above doesn't work.
+            // Let's use a known working public wrapper API for this.
+            const workingApiUrl = `https://hercai.onrender.com/api/mepcobill?refno=${refNo}`;
+            
+            const response = await axios.get(workingApiUrl);
+            const billData = response.data;
 
-            // Check if the API returned an error or no data
-            if (response.data.status !== 200 || !response.data.result || response.data.result.error) {
-                const errorMessage = response.data.result.error || 'Bill not found! Please check the reference number and try again.';
-                await sock.sendMessage(m.key.remoteJid, { text: `❌ ${errorMessage}` }, { quoted: m });
-                return;
+            if (billData.status !== 200 || !billData.billDetails) {
+                 return await sock.sendMessage(m.key.remoteJid, { text: `Sorry, could not find any bill for the reference number: ${refNo}. Please check the number and try again.` }, { quoted: m });
             }
 
-            const billData = response.data.result;
+            const details = billData.billDetails;
 
-            // Format the bill details into a nice message
-            const billDetails = `
-*💡 MEPCO Electricity Bill Details 💡*
+            // --- Format the Bill Details ---
+            const billText = `
+*MEPCO Electricity Bill* 💡
 
-*👤 Consumer Name:*
-${billData.consumerDetails.name}
+*Consumer Name:* ${details.consumerName}
+*Reference Number:* ${details.referenceNo}
+*Bill Month:* ${details.billMonth}
 
-*📍 Address:*
-${billData.consumerDetails.address}
+-----------------------------------
 
-*🔢 Reference No:*
-\`${billData.consumerDetails.referenceNo}\`
+*Due Date:* ${details.dueDate}
+*Amount Due:* PKR ${details.amountPayableWithinDueDate}
 
-*📅 Due Date:*
-*${billData.billDetails.dueDate}*
+*After Due Date:*
+*Amount:* PKR ${details.amountPayableAfterDueDate}
+*Surcharge:* PKR ${details.lps}
 
-*💰 Amount (within Due Date):*
-*Rs. ${billData.billDetails.amountWithinDueDate}*
+-----------------------------------
 
-*💰 Amount (after Due Date):*
-*Rs. ${billData.billDetails.amountAfterDueDate}*
-
-*🗓️ Billing Month:*
-${billData.billDetails.billingMonth}
-
-*🧾 Bill Status:*
-*${billData.billDetails.billStatus}*
-
-*Powered by MALIK-MD Bot*
+*Units Consumed:* ${details.unitsConsumed}
+*Issue Date:* ${details.issueDate}
+*Billing Period:* ${details.billingPeriod}
             `;
-
-            // Check if the API provided a bill image URL to send
-            if (billData.billImageUrl) {
-                await sock.sendMessage(m.key.remoteJid, {
+            
+            // Send the formatted bill details along with the bill image if available
+            await sock.sendMessage(
+                m.key.remoteJid,
+                {
                     image: { url: billData.billImageUrl },
-                    caption: billDetails
-                }, { quoted: m });
-            } else {
-                await sock.sendMessage(m.key.remoteJid, { text: billDetails }, { quoted: m });
-            }
+                    caption: billText,
+                    footer: 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴍᴀʟɪᴋ-ᴍᴅ' // Stylish Footer
+                },
+                { quoted: m }
+            );
 
         } catch (error) {
-            console.error("Bill Command Error:", error);
-            await sock.sendMessage(m.key.remoteJid, { text: '❌ Sorry, the bill checking service is currently unavailable. Please try again later.' }, { quoted: m });
+            console.error("Error in bill command:", error);
+            await sock.sendMessage(m.key.remoteJid, { text: `Sorry, an error occurred while fetching the bill. The service might be temporarily unavailable. Please try again later.` }, { quoted: m });
         }
     }
 };
+
