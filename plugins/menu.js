@@ -1,54 +1,42 @@
-const config = require('../config.cjs');
-const { performance } = require('perf_hooks');
 const fs = require('fs');
-const path = require('path');
+const path =require('path');
+const config = require('../config.cjs');
 
 module.exports = {
     name: 'menu',
-    description: 'Displays the list of available commands.',
-    aliases: ['help', 'commands'],
-    execute: async (sock, m, args) => {
-        const startTime = performance.now();
-        
-        let commandListText = '';
+    alias: ['help'],
+    description: 'Displays the bot menu.',
+    async exec(sock, m) {
         try {
-            // Read the plugins directory to get all command files
-            const pluginsDir = path.join(__dirname); 
-            const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-            
-            commandListText = pluginFiles
-                .map(file => `│ - ${config.prefix}${path.parse(file).name}`)
-                .join('\n');
-        } catch (error) {
-            console.error("Could not generate command list for menu:", error);
-            commandListText = "│ Could not load commands.";
-        }
+            // Get bot's uptime
+            const uptime = process.uptime();
+            const uptimeString = new Date(uptime * 1000).toISOString().substr(11, 8);
 
-        const endTime = performance.now();
-        const ping = (endTime - startTime).toFixed(2);
-        const uptime = process.uptime();
-        const uptimeString = new Date(uptime * 1000).toISOString().substr(11, 8);
+            // Read command files from plugins directory
+            const pluginsDir = path.join(__dirname);
+            const commandFiles = fs.readdirSync(pluginsDir)
+                .filter(file => file.endsWith('.js'))
+                .map(file => `│ • ${config.prefix}${path.parse(file).name}`);
 
-        const menuText = `
+            const menuText = `
 ╭─「 *${config.OWNER_NAME}'s BOT* 」
 │
-│  ◈ *Mode:* ${config.MODE}
-│  ◈ *Prefix:* ${config.prefix}
-│  ◈ *Uptime:* ${uptimeString}
-│  ◈ *Ping:* ${ping} ms
+│  ❖  *Mode:* ${config.MODE}
+│  ❖  *Prefix:* ${config.prefix}
+│  ❖  *Uptime:* ${uptimeString}
 │
 ╰───────────⭓
 
 ╭─「 *Commands* 」
-${commandListText}
+${commandFiles.join('\n')}
 ╰───────────⭓
-        `;
+            `;
 
-        await sock.sendMessage(
-            m.key.remoteJid, 
-            { text: menuText.trim() },
-            { quoted: m }
-        );
-    },
+            await sock.sendMessage(m.key.remoteJid, { text: menuText }, { quoted: m });
+        } catch (error) {
+            console.error("Error in menu command:", error);
+            await sock.sendMessage(m.key.remoteJid, { text: 'Could not generate the menu.' }, { quoted: m });
+        }
+    }
 };
 
