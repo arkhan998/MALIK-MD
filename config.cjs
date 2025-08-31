@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const config = {
   SESSION_ID: process.env.SESSION_ID || "",
-  SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS || "", 
+  SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS || "AIzaSyA_AuZSidaQ7J0-JgYpqikOX_Sz-PuN51k", 
   
   // --- Google Gemini API Key ---
   // Get your key from Google AI Studio and add it to Heroku Config Vars
