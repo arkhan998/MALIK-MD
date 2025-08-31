@@ -10,18 +10,6 @@
     "whatsapp",
     "bot"
   ],
-  "author": "arkhan998",{
-  "name": "malik-md",
-  "version": "1.0.0",
-  "description": "A powerful WhatsApp bot.",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "keywords": [
-    "whatsapp",
-    "bot"
-  ],
   "author": "arkhan998",
   "license": "ISC",
   "dependencies": {
@@ -36,20 +24,3 @@
     "pino": "^9.2.0"
   }
 }
-
-
-  "license": "ISC",
-  "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.19",
-    "@hapi/boom": "^10.0.1",
-    "axios": "^1.11.0",
-    "chalk": "^5.6.0",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "form-data": "^4.0.4",
-    "fs": "0.0.1-security",
-    "megajs": "^1.3.9",
-    "pino": "^9.9.0"
-  }
-}
-
