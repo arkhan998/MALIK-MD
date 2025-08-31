@@ -1,18 +1,22 @@
 {
   "name": "malik-md",
   "version": "1.0.0",
-  "description": "A powerful WhatsApp bot based on Baileys.",
+  "description": "A powerful WhatsApp bot.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "author": "arkhan998",
+  "license": "MIT",
   "dependencies": {
+    "@whiskeysockets/baileys": "github:Jeliostarr/DEV-Baileys",
     "@hapi/boom": "^10.0.1",
-    "@whiskeysockets/baileys": "^6.7.8",
     "axios": "^1.7.2",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "pino": "^9.2.0"
+    "megajs": "^1.1.4",
+    "pino": "^8.21.0"
   }
 }
+
