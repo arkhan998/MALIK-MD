@@ -1,62 +1,61 @@
 const fs = require('fs');
 const path = require('path');
-const config = require('./config.cjs'); 
+const config = require('./config.cjs');
 
-const pluginsDir = path.join(__dirname, 'plugins');
-const commands = new Map();
+// This function will be exported and called by index.js
+const handleMessage = async (sock, m) => {
+    // --- Start of Original Handler Logic ---
+    const commands = new Map();
+    const pluginsDir = path.join(__dirname, 'plugins');
 
-// --- Load all commands from plugins folder ---
-try {
-    const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-    console.log(`✅ Found ${pluginFiles.length} commands.`);
-    for (const file of pluginFiles) {
-        try {
-            const command = require(path.join(pluginsDir, file));
-            if (command.name && command.execute) {
+    try {
+        const commandFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
+        for (const file of commandFiles) {
+            try {
+                const command = require(path.join(pluginsDir, file));
                 commands.set(command.name, command);
-                if (command.aliases && Array.isArray(command.aliases)) {
-                    command.aliases.forEach(alias => commands.set(alias, command));
+                if (command.alias) {
+                    command.alias.forEach(alias => commands.set(alias, command));
                 }
+            } catch (error) {
+                console.error(`Error loading plugin ${file}:`, error);
             }
-        } catch (err) {
-            console.error(`❌ Error loading command ${file}:`, err);
         }
+    } catch (error) {
+        console.error("Error reading plugins directory:", error);
     }
-} catch (error) {
-    console.error("❌ Error reading plugins directory:", error);
-}
-
-async function handler(sock, m) {
-    if (!m.message || !m.key.remoteJid) return;
-    const from = m.key.remoteJid;
-    const isGroup = from.endsWith('@g.us');
-    const sender = isGroup ? m.key.participant : m.key.remoteJid;
-
-    // --- Auto actions ---
+    
+    // Auto actions (typing, recording, reading)
+    if (config.AUTO_TYPING) await sock.sendPresenceUpdate('composing', m.key.remoteJid);
+    if (config.AUTO_RECORDING) await sock.sendPresenceUpdate('recording', m.key.remoteJid);
     if (config.AUTO_READ) await sock.readMessages([m.key]);
-    if (config.AUTO_TYPING) await sock.sendPresenceUpdate('composing', from);
-    if (config.AUTO_RECORDING) await sock.sendPresenceUpdate('recording', from);
 
-    const body = m.message.conversation || m.message.extendedTextMessage?.text || '';
-    if (!body || !body.startsWith(config.prefix)) return;
+    // Extracting command and arguments
+    const messageText = m.message?.conversation || m.message?.extendedTextMessage?.text || '';
+    if (!messageText.startsWith(config.prefix)) return;
 
-    const args = body.slice(config.prefix.length).trim().split(/ +/);
+    const args = messageText.slice(config.prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
     const command = commands.get(commandName);
 
-    const ownerJid = `${config.OWNER_NUMBER}@s.whatsapp.net`;
-    if (config.MODE === 'private' && sender !== ownerJid) return;
+    // Private mode logic
+    const isOwner = m.key.remoteJid.startsWith(config.OWNER_NUMBER);
+    if (config.MODE === 'private' && !isOwner) {
+        return;
+    }
 
+    // Command execution
     if (command) {
         try {
-            await command.execute(sock, m, args);
+            await command.exec(sock, m, args);
         } catch (error) {
-            console.error(`❌ Error executing command ${commandName}:`, error);
-            sock.sendMessage(from, { text: 'An error occurred while executing the command.' }, { quoted: m });
+            console.error(`Error executing command ${command.name}:`, error);
+            await sock.sendMessage(m.key.remoteJid, { text: 'An error occurred while executing the command.' }, { quoted: m });
         }
     }
-}
+    // --- End of Original Handler Logic ---
+};
 
-// Handler is the only export
-module.exports = { handler };
+// Export the main function
+module.exports = handleMessage;
 
