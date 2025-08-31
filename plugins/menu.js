@@ -1,55 +1,68 @@
 const fs = require('fs');
 const path = require('path');
-const config = require('../config.cjs');
+const config = require('../config.cjs'); // Correct path to config file
+
+// --- Uptime Calculation ---
+// This function calculates how long the bot has been running.
+function getUptime() {
+    const uptime = process.uptime();
+    const days = Math.floor(uptime / (24 * 60 * 60));
+    const hours = Math.floor((uptime % (24 * 60 * 60)) / (60 * 60));
+    const minutes = Math.floor((uptime % (60 * 60)) / 60);
+    const seconds = Math.floor(uptime % 60);
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
 
 module.exports = {
-    name: 'menu',
-    alias: ['help'],
-    description: 'Displays the interactive bot menu with buttons.',
-    async exec(sock, m) {
+    name: "menu",
+    alias: ["help"],
+    exec: async (sock, m) => {
         try {
-            const watermarkImageUrl = 'https://telegra.ph/file/a8a185275811c68f27303.jpg';
-            const stylishFooter = 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴍᴀʟɪᴋ-ᴍᴅ';
-
-            // --- Button Creation ---
-            const pluginsDir = path.join(__dirname);
-            const commandFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
+            // --- Dynamically Read Commands ---
+            const pluginsDir = path.join(__dirname); // Current directory is /plugins
+            const commandFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js') && file !== 'menu.js');
             
-            const buttons = commandFiles.map(file => {
-                const commandName = path.parse(file).name;
-                // We don't want a button for the menu command itself
-                if (commandName === 'menu') return null;
-                return {
-                    buttonId: `${config.prefix}${commandName}`, // The ID will be the command itself e.g., !ping
-                    buttonText: { displayText: commandName.toUpperCase() },
-                    type: 1
-                };
-            }).filter(Boolean); // Remove any null entries
+            let commandList = '';
+            commandFiles.forEach(file => {
+                const commandName = path.basename(file, '.js');
+                commandList += `│ • ${config.prefix}${commandName}\n`;
+            });
 
-            // --- Menu Message Construction ---
-            const uptime = new Date(process.uptime() * 1000).toISOString().substr(11, 8);
-            const menuCaption = `
-*As-salamu alaykum!* 🌟
+            // --- Menu Content ---
+            const menuText = `
+╭─「 *${config.OWNER_NAME}'s BOT* 」
+│
+│  ❖  *Mode:* ${config.MODE}
+│  ❖  *Prefix:* ${config.prefix}
+│  ❖  *Owner:* ${config.OWNER_NAME}
+│  ❖  *Uptime:* ${getUptime()}
+│
+╰───────────⭓
 
-I am MALIK-MD, your personal AI agent. Please select an option from the buttons below to get started.
+╭─「 *Commands* 」
+${commandList.trim()}
+╰───────────⭓
+            `;
 
-  ❖  *Mode:* ${config.MODE}
-  ❖  *Uptime:* ${uptime}
-`;
+            const menuButtons = [
+                { buttonId: `${config.prefix}ping`, buttonText: { displayText: 'Ping' }, type: 1 },
+                { buttonId: `${config.prefix}sticker`, buttonText: { displayText: 'Sticker' }, type: 1 },
+                { buttonId: `${config.prefix}song`, buttonText: { displayText: 'Song' }, type: 1 }
+            ];
 
             const buttonMessage = {
-                image: { url: watermarkImageUrl },
-                caption: menuCaption,
-                footer: stylishFooter,
-                buttons: buttons,
-                headerType: 4 // 4 for image
+                image: { url: 'https://telegra.ph/file/a2ae6cbfa40f473f0f631.jpg' }, // Watermark Image
+                caption: menuText,
+                footer: 'ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴍᴀʟɪᴋ-ᴍᴅ', // Stylish Footer
+                buttons: menuButtons,
+                headerType: 4
             };
 
-            await sock.sendMessage(m.key.remoteJid, buttonMessage);
+            await sock.sendMessage(m.key.remoteJid, buttonMessage, { quoted: m });
 
         } catch (error) {
             console.error("Error in menu command:", error);
-            await sock.sendMessage(m.key.remoteJid, { text: 'Could not generate the interactive menu.' }, { quoted: m });
+            await sock.sendMessage(m.key.remoteJid, { text: "Sorry, I couldn't display the menu right now." });
         }
     }
 };
