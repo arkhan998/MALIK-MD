@@ -28,10 +28,11 @@ if (!fs.existsSync(sessionPath)) {
     fs.mkdirSync(sessionPath, { recursive: true });
 }
 
+// Mega.nz se session download karne ka function
 async function downloadSession() {
     console.log(chalk.yellow("📥 Attempting to download session from Mega.nz..."));
     if (!config.SESSION_ID) {
-        console.error(chalk.red("❌ Error: SESSION_ID not found."));
+        console.error(chalk.red("❌ Error: SESSION_ID not found. Please set it in Heroku Vars."));
         return false;
     }
     const credsPath = path.join(sessionPath, 'creds.json');
@@ -48,44 +49,56 @@ async function downloadSession() {
             return false;
         }
     }
-    console.log(chalk.blue("ℹ️ Session file already exists."));
+    console.log(chalk.blue("ℹ️ Session file already exists. Skipping download."));
     return true;
 }
 
 let initialConnection = true;
 
+// Bot ko start karne ka function
 async function startMalikBot() {
     const sessionDownloaded = await downloadSession();
     if (!sessionDownloaded) {
+        console.log(chalk.red("Session download failed. Exiting."));
         process.exit(1);
     }
 
-    const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
-    const { version, isLatest } = await fetchLatestBaileysVersion();
+    const {
+        state,
+        saveCreds
+    } = await useMultiFileAuthState(sessionPath);
+    const {
+        version,
+        isLatest
+    } = await fetchLatestBaileysVersion();
     console.log(chalk.cyan(`🔄 Using Baileys version: ${version.join('.')}, isLatest: ${isLatest}`));
 
     const sock = makeWASocket({
         version,
         auth: state,
         printQRInTerminal: false,
-        logger: pino({ level: "silent" }),
+        logger: pino({
+            level: "silent"
+        }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
 
     sock.ev.on("connection.update", (update) => {
-        const { connection, lastDisconnect } = update;
+        const {
+            connection,
+            lastDisconnect
+        } = update;
         if (connection === "close") {
             const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log(chalk.red("❌ Connection closed, reconnecting:"), shouldReconnect);
-            initialConnection = true;
             if (shouldReconnect) {
                 startMalikBot();
             }
         } else if (connection === "open") {
             console.log(chalk.green("✅ Integration Successful! Bot is online."));
-            if (initialConnection) {
+            if (initialConnection && config.OWNER_NUMBER) {
                 const ownerJid = config.OWNER_NUMBER + "@s.whatsapp.net";
-                const connectMsg = `*🚀 MALIK-MD Bot Connected!*\n\nBot has successfully connected and is now online.\n\n❖ *Mode:* ${config.MODE}\n❖ *Prefix:* ${config.prefix}\n❖ *Owner:* ${config.OWNER_NAME}\n\nTo see all commands, type:\n\`${config.prefix}menu\``;
+                const connectMsg = `*🚀 MALIK-MD Bot Connected!*\n\nBot has successfully connected and is now online.\n\n❖ *Mode:* ${config.MODE}\n❖ *Prefix:* ${config.prefix}`;
                 sock.sendMessage(ownerJid, { text: connectMsg });
                 initialConnection = false;
             }
@@ -94,25 +107,54 @@ async function startMalikBot() {
 
     sock.ev.on("creds.update", saveCreds);
 
+    // Message aane par event announce karna
     sock.ev.on("messages.upsert", (mek) => {
         try {
             const m = mek.messages[0];
-            const sender = m.key.remoteJid;
-            const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
-
-            // Sirf doosron ke messages ko ignore karna, owner ke nahi
-            if (!m.message || (m.key.fromMe && !isOwner)) return;
-
-            // **Yeh Line Sab se Zaroori Hai**
-            // Yahan se handler ko message bheja ja raha hai
+            if (!m.message) return;
             botEvents.emit('new-message', { sock, m });
-
         } catch (err) {
             console.error(chalk.red("Error in messages.upsert event:"), err);
         }
     });
     
-    // Baaki saare events (group update, status seen, reject call) bilkul wese hi rahengy
+    // Welcome/Goodbye message
+    sock.ev.on('group-participants.update', async (update) => {
+        if (!config.WELCOME) return;
+        const { id, participants, action } = update;
+        try {
+            const groupMeta = await sock.groupMetadata(id);
+            for (const participant of participants) {
+                const user = participant.split('@')[0];
+                if (action === 'add') {
+                    sock.sendMessage(id, { text: `🎉 Assalam-o-Alaikum @${user}! Welcome to *${groupMeta.subject}*.`, mentions: [participant] });
+                } else if (action === 'remove') {
+                    sock.sendMessage(id, { text: `👋 Allah Hafiz @${user}! We'll miss you.`, mentions: [participant] });
+                }
+            }
+        } catch (err) {
+            console.log("Error in group-participants.update:", err);
+        }
+    });
+
+    // Auto Status Seen
+    sock.ev.on('messages.upsert', async (mek) => {
+        const m = mek.messages[0];
+        if (config.AUTO_STATUS_SEEN && m.key.remoteJid === 'status@broadcast') {
+            await sock.readMessages([m.key]);
+        }
+    });
+
+    // Reject Call
+    sock.ev.on('call', async (json) => {
+        if (config.REJECT_CALL) {
+            for (const id of json) {
+                if (id.status === 'offer') {
+                    await sock.rejectCall(id.id, id.from);
+                }
+            }
+        }
+    });
 }
 
 startMalikBot();
