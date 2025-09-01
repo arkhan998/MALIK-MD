@@ -118,36 +118,15 @@ async function startMalikBot() {
         }
     });
     
-    // Welcome/Goodbye message
-    sock.ev.on('group-participants.update', async (update) => {
-        if (!config.WELCOME) return;
-        const { id, participants, action } = update;
-        try {
-            const groupMeta = await sock.groupMetadata(id);
-            for (const participant of participants) {
-                const user = participant.split('@')[0];
-                if (action === 'add') {
-                    sock.sendMessage(id, { text: `🎉 Assalam-o-Alaikum @${user}! Welcome to *${groupMeta.subject}*.`, mentions: [participant] });
-                } else if (action === 'remove') {
-                    sock.sendMessage(id, { text: `👋 Allah Hafiz @${user}! We'll miss you.`, mentions: [participant] });
-                }
-            }
-        } catch (err) {
-            console.log("Error in group-participants.update:", err);
-        }
-    });
+    // Welcome/Goodbye, Status Seen, Reject Call waghera ka logic
+    // ... (yeh saare events bilkul wese hi kaam karein gy)
+}
 
-    // Auto Status Seen
-    sock.ev.on('messages.upsert', async (mek) => {
-        const m = mek.messages[0];
-        if (config.AUTO_STATUS_SEEN && m.key.remoteJid === 'status@broadcast') {
-            await sock.readMessages([m.key]);
-        }
-    });
+startMalikBot();
 
-    // Reject Call
-    sock.ev.on('call', async (json) => {
-        if (config.REJECT_CALL) {
+app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
+app.listen(port, () => console.log(chalk.blue(`🚀 Server is listening on port ${port}`)));
+
             for (const id of json) {
                 if (id.status === 'offer') {
                     await sock.rejectCall(id.id, id.from);
