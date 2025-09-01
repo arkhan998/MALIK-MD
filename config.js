@@ -14,20 +14,21 @@ const config = {
   OWNER_NAME: process.env.OWNER_NAME || "🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝",
   OWNER_NUMBER: process.env.OWNER_NUMBER || "923322964709",
 
-  // Subscribed users ki list (Heroku se aayegi)
-  SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS ? process.env.SUBSCRIBED_USERS.split(',') : [],
+  // Subscribed users ki list Heroku se aayegi
+  // .split(',') isko [ 'number1', 'number2' ] me badal dega
+  SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS ? process.env.SUBSCRIBED_USERS.split(',') : [923124533358,923474838534],
 
-  // Google Gemini API Key (Heroku se aayegi)
+  // Google Gemini API Key Heroku se aayegi
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || "AIzaSyA_AuZSidaQ7J0-JgYpqikOX_Sz-PuN51k",
 
   // Baaki saare features
-  AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN !== undefined ? process.env.AUTO_STATUS_SEEN === 'true' : true,
-  AUTO_READ: process.env.AUTO_READ !== undefined ? process.env.AUTO_READ === 'true' : false,
-  AUTO_TYPING: process.env.AUTO_TYPING !== undefined ? process.env.AUTO_TYPING === 'true' : false,
-  AUTO_RECORDING: process.env.AUTO_RECORDING !== undefined ? process.env.AUTO_RECORDING === 'true' : false,
-  ALWAYS_ONLINE: process.env.ALWAYS_ONLINE !== undefined ? process.env.ALWAYS_ONLINE === 'true' : false,
-  REJECT_CALL: process.env.REJECT_CALL !== undefined ? process.env.REJECT_CALL === 'true' : false,
-  WELCOME: process.env.WELCOME !== undefined ? process.env.WELCOME === 'true' : true,
+  AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN === 'true',
+  AUTO_READ: process.env.AUTO_READ === 'true',
+  AUTO_TYPING: process.env.AUTO_TYPING === 'true',
+  AUTO_RECORDING: process.env.AUTO_RECORDING === 'true',
+  ALWAYS_ONLINE: process.env.ALWAYS_ONLINE === 'true',
+  REJECT_CALL: process.env.REJECT_CALL === 'true',
+  WELCOME: process.env.WELCOME === 'true',
 };
 
 export default config;
