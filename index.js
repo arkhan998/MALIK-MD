@@ -22,7 +22,6 @@ if (!fs.existsSync(sessionPath)) {
     fs.mkdirSync(sessionPath, { recursive: true });
 }
 
-// Session download karne ka function
 async function downloadSession() {
     console.log(chalk.yellow("📥 Attempting to download session from Mega.nz..."));
     if (!config.SESSION_ID || !config.SESSION_ID.includes('MALIK-MD~')) {
@@ -48,7 +47,6 @@ async function downloadSession() {
     return true;
 }
 
-// WhatsApp se connect karne ka function
 async function connectToWhatsApp() {
     const sessionDownloaded = await downloadSession();
     if (!sessionDownloaded) {
@@ -68,10 +66,9 @@ async function connectToWhatsApp() {
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
 
-    // Reminder service start karna
     if (config.ENABLE_REMINDERS && config.REMINDER_USERS.length > 0) {
         console.log(chalk.magenta('⏰ Daily reminder service is enabled.'));
-        cron.schedule('0 5 * * *', async () => { // Roz subha 5 baje
+        cron.schedule('0 5 * * *', async () => {
             console.log(chalk.bgGreen.white('🌅 Running daily reminder job...'));
             const message = await generateReminderMessage();
             for (const user of config.REMINDER_USERS) {
@@ -89,23 +86,30 @@ async function connectToWhatsApp() {
         });
     }
 
-    // Connection events handle karna
     sock.ev.on("connection.update", (update) => {
         const { connection, lastDisconnect } = update;
         if (connection === "close") {
-            const shouldReconnect = new Boom(lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log(chalk.red(`❌ Connection closed. Reconnecting: ${shouldReconnect}`));
-            if (shouldReconnect) {
-                connectToWhatsApp(); // Yahan par aaram se reconnect hoga, crash nahi hoga
+            const statusCode = new Boom(lastDisconnect?.error)?.output?.statusCode;
+            // ======================================================
+            // YEH HAI NAYA AUR SMART CODE
+            // Agar session kharab (loggedOut) ya invalid (401) ho to session folder delete kar do
+            // ======================================================
+            if (statusCode === DisconnectReason.loggedOut || statusCode === DisconnectReason.connectionReplaced || statusCode === 401) {
+                console.log(chalk.red("❌ Unrecoverable session error. Deleting session and restarting..."));
+                if (fs.existsSync(sessionPath)) {
+                    fs.rmSync(sessionPath, { recursive: true, force: true });
+                }
+                // Bot ko aaram se restart hone do
+                connectToWhatsApp();
             } else {
-                console.log(chalk.red("❌ Not reconnecting, user logged out."));
+                 console.log(chalk.yellow("Connection closed, attempting to reconnect..."));
+                 connectToWhatsApp();
             }
         } else if (connection === "open") {
             console.log(chalk.green("✅ Bot is online."));
         }
     });
 
-    // Baaki saare events
     sock.ev.on("creds.update", saveCreds);
     sock.ev.on("messages.upsert", (mek) => {
         try {
@@ -116,11 +120,9 @@ async function connectToWhatsApp() {
     });
 }
 
-// Web Server start karna (taake Heroku bot ko on rakhe)
 app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
 app.listen(port, () => {
     console.log(chalk.blue(`🚀 Web server listening on port ${port}`));
-    // Server start hone ke baad bot ko connect karna
     connectToWhatsApp().catch(err => console.error(chalk.red("❌ Bot failed to start:"), err));
 });
 
