@@ -68,7 +68,7 @@ async function connectToWhatsApp() {
 
     if (config.ENABLE_REMINDERS && config.REMINDER_USERS.length > 0) {
         console.log(chalk.magenta('⏰ Daily reminder service is enabled.'));
-        cron.schedule('18 23 * * *', async () => {
+        cron.schedule('25 23 * * *', async () => {
             console.log(chalk.bgGreen.white('🌅 Running daily reminder job...'));
             const message = await generateReminderMessage();
             for (const user of config.REMINDER_USERS) {
