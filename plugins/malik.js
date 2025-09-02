@@ -6,10 +6,10 @@ module.exports = {
             // --- APNA AUDIO LINK YAHAN DAALEIN ---
             // Neeche di gayi line me 'YOUR_AUDIO_URL_HERE' ki jagah
             // apni audio file ka direct download link (.mp3, .ogg, etc.) daalein.
-            const audioUrl = "YOUR_AUDIO_URL_HERE";
+            const audioUrl = "https://files.catbox.moe/99s17a.mp3";
 
             // Check if the URL is a placeholder
-            if (audioUrl === "YOUR_AUDIO_URL_HERE") {
+            if (audioUrl === "https://files.catbox.moe/99s17a.mp3") {
                 return await sock.sendMessage(m.key.remoteJid, { text: "⚠️ *Audio Not Set*\n\nThe owner has not configured the audio URL for this command yet." }, { quoted: m });
             }
 
