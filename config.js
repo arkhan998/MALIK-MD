@@ -18,7 +18,7 @@ const config = {
 
     // 2. Un numbers ki list jinhe roz subha reminder bhejna hai
 
-    REMINDER_USERS: process.env.REMINDER_USERS ? process.env.REMINDER_USERS.split(',') : ["923322964709","923124533358"], 
+    REMINDER_USERS: process.env.REMINDER_USERS ? process.env.REMINDER_USERS.split(',') : ["923322964709","923124533358", "923311308116"], 
 
 
 
