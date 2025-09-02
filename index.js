@@ -1,24 +1,21 @@
-import makeWASocket, {
+const {
+    default: makeWASocket,
     useMultiFileAuthState,
     DisconnectReason,
     fetchLatestBaileysVersion
-} from "@whiskeysockets/baileys";
-import { Boom } from "@hapi/boom";
-import pino from "pino";
-import express from "express";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from 'url';
-import { File } from 'megajs';
-import chalk from "chalk";
-import config from "./config.js";
-import botEvents from './lib/events.js';
+} = require("@whiskeysockets/baileys");
+const { Boom } = require("@hapi/boom");
+const pino = require("pino");
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const chalk = require("chalk");
+const { File } = require('megajs');
+const config = require("./config.js");
+const botEvents = require('./lib/events.js');
 
 // Handler ko yahan import karna zaroori hai taake woh events sun'na shuru kar de
-import './handler.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+require('./handler.js');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -118,15 +115,9 @@ async function startMalikBot() {
         }
     });
     
-    // Welcome/Goodbye, Status Seen, Reject Call waghera ka logic
-    // ... (yeh saare events bilkul wese hi kaam karein gy)
-}
-
-startMalikBot();
-
-app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
-app.listen(port, () => console.log(chalk.blue(`🚀 Server is listening on port ${port}`)));
-
+    // Call rejection logic
+    sock.ev.on('call', async (json) => {
+        if (config.REJECT_CALL) {
             for (const id of json) {
                 if (id.status === 'offer') {
                     await sock.rejectCall(id.id, id.from);
@@ -140,4 +131,3 @@ startMalikBot();
 
 app.get('/', (req, res) => res.send('MALIK-MD Bot is running!'));
 app.listen(port, () => console.log(chalk.blue(`🚀 Server is listening on port ${port}`)));
-
