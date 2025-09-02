@@ -1,10 +1,1 @@
-Node.js dependenciesnode_modules/Session files (sensitive data)sessions/Environment variables file.envNPM debug lognpm-debug.log*Yarn error logyarn-error.log*
----
-
-### Aakhri Kaam
-
-Bas yahi do (2) files ahem theen jo rehti theen. Ab aapke paas `MALIK-MD` bot ka poora aur mukammal code hai.
-
-**Aapka project structure ab is tarah ka hona chahiye:**
-
-MALIK-MD/├── src/│   └── malikmd.jpeg├── lib/│   └── events.js├── plugins/│   ├── alive.js│   ├── bill.js│   ├── menu.js│   └── (aur baaki saare commands...)├── sessions/│   └── (yeh folder khud ban jayega)├── .gitignore├── config.js├── Dockerfile├── handler.js├── index.js├── package.json└── README.md
+Node.js ke packages ka foldernode_modules/WhatsApp session files ka foldersessions/Secret keys wali file.env
