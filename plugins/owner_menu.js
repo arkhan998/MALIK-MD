@@ -1,12 +1,11 @@
-import config from '../config.js';
+const config = require('../config.js');
 
-const command = {
+module.exports = {
     name: "owner_menu",
+    ownerOnly: true,
     exec: async (sock, m, args) => {
         try {
-            const ownerMenuText = `*👑 Welcome to the Owner Panel, Malik Sahab!*
-
-Here are the exclusive commands only you can use to manage the bot.`;
+            const ownerMenuText = `*👑 Welcome to the Owner Panel, Malik Sahab!*\n\nHere are the exclusive commands only you can use to manage the bot.`;
 
             const buttons = [{
                 buttonId: `${config.prefix}restart`,
@@ -15,6 +14,11 @@ Here are the exclusive commands only you can use to manage the bot.`;
             }, {
                 buttonId: `${config.prefix}listusers`,
                 buttonText: { displayText: '👥 List Subscribers' },
+                type: 1
+            }, {
+                // Yeh naya button hai
+                buttonId: `${config.prefix}settings`,
+                buttonText: { displayText: '⚙️ Bot Settings' },
                 type: 1
             }];
 
@@ -33,4 +37,3 @@ Here are the exclusive commands only you can use to manage the bot.`;
     },
 };
 
-export default command;
