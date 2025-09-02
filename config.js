@@ -1,4 +1,4 @@
-import "dotenv/config";
+require("dotenv").config();
 
 const config = {
   // SESSION_ID Heroku se aayega
@@ -16,7 +16,7 @@ const config = {
 
   // Subscribed users ki list Heroku se aayegi
   // .split(',') isko [ 'number1', 'number2' ] me badal dega
-  SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS ? process.env.SUBSCRIBED_USERS.split(',') : [923124533358,923474838534],
+  SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS ? process.env.SUBSCRIBED_USERS.split(',') : ["923124533358", "923474838534"],
 
   // Google Gemini API Key Heroku se aayegi
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || "AIzaSyA_AuZSidaQ7J0-JgYpqikOX_Sz-PuN51k",
@@ -31,5 +31,4 @@ const config = {
   WELCOME: process.env.WELCOME === 'true',
 };
 
-export default config;
-
+module.exports = config;
