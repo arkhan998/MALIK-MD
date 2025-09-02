@@ -7,6 +7,7 @@ const command = {
     aliases: ["help", "commands"],
     exec: async (sock, m, args) => {
         try {
+            // Tasveer ka path
             const imagePath = path.join(__dirname, '..', 'src', 'malikmd.jpeg');
             const imageBuffer = fs.readFileSync(imagePath);
 
@@ -17,71 +18,56 @@ const command = {
             const uptimeString = new Date(uptime * 1000).toISOString().substr(11, 8);
 
             // ======================================================
-            // YEH HAI AAPKA NAYA, PROFESSIONAL TEXT-BASED MENU
+            // YEH HAI SAB SE STABLE AUR RELIABLE MENU
+            // Tasveer ke neeche caption me khoobsurat text menu
             // ======================================================
             
-            let menuBodyText = `*❖ ━━━━━━━ 
+            let menuText = `*❖ ━━━━━━━ 
   *MALIK-MD MAIN MENU*
 *━━━━━━━ ❖*
 
 *╭─≽ Info*
 *│*
 *│  Owner: ${config.OWNER_NAME}*
-*│  Number: ${config.OWNER_NUMBER}*
-*│  Platform: Heroku*
+*│  Prefix: ${config.prefix}*
 *│  Uptime: ${uptimeString}*
 *│*
-*╰──────────≽*`;
+*╰──────────≽*
 
-            // ======================================================
-            // YEH HAIN AAPKE NAYE INTERACTIVE BUTTONS
-            // ======================================================
-            
-            const interactiveButtons = [
-                {
-                    "headerType": 1,
-                    "title": "🧠 AI Tools",
-                    "id": `${config.prefix}ai_menu`
-                },
-                {
-                    "headerType": 1,
-                    "title": "🛠️ General Tools",
-                    "id": `${config.prefix}general_menu`
-                }
-            ];
+*╭─≽ Categories*
+*│*
+*│  1️⃣ *AI Tools*
+*│     (Type \`${config.prefix}ai_menu\`) *
+*│*
+*│  2️⃣ *General Tools*
+*│     (Type \`${config.prefix}general_menu\`) *
+*│*`;
 
+            // Agar user owner hai, to Owner Panel ka option add karna
             if (isOwner) {
-                interactiveButtons.push({
-                    "headerType": 1,
-                    "title": "👑 Owner Panel",
-                    "id": `${config.prefix}owner_menu`
-                });
+                menuText += `
+*│  3️⃣ *Owner Panel*
+*│     (Type \`${config.prefix}owner_menu\`) *
+*│*`;
             }
 
-            const interactiveMessage = {
-                "body": { "text": menuBodyText },
-                "footer": { "text": `Powered by ${config.OWNER_NAME}` },
-                "header": {
-                    "title": "MALIK-MD",
-                    "subtitle": "Welcome!",
-                    "hasMediaAttachment": true, // Yeh zaroori hai tasveer ke liye
-                    "imageMessage": {
-                        "jpegThumbnail": imageBuffer
-                    }
-                },
-                "nativeFlowMessage": {
-                    "buttons": interactiveButtons
-                }
-            };
-            
-            await sock.sendMessage(m.key.remoteJid, {
-                "interactive": interactiveMessage
-            });
+            menuText += `
+*╰──────────≽*
 
+*Powered by 🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝*`;
+            
+            // ======================================================
+            
+            // Yahan hum tasveer aur uske neeche caption (menu) bhej rahe hain.
+            await sock.sendMessage(m.key.remoteJid, {
+                image: imageBuffer,
+                caption: menuText 
+            });
 
         } catch (error) {
             console.error("Error in menu command:", error);
-            await sock.sendMessage(m.key.remoteJid, { text: "Sorry, an error occurred while displaying the menu." });
+            // Error ki soorat me user ko simple text message bhejna
+            await sock.sendMessage(m.key.remoteJid, { text: "Sorry, menu me error aagaya. Please try again later." });
         }
     },
 };
