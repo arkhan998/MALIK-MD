@@ -1,29 +1,32 @@
 {
   "name": "malik-md",
-  "version": "1.0.1",
-  "description": "A powerful WhatsApp bot agent, reconfigured for stability.",
+  "version": "1.0.3",
+  "description": "A powerful WhatsApp bot.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "keywords": [
     "whatsapp",
-    "bot",
-    "malik-md",
-    "baileys"
+    "bot"
   ],
-  "author": "arkhan998 (Reconfigured by Gemini)",
+  "author": "arkhan998",
   "license": "ISC",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
-    "@whiskeysockets/baileys": "^6.7.2",
     "@vitalets/google-translate-api": "^9.2.0",
+    "@whiskeysockets/baileys": "^6.7.19",
     "axios": "^1.7.2",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.1.9",
+    "form-data": "^4.0.0",
     "megajs": "^1.1.4",
     "node-cron": "^3.0.3",
     "pino": "^8.21.0"
   }
 }
+
