@@ -1,5 +1,5 @@
 const axios = require('axios');
-const config = require('../config.cjs');
+const config = require('../config.js');
 const { Buffer } = require('buffer');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
 
