@@ -1,5 +1,5 @@
 const axios = require('axios');
-const config = require('../config.cjs');
+const config = require('../config.js');
 const { Buffer } = require('buffer');
 
 // Helper function to wait for a specific duration
