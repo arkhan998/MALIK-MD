@@ -17,6 +17,7 @@
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "^6.7.2",
+    "@vitalets/google-translate-api": "^9.2.0",
     "axios": "^1.7.2",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.5",
