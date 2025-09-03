@@ -4,73 +4,174 @@ const config = require("../config.js");
 
 const command = {
     name: "menu",
-    aliases: ["help", "commands"],
+    alias: ["menu-v2"],
     exec: async (sock, m, args) => {
         try {
-            // Tasveer ka path
             const imagePath = path.join(__dirname, '..', 'src', 'malikmd.jpeg');
             const imageBuffer = fs.readFileSync(imagePath);
 
-            const isGroup = m.key.remoteJid.endsWith('@g.us');
-            const sender = isGroup ? (m.key.participant || m.participant) : m.key.remoteJid;
-            const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
-            const uptime = process.uptime();
-            const uptimeString = new Date(uptime * 1000).toISOString().substr(11, 8);
+            const isOwner = config.OWNER_NUMBER && m.key.remoteJid.startsWith(config.OWNER_NUMBER);
 
             // ======================================================
-            // YEH HAI SAB SE STABLE AUR RELIABLE MENU
-            // Tasveer ke neeche caption me khoobsurat text menu
+            // MAIN MENU KA TEXT
             // ======================================================
-            
-            let menuText = `*❖ ━━━━━━━ 
-  *MALIK-MD MAIN MENU*
-*━━━━━━━ ❖*
+            const menuCaption = `╭━━━〔 *MALIK-MD* 〕━━━┈⊷
+┃★╭──────────────
+┃★│ 👑 Owner : *${config.OWNER_NAME}*
+┃★╰──────────────
+╰━━━━━━━━━━━━━━━┈⊷
+📋 *Choose a category to explore:*
+> _Reply with the matching number to open the menu_
 
-*╭─≽ Info*
-*│*
-*│  Owner: ${config.OWNER_NAME}*
-*│  Prefix: ${config.prefix}*
-*│  Uptime: ${uptimeString}*
-*│*
-*╰──────────≽*
+ ➦✧ -〘 *BOT MENU* 〙 -  ✧━┈⊷
+┃✧ ➦♦⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆✧━┈⊷
+┃✧│  ❶  *AI Menu* 🤖
+┃✧│  ❷  *Downloader Menu* 📥
+┃✧│  ❸  *Islamic Menu* 🕋
+┃✧│  ❹  *Tools Menu* 🛠️
+┃✧│  ❺  *Main Menu* 🏠`;
 
-*╭─≽ Categories*
-*│*
-*│  1️⃣ *AI Tools*
-*│     (Type \`${config.prefix}ai_menu\`) *
-*│*
-*│  2️⃣ *General Tools*
-*│     (Type \`${config.prefix}general_menu\`) *
-*│*`;
-
-            // Agar user owner hai, to Owner Panel ka option add karna
+            // Agar user owner hai to Owner Menu ka option dikhana
+            let finalMenuCaption = menuCaption;
             if (isOwner) {
-                menuText += `
-*│  3️⃣ *Owner Panel*
-*│     (Type \`${config.prefix}owner_menu\`) *
-*│*`;
+                finalMenuCaption += `\n┃✧│  ❻  *Owner Menu* 👑`;
             }
 
-            menuText += `
-*╰──────────≽*
+            finalMenuCaption += `
+┃✧ ➥ ⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆✧━┈⊷
+ ➥⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆✧━┈⊷
+> *Powered by 🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝*`;
 
-*Powered by 🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝*`;
-            
             // ======================================================
+            // HAR CATEGORY KE ANDAR KE COMMANDS
+            // ======================================================
+            const menuData = {
+                '1': {
+                    title: "🤖 *AI Menu* 🤖",
+                    content: `╭━━━〔 *AI Menu* 〕━━━┈⊷
+┃★╭──────────────
+┃★│ 🖼️ *Image AI*
+┃★│ • .fluxai [prompt]
+┃★│ • .sdiffusion [prompt]
+┃★│ • .stability [prompt]
+┃★│ • .gimage [query]
+┃★╰──────────────
+┃★╭──────────────
+┃★│ 👁️ *Vision & Text*
+┃★│ • .ai [question]
+┃★│ • .describe (reply to image)
+┃★╰──────────────
+╰━━━━━━━━━━━━━━━┈⊷`
+                },
+                '2': {
+                    title: "📥 *Downloader Menu* 📥",
+                    content: `╭━━━〔 *Download Menu* 〕━━━┈⊷
+┃★╭──────────────
+┃★│ 🌐 *Social Media & Music*
+┃★│ • .tiktok [link]
+┃★│ • .song [song name]
+┃★│ • .pin [pinterest link]
+┃★╰──────────────
+╰━━━━━━━━━━━━━━━┈⊷`
+                },
+                '3': {
+                    title: "🕋 *Islamic Menu* 🕋",
+                    content: `╭━━━〔 *Islamic Menu* 〕━━━┈⊷
+┃★╭──────────────
+┃★│ 📖 *Quran Commands*
+┃★│ • .quran [surah number]
+┃★│ • .quranmenu (for list)
+┃★╰──────────────
+╰━━━━━━━━━━━━━━━┈⊷`
+                },
+                '4': {
+                    title: "🛠️ *Tools Menu* 🛠️",
+                    content: `╭━━━〔 *Tools Menu* 〕━━━┈⊷
+┃★╭──────────────
+┃★│ 🔍 *Information*
+┃★│ • .weather [city]
+┃★│ • .news
+┃★│ • .news urdu
+┃★╰──────────────
+╰━━━━━━━━━━━━━━━┈⊷`
+                },
+                '5': {
+                    title: "🏠 *Main Menu* 🏠",
+                    content: `╭━━━〔 *Main Menu* 〕━━━┈⊷
+┃★╭──────────────
+┃★│ ℹ️ *Bot Info*
+┃★│ • .ping
+┃★│ • .alive
+┃★│ • .owner
+┃★╰──────────────
+╰━━━━━━━━━━━━━━━┈⊷`
+                },
+                '6': {
+                    title: "👑 *Owner Menu* 👑",
+                    content: `╭━━━〔 *Owner Menu* 〕━━━┈⊷
+┃★╭──────────────
+┃★│ ⚠️ *Bot Control*
+┃★│ • .restart
+┃★│ • .settings
+┃★│ • .listusers
+┃★│ • .simdata [number]
+┃★╰──────────────
+╰━━━━━━━━━━━━━━━┈⊷`
+                }
+            };
             
-            // Yahan hum tasveer aur uske neeche caption (menu) bhej rahe hain.
-            await sock.sendMessage(m.key.remoteJid, {
+            // Main menu bhejna
+            const sentMsg = await sock.sendMessage(m.key.remoteJid, {
                 image: imageBuffer,
-                caption: menuText 
-            });
+                caption: finalMenuCaption
+            }, { quoted: m });
+            
+            // Ab user ke reply ka intezar karna
+            const messageID = sentMsg.key.id;
+            const originalSender = m.key.remoteJid;
 
-        } catch (error) {
-            console.error("Error in menu command:", error);
-            // Error ki soorat me user ko simple text message bhejna
-            await sock.sendMessage(m.key.remoteJid, { text: "Sorry, menu me error aagaya. Please try again later." });
+            const handler = async (msgData) => {
+                const receivedMsg = msgData.messages[0];
+                if (!receivedMsg?.message || receivedMsg.key.remoteJid !== originalSender) return;
+
+                const isReplyToMenu = receivedMsg.message.extendedTextMessage?.contextInfo?.stanzaId === messageID;
+                
+                if (isReplyToMenu) {
+                    const receivedText = (receivedMsg.message.conversation || receivedMsg.message.extendedTextMessage?.text || "").trim();
+                    
+                    const selectedMenu = menuData[receivedText];
+
+                    if (selectedMenu) {
+                         // Owner-only check
+                        if (receivedText === '6' && !isOwner) {
+                            await sock.sendMessage(originalSender, { text: "❌ You are not the owner to access this menu." }, { quoted: receivedMsg });
+                            return;
+                        }
+                        
+                        // Category menu bhejna
+                        await sock.sendMessage(originalSender, {
+                            text: selectedMenu.content
+                        }, { quoted: receivedMsg });
+                        await sock.sendMessage(originalSender, { react: { text: '✅', key: receivedMsg.key } });
+
+                    } else {
+                        await sock.sendMessage(originalSender, { text: `❌ *Invalid Option!* ❌\n\nPlease reply with a valid number from the menu.` }, { quoted: receivedMsg });
+                    }
+                }
+            };
+
+            sock.ev.on("messages.upsert", handler);
+
+            // 3 minute ke baad reply sun'na band kar dena
+            setTimeout(() => {
+                sock.ev.off("messages.upsert", handler);
+            }, 180000);
+
+        } catch (e) {
+            console.error('New Menu Error:', e);
+            await sock.sendMessage(m.key.remoteJid, { text: `❌ Menu system is currently busy. Please try again later.` }, { quoted: m });
         }
-    },
+    }
 };
 
 module.exports = command;
-
