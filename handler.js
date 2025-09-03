@@ -9,11 +9,10 @@ const commands = new Map();
 async function loadCommands() {
     const pluginsPath = path.join(__dirname, 'plugins');
     if (!fs.existsSync(pluginsPath)) {
-        console.log(chalk.yellow("Plugins directory not found, skipping command loading."));
+        console.log(chalk.yellow("Plugins directory not found."));
         return;
     }
     const commandFiles = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
-
     for (const file of commandFiles) {
         try {
             const commandModule = require(path.join(pluginsPath, file));
@@ -23,8 +22,7 @@ async function loadCommands() {
                     commandModule.alias.forEach(alias => commands.set(alias, commandModule));
                 }
             }
-        } catch (error)
-        {
+        } catch (error) {
             console.error(chalk.red(`❌ Error loading plugin ${file}:`), error);
         }
     }
@@ -35,37 +33,43 @@ loadCommands();
 
 botEvents.on('new-message', async ({ sock, m }) => {
     try {
-        // YEH HAI FIX: Pehle check kar rahe hain ke 'm' ya 'm.message' khali to nahi
-        if (!m || !m.message) {
-            return;
-        }
+        if (!m || !m.message) return;
 
-        const body = m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.buttonsResponseMessage?.selectedButtonId || "";
+        // Message ko saaf karke chotay letters me karna
+        const body = (m.message?.conversation || m.message?.extendedTextMessage?.text || "").trim().toLowerCase();
         
-        if (!body) return;
-
-        const isGroup = m.key.remoteJid.endsWith('@g.us');
-        const sender = isGroup ? (m.key.participant || m.participant) : m.key.remoteJid;
-        const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
-
-        if (m.key.fromMe && !isOwner) {
-            return;
+        // ======================================================
+        // YEH HAI AAPKA NAYA FEATURE
+        // Bina prefix ke "Malik" check karna
+        // ======================================================
+        if (body === "malik") {
+            try {
+                await sock.sendMessage(m.key.remoteJid, {
+                    audio: { url: "https://files.catbox.moe/99s17a.mp3" },
+                    mimetype: 'audio/mpeg',
+                    ptt: true // Is se voice note ban kar jayega
+                }, { quoted: m });
+            } catch (err) {
+                console.error("Error sending 'Malik' auto-reply:", err);
+            }
+            return; // Yahan par ruk jana zaroori hai taake bot isay command na samjhe
         }
+        // ======================================================
 
+
+        // Neeche wala code commands (.menu, .tiktok etc.) ke liye hai
         if (!body.startsWith(config.prefix)) return;
 
         const args = body.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
-        
         const command = commands.get(commandName);
-        if (command) {
-            if (command.ownerOnly && !isOwner) {
-                return sock.sendMessage(m.key.remoteJid, { text: "👑 This command can only be used by my owner, Malik Sahab." }, { quoted: m });
-            }
 
-            const isSubscribed = config.SUBSCRIBED_USERS && config.SUBSCRIBED_USERS.some(user => sender.startsWith(user));
-            if (config.MODE === 'private' && !isOwner && !isSubscribed) {
-                return sock.sendMessage(m.key.remoteJid, { text: "❌ *Access Denied!*\n\nYou are not a subscribed user." }, { quoted: m });
+        if (command) {
+            const sender = m.key.remoteJid.endsWith('@g.us') ? (m.key.participant || m.participant) : m.key.remoteJid;
+            const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
+
+            if (command.ownerOnly && !isOwner) {
+                return sock.sendMessage(m.key.remoteJid, { text: "👑 This command is for my owner only." }, { quoted: m });
             }
             
             await command.exec(sock, m, args);
