@@ -14,48 +14,45 @@ const command = {
                 return sock.sendMessage(m.key.remoteJid, { text: "This is not a valid TikTok link." }, { quoted: m });
             }
             
-            // User ko batana ke process shuru ho gaya hai
             const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "🎵 Downloading your TikTok video, please wait..." }, { quoted: m });
             
-            // API se video ki maloomat fetch karna
-            const apiUrl = `https://delirius-apiofc.vercel.app/download/tiktok?url=${encodeURIComponent(link)}`;
+            // ======================================================
+            // YEH HAI AAPKI NAYI API
+            // ======================================================
+            const apiUrl = `https://api.princetechn.com/api/download/tiktok?apikey=prince&url=${encodeURIComponent(link)}`;
+            
             const { data } = await axios.get(apiUrl);
             
-            if (!data.status || !data.data) {
-                return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I failed to fetch the TikTok video. The API might be down.", edit: waitingMsg.key }, { quoted: m });
+            // API se response check karna
+            if (!data.status === 'success' || !data.data) {
+                return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I failed to fetch the TikTok video. The API might be down or the link is invalid.", edit: waitingMsg.key }, { quoted: m });
             }
             
-            const { title, like, comment, share, author, meta } = data.data;
+            const videoInfo = data.data;
+            const videoUrl = videoInfo.video_nwm; // No Watermark video URL
             
-            // Video ka link dhoondna
-            const videoData = meta.media.find(v => v.type === "video" && v.quality === "nwm"); // nwm = no watermark
-            
-            if (!videoData || !videoData.url) {
-                 return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I could not find a downloadable video link.", edit: waitingMsg.key }, { quoted: m });
+            if (!videoUrl) {
+                 return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I could not find a downloadable video link from the API response.", edit: waitingMsg.key }, { quoted: m });
             }
-            
-            const videoUrl = videoData.url;
             
             const caption = `*🎵 TikTok Video Downloaded 🎵*\n\n` +
-                            `👤 *User:* ${author.nickname} (@${author.username})\n` +
-                            `📖 *Title:* ${title || 'No Title'}\n` +
-                            `👍 *Likes:* ${like}\n💬 *Comments:* ${comment}\n🔁 *Shares:* ${share}\n\n*Powered by MALIK-MD*`;
+                            `📖 *Title:* ${videoInfo.title || 'No Title'}\n` +
+                            `▶️ *Plays:* ${videoInfo.play || 'N/A'}\n\n` +
+                            `*Powered by MALIK-MD*`;
             
-            // Video bhejna
             await sock.sendMessage(m.key.remoteJid, {
                 video: { url: videoUrl },
                 caption: caption
             }, { quoted: m });
 
-            // "Downloading" wala message delete kar dena (optional)
             await sock.sendMessage(m.key.remoteJid, { delete: waitingMsg.key });
             
         } catch (e) {
             console.error("Error in TikTok downloader command:", e);
-            await sock.sendMessage(m.key.remoteJid, { text: `An error occurred: ${e.message}` }, { quoted: m });
+            await sock.sendMessage(m.key.remoteJid, { text: `An error occurred. The API might be temporarily down.` }, { quoted: m });
         }
     }
 };
 
 module.exports = command;
- 
+
