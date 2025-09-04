@@ -3,6 +3,7 @@ const path = require('path');
 const chalk = require('chalk');
 const botEvents = require('./lib/events.js');
 const config = require('./config.js');
+const cache = require('./lib/cache.js'); // Bot ki memory ko import karna
 
 const commands = new Map();
 
@@ -35,31 +36,57 @@ botEvents.on('new-message', async ({ sock, m }) => {
     try {
         if (!m || !m.message) return;
 
-        // Message ko saaf karke chotay letters me karna
-        const body = (m.message?.conversation || m.message?.extendedTextMessage?.text || "").trim().toLowerCase();
-        
+        const body = (m.message?.conversation || m.message?.extendedTextMessage?.text || "").trim();
+        const repliedToId = m.message.extendedTextMessage?.contextInfo?.stanzaId;
+
         // ======================================================
-        // YEH HAI AAPKA NAYA FEATURE
-        // Bina prefix ke "Malik" check karna
+        // YEH HAI NAYA REPLY SYSTEM
+        // Yeh check karta hai ke message kisi command ka reply hai ya nahi
         // ======================================================
-        if (body === "malik") {
+        if (repliedToId && cache[repliedToId]) {
+            const cachedData = cache[repliedToId];
+            const replyText = body.toLowerCase();
+
+            // Agar reply "1" hai to video bhejo
+            if (replyText === '1') {
+                await sock.sendMessage(m.key.remoteJid, { react: { text: '🎬', key: m.key } });
+                await sock.sendMessage(m.key.remoteJid, {
+                    video: { url: cachedData.videoUrl },
+                    caption: "*Here is your TikTok video!*"
+                }, { quoted: m });
+                delete cache[repliedToId]; // Kaam khatam, memory se data saaf kar do
+                return; // Yahan ruk jao
+            } 
+            // Agar reply "2" hai to audio bhejo
+            else if (replyText === '2') {
+                await sock.sendMessage(m.key.remoteJid, { react: { text: '🎧', key: m.key } });
+                await sock.sendMessage(m.key.remoteJid, {
+                    audio: { url: cachedData.audioUrl },
+                    mimetype: 'audio/mpeg'
+                }, { quoted: m });
+                delete cache[repliedToId]; // Kaam khatam, memory se data saaf kar do
+                return; // Yahan ruk jao
+            }
+        }
+        // ======================================================
+
+        // Purana "Malik" auto-reply
+        if (body.toLowerCase() === "malik") {
             try {
                 await sock.sendMessage(m.key.remoteJid, {
                     audio: { url: "https://files.catbox.moe/99s17a.mp3" },
                     mimetype: 'audio/mpeg',
-                    ptt: true // Is se voice note ban kar jayega
+                    ptt: true
                 }, { quoted: m });
             } catch (err) {
                 console.error("Error sending 'Malik' auto-reply:", err);
             }
-            return; // Yahan par ruk jana zaroori hai taake bot isay command na samjhe
+            return;
         }
-        // ======================================================
 
-
-        // Neeche wala code commands (.menu, .tiktok etc.) ke liye hai
+        // Normal command handling
         if (!body.startsWith(config.prefix)) return;
-
+        
         const args = body.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
         const command = commands.get(commandName);
@@ -71,9 +98,9 @@ botEvents.on('new-message', async ({ sock, m }) => {
             if (command.ownerOnly && !isOwner) {
                 return sock.sendMessage(m.key.remoteJid, { text: "👑 This command is for my owner only." }, { quoted: m });
             }
-            
             await command.exec(sock, m, args);
         }
+
     } catch (error) {
         console.error(chalk.red(`❌ Error in handler:`), error);
     }
