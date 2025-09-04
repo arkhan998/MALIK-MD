@@ -19,25 +19,27 @@ const command = {
             // ======================================================
             // YEH HAI AAPKI NAYI API
             // ======================================================
-            const apiUrl = `https://api.princetechn.com/api/download/tiktok?apikey=prince&url=${encodeURIComponent(link)}`;
+            const apiUrl = `https://lance-frank-asta.onrender.com/api/tikdl?url=${encodeURIComponent(link)}`;
             
             const { data } = await axios.get(apiUrl);
             
             // API se response check karna
-            if (!data.status === 'success' || !data.data) {
+            if (data.status !== true || !data.result || !data.result.video || data.result.video.length === 0) {
                 return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I failed to fetch the TikTok video. The API might be down or the link is invalid.", edit: waitingMsg.key }, { quoted: m });
             }
             
-            const videoInfo = data.data;
-            const videoUrl = videoInfo.video_nwm; // No Watermark video URL
+            const videoInfo = data.result;
+            // Aksar pehla link watermark wala hota hai aur doosra बगैर watermark ke.
+            // Agar sirf ek link hai, to wohi istemal hoga.
+            const videoUrl = videoInfo.video[1] || videoInfo.video[0]; 
             
             if (!videoUrl) {
                  return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I could not find a downloadable video link from the API response.", edit: waitingMsg.key }, { quoted: m });
             }
             
             const caption = `*🎵 TikTok Video Downloaded 🎵*\n\n` +
-                            `📖 *Title:* ${videoInfo.title || 'No Title'}\n` +
-                            `▶️ *Plays:* ${videoInfo.play || 'N/A'}\n\n` +
+                            `👤 *User:* ${videoInfo.author.nickname || 'N/A'}\n` +
+                            `📖 *Title:* ${videoInfo.description || 'No Title'}\n\n` +
                             `*Powered by MALIK-MD*`;
             
             await sock.sendMessage(m.key.remoteJid, {
