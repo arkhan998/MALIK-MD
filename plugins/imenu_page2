@@ -1,0 +1,38 @@
+const config = require("../config.js");
+
+const command = {
+    name: "imenu_page2",
+    exec: async (sock, m, args) => {
+        try {
+            const isOwner = config.OWNER_NUMBER && m.key.remoteJid.startsWith(config.OWNER_NUMBER);
+
+            const buttons = [
+                { buttonId: `${config.prefix}islamic_menu`, buttonText: { displayText: '🕋 Islamic Menu' }, type: 1 },
+                { buttonId: `${config.prefix}tools_menu`, buttonText: { displayText: '🛠️ Tools Menu' }, type: 1 },
+            ];
+
+            if (isOwner) {
+                buttons.push({ buttonId: `${config.prefix}owner_menu`, buttonText: { displayText: '👑 Owner Menu' }, type: 1 });
+            }
+            
+            // Wapas main menu par jane ke liye button
+            buttons.unshift({ buttonId: `${config.prefix}imenu`, buttonText: { displayText: '⬅️ Back to Main' }, type: 1 });
+
+            const buttonMessage = {
+                text: `*📚 Menu Categories (Page 2)*\n\nPlease select another category from the buttons below.`,
+                footer: `Powered by ${config.OWNER_NAME}`,
+                buttons: buttons,
+                headerType: 1
+            };
+
+            await sock.sendMessage(m.key.remoteJid, buttonMessage, { quoted: m });
+
+        } catch (e) {
+            console.error('iMenu Page 2 Error:', e);
+            await sock.sendMessage(m.key.remoteJid, { text: `❌ Menu system encountered an error.` }, { quoted: m });
+        }
+    }
+};
+
+module.exports = command;
+ 
