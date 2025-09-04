@@ -13,7 +13,7 @@ const command = {
 
             await sock.sendMessage(m.key.remoteJid, { react: { text: '⏳', key: m.key } });
 
-            const apiUrl = `https://lance-frank-asta.onrender.com/api/tikdl?url=${encodeURIComponent(link)}`;
+            const apiUrl = `https://delirius-apiofc.vercel.app/download/tiktok?url=${encodeURIComponent(link)}`;
             const { data } = await axios.get(apiUrl);
 
             if (data.status !== true || !data.result) {
