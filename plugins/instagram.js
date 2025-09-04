@@ -1,4 +1,11 @@
 const axios = require('axios');
+const config = require('../config.js');
+
+// Hum 2 alag alag APIs try karenge
+const INSTA_APIS = [
+    `https://api.akuari.my.id/downloader/igdl?link=`,
+    `https://api.maher-zubair.tech/download/instagram?url=`
+];
 
 const command = {
     name: "instagram",
@@ -10,31 +17,44 @@ const command = {
                 return sock.sendMessage(m.key.remoteJid, { text: "Please provide a valid Instagram Reel or Video link." }, { quoted: m });
             }
 
-            const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "📥 Downloading from Instagram..." }, { quoted: m });
+            const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "📥 Downloading from Instagram...\n_Trying multiple sources..._" }, { quoted: m });
 
-            const apiUrl = `https://api.akuari.my.id/downloader/igdl?link=${encodeURIComponent(link)}`;
-            
-            const { data } = await axios.get(apiUrl);
+            let mediaUrl = null;
 
-            if (!data || !data.result || data.result.length === 0) {
-                return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I failed to fetch the media. The link might be for a private account or stories.", edit: waitingMsg.key }, { quoted: m });
+            for (const apiUrl of INSTA_APIS) {
+                try {
+                    const response = await axios.get(`${apiUrl}${encodeURIComponent(link)}`);
+                    const data = response.data;
+                    
+                    if (data.result && data.result[0]?.url) { // akuari API
+                        mediaUrl = data.result[0].url;
+                        break;
+                    } else if (data.result?.url) { // maher-zubair API
+                        mediaUrl = data.result.url;
+                        break;
+                    }
+                } catch (e) {
+                    console.log(`Instagram API failed: ${apiUrl}. Trying next...`);
+                }
             }
 
-            // API se video ka link nikalna
-            const mediaUrl = data.result[0].url;
+            if (!mediaUrl) {
+                return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I failed to fetch the media from all sources. The link might be private or all APIs are down.", edit: waitingMsg.key }, { quoted: m });
+            }
 
             await sock.sendMessage(m.key.remoteJid, {
                 video: { url: mediaUrl },
-                caption: `* reels Downloaded ✅*\n\n*Powered by MALIK-MD*`
+                caption: `*✅ Instagram Video Downloaded*\n\n*Powered by MALIK-MD*`
             }, { quoted: m });
 
             await sock.sendMessage(m.key.remoteJid, { delete: waitingMsg.key });
 
         } catch (error) {
-            console.error("Error in Instagram command:", error);
-            await sock.sendMessage(m.key.remoteJid, { text: "❌ An error occurred. The API might be down." }, { quoted: m });
+            console.error("Error in Instagram command:", error.message);
+            await sock.sendMessage(m.key.remoteJid, { text: `❌ An unknown error occurred: ${error.message}` }, { quoted: m });
         }
     }
 };
 
 module.exports = command;
+
