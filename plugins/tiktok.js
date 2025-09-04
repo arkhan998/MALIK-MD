@@ -1,49 +1,49 @@
 const axios = require('axios');
+const cache = require('../lib/cache.js'); // Bot ki memory ko import karna
 
 const command = {
     name: "tiktok",
-    alias: ["ttdl", "tt", "tiktokdl"],
+    alias: ["tt", "tik"],
     exec: async (sock, m, args) => {
         try {
             const link = args[0];
-
             if (!link || !link.includes("tiktok.com")) {
                 return sock.sendMessage(m.key.remoteJid, { text: "Please provide a valid TikTok video link." }, { quoted: m });
             }
-            
-            const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "🎵 Downloading your TikTok video, please wait..." }, { quoted: m });
-            
+
+            await sock.sendMessage(m.key.remoteJid, { react: { text: '⏳', key: m.key } });
+
             const apiUrl = `https://lance-frank-asta.onrender.com/api/tikdl?url=${encodeURIComponent(link)}`;
-            
             const { data } = await axios.get(apiUrl);
-            
-            // ======================================================
-            // YEH HAI NAYI API KE MUTABIQ CODE
-            // Ab hum 'data.result.video[0]' check kar rahe hain
-            // ======================================================
-            if (data.status !== true || !data.result || !data.result.video || !data.result.video[0]) {
-                return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I failed to fetch the TikTok video. The API might be down or the link is invalid.", edit: waitingMsg.key }, { quoted: m });
+
+            if (data.status !== true || !data.result) {
+                return sock.sendMessage(m.key.remoteJid, { text: "❌ TikTok download failed. Please try again." }, { quoted: m });
             }
-            
+
             const videoInfo = data.result;
-            // Yeh API aksar 2 link bhejti hai. Doosra wala behtar quality ka hota hai.
-            const videoUrl = videoInfo.video[1] || videoInfo.video[0]; 
-            
-            const caption = `*🎵 TikTok Video Downloaded 🎵*\n\n` +
-                            `👤 *User:* ${videoInfo.author.nickname || 'N/A'}\n` +
-                            `📖 *Title:* ${videoInfo.description || 'No Title'}\n\n` +
-                            `*Powered by MALIK-MD*`;
-            
+
+            // Maloomat ko bot ki memory (cache) me save karna
+            const cacheId = m.key.id; // Message ki unique ID
+            cache[cacheId] = {
+                videoUrl: videoInfo.video[1] || videoInfo.video[0],
+                audioUrl: videoInfo.music
+            };
+
+            // User ko maloomat aur instructions bhejna
+            const caption = `*🎵 TikTok Downloader 🎵*\n\n` +
+                            `*👤 Author:* ${videoInfo.author.nickname}\n` +
+                            `*📖 Title:* ${videoInfo.description || 'No Title'}\n\n` +
+                            `*➡️ Reply with "1" for Video*\n` +
+                            `*➡️ Reply with "2" for Audio*`;
+
             await sock.sendMessage(m.key.remoteJid, {
-                video: { url: videoUrl },
+                image: { url: videoInfo.cover },
                 caption: caption
             }, { quoted: m });
 
-            await sock.sendMessage(m.key.remoteJid, { delete: waitingMsg.key });
-            
         } catch (e) {
-            console.error("Error in TikTok downloader command:", e);
-            await sock.sendMessage(m.key.remoteJid, { text: `An error occurred. The API might be temporarily down.` }, { quoted: m });
+            console.error("TikTok command error:", e);
+            await sock.sendMessage(m.key.remoteJid, { text: "❌ TikTok download failed. The API might be down." }, { quoted: m });
         }
     }
 };
