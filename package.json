@@ -27,6 +27,7 @@
     "megajs": "^1.1.4",
     "node-cron": "^3.0.3",
     "pino": "^8.21.0"
+    "wa-sticker-formatte": "^4.4.4",
   }
 }
 
