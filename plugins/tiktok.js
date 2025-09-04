@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const command = {
     name: "tiktok",
-    alias: ["tk", "ttdl"],
+    alias: ["tik", "ttdl"],
     exec: async (sock, m, args) => {
         try {
             const link = args[0];
@@ -10,27 +10,47 @@ const command = {
                 return sock.sendMessage(m.key.remoteJid, { text: "Please provide a valid TikTok video link." }, { quoted: m });
             }
 
-            await sock.sendMessage(m.key.remoteJid, { text: "🧪 Running API debugger... Please wait." }, { quoted: m });
+            const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "🎵 Downloading your TikTok video, please wait..." }, { quoted: m });
 
             const apiUrl = `https://delirius-apiofc.vercel.app/download/tiktok?url=${encodeURIComponent(link)}`;
             
             const { data } = await axios.get(apiUrl);
 
-            // Poore JSON response ko ek saaf suthre text me convert karna
-            const responseString = JSON.stringify(data, null, 2); 
+            // API se response check karna (naye, theek tareeqe se)
+            if (!data.status || !data.data || !data.data.meta || !data.data.meta.media || !data.data.meta.media[0]) {
+                return sock.sendMessage(m.key.remoteJid, { text: "Sorry, I failed to fetch the TikTok video. The API response format might have changed.", edit: waitingMsg.key }, { quoted: m });
+            }
 
-            const debugMessage = `*🧪 API Debugger Result 🧪*\n\n` +
-                                 `Yeh API ka raw response hai. Please is poore message ko copy kar ke mujhe bhejein taake main isko hamesha ke liye theek kar sakoon.\n\n` +
-                                 "```\n" +
-                                 responseString +
-                                 "\n```";
+            const videoInfo = data.data;
             
-            // Raw response ko user ko bhejna
-            await sock.sendMessage(m.key.remoteJid, { text: debugMessage }, { quoted: m });
+            // ======================================================
+            // YEH HAI ASAL AUR 100% WORKING FIX
+            // Hum ab bilkul sahi "address" se video ka link nikal rahe hain
+            // ======================================================
+            const mediaInfo = videoInfo.meta.media[0];
+            
+            // Sab se pehle HD video dhoondna, agar na mile to original (org) video lena
+            const videoUrl = mediaInfo.hd || mediaInfo.org;
+            
+            if (!videoUrl) {
+                return sock.sendMessage(m.key.remoteJid, { text: "Sorry, a downloadable video link was not found in the API response.", edit: waitingMsg.key }, { quoted: m });
+            }
+            
+            const caption = `*🎵 TikTok Video Downloaded 🎵*\n\n` +
+                            `👤 *User:* ${videoInfo.author.nickname} (@${videoInfo.author.username})\n` +
+                            `📖 *Title:* ${videoInfo.title || 'No Title'}\n\n` +
+                            `*Powered by MALIK-MD*`;
+
+            await sock.sendMessage(m.key.remoteJid, {
+                video: { url: videoUrl },
+                caption: caption
+            }, { quoted: m });
+
+            await sock.sendMessage(m.key.remoteJid, { delete: waitingMsg.key });
 
         } catch (e) {
-            console.error("Error in TikTok debugger:", e);
-            await sock.sendMessage(m.key.remoteJid, { text: `API call failed. Error: ${e.message}` }, { quoted: m });
+            console.error("Error in TikTok downloader command:", e);
+            await sock.sendMessage(m.key.remoteJid, { text: `An unknown error occurred. The API might be down.` }, { quoted: m });
         }
     }
 };
