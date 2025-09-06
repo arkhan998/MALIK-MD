@@ -1,4 +1,5 @@
 const axios = require('axios');
+const config = require('../config.js');
 
 const command = {
     name: "shayari",
@@ -8,7 +9,6 @@ const command = {
             await sock.sendMessage(m.key.remoteJid, { react: { text: '✍️', key: m.key } });
 
             const apiUrl = `https://api.maher-zubair.tech/ai/shayari`;
-            
             const { data } = await axios.get(apiUrl);
 
             if (data.status !== 200 || !data.result) {
@@ -16,18 +16,15 @@ const command = {
             }
 
             const shayari = data.result;
-
-            const message = `*✍️ Here's some Urdu Shayari for you ✍️*\n\n` +
-                            `_${shayari}_\n\n` +
-                            `*Powered by MALIK-MD*`;
-            
+            const message = `*✍️ Here's some Urdu Shayari ✍️*\n\n_${shayari}_\n\n*Powered by MALIK-MD*`;
             await sock.sendMessage(m.key.remoteJid, { text: message }, { quoted: m });
 
         } catch (error) {
-            console.error("Error in shayari command:", error);
-            await sock.sendMessage(m.key.remoteJid, { text: "Sorry, the shayari service is currently unavailable." }, { quoted: m });
+            console.error("Error in shayari command:", error.message);
+            await sock.sendMessage(m.key.remoteJid, { text: `Sorry, the shayari service seems to be unavailable. Error: ${error.message}` }, { quoted: m });
         }
     }
 };
 
 module.exports = command;
+
