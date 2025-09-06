@@ -26,6 +26,7 @@
     "form-data": "^4.0.0",
     "megajs": "^1.1.4",
     "node-cron": "^3.0.3",
+    "moment-timezone": "^0.5.45"
     "pino": "^8.21.0"
     "wa-sticker-formatte": "^4.4.4",
   }
