@@ -51,8 +51,7 @@ async function downloadSession() {
 async function connectToWhatsApp() {
     const sessionDownloaded = await downloadSession();
     if (!sessionDownloaded) {
-        console.log(chalk.red("Exiting due to session download failure."));
-        process.exit(1);
+        console.log(chalk.yellow("⚠️ No saved session — scan the QR code below to pair WhatsApp."));
     }
 
     const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
