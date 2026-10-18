@@ -15,7 +15,7 @@ const command = {
 
             const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "🎨 Creating your sticker..." }, { quoted: m });
 
-            const media = await sock.downloadMediaMessage(m.message.extendedTextMessage.contextInfo.quotedMessage);
+            const media = await sock.downloadMediaMessage({ key: m.key, message: m.message.extendedTextMessage.contextInfo.quotedMessage });
             
             const sticker = new Sticker(media, {
                 pack: packname,

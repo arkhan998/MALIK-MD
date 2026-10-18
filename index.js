@@ -6,6 +6,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
+const qrcode = require("qrcode-terminal");
 const { File } = require('megajs');
 const cron = require('node-cron');
 
@@ -61,7 +62,6 @@ async function connectToWhatsApp() {
     const sock = makeWASocket({
         version,
         auth: state,
-        printQRInTerminal: true,
         logger: pino({ level: "silent" }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
@@ -87,7 +87,12 @@ async function connectToWhatsApp() {
     }
 
     sock.ev.on("connection.update", (update) => {
-        const { connection, lastDisconnect } = update;
+        const { connection, lastDisconnect, qr } = update;
+        // Baileys v7: printQRInTerminal is deprecated — handle QR manually
+        if (qr) {
+            console.log(chalk.cyan("📱 Scan this QR code with WhatsApp to link the bot:"));
+            qrcode.generate(qr, { small: true });
+        }
         if (connection === "close") {
             const statusCode = new Boom(lastDisconnect?.error)?.output?.statusCode;
             // ======================================================

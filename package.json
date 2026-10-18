@@ -18,17 +18,17 @@
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "@vitalets/google-translate-api": "^9.2.0",
-    "@whiskeysockets/baileys": "^6.7.19",
+    "@whiskeysockets/baileys": "^7.0.0-rc14",
     "axios": "^1.7.2",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.5",
     "express": "^4.1.9",
     "form-data": "^4.0.0",
     "megajs": "^1.1.4",
+    "moment-timezone": "^0.5.45",
     "node-cron": "^3.0.3",
-    "moment-timezone": "^0.5.45"
-    "pino": "^8.21.0"
-    "wa-sticker-formatte": "^4.4.4",
+    "pino": "^8.21.0",
+    "qrcode-terminal": "^0.12.0",
+    "wa-sticker-formatter": "^4.4.4"
   }
 }
-

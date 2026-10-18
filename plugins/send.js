@@ -12,7 +12,7 @@ const command = {
             }
 
             // Media download karna
-            const mediaBuffer = await sock.downloadMediaMessage(quotedMessage);
+            const mediaBuffer = await sock.downloadMediaMessage({ key: m.key, message: quotedMessage });
             let messageContent = {};
 
             // Media ki qisam check karna

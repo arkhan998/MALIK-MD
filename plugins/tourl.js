@@ -15,7 +15,7 @@ const command = {
 
             const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "📥 Uploading your file, please wait..." }, { quoted: m });
 
-            const mediaBuffer = await sock.downloadMediaMessage(quotedMessage);
+            const mediaBuffer = await sock.downloadMediaMessage({ key: m.key, message: quotedMessage });
 
             // File ko upload karne ke liye FormData tayyar karna
             const form = new FormData();

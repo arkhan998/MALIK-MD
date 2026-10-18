@@ -22,7 +22,7 @@ module.exports = {
             await sock.sendMessage(m.key.remoteJid, { text: "🖼️ *Analyzing the image with AI Vision...*\n\nThis might take a moment." }, { quoted: m });
 
             // Download the image buffer from the quoted message
-            const imageBuffer = await downloadMediaMessage(quotedMessage, 'buffer', {});
+            const imageBuffer = await downloadMediaMessage({ key: m.key, message: quotedMessage }, 'buffer', {});
             const mimeType = quotedMessage.imageMessage.mimetype; // Get the actual mime type
 
             const base64Image = imageBuffer.toString('base64');
