@@ -1,0 +1,13 @@
+{
+  "name": "MALIK-MD",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "postCreateCommand": "npm install",
+  "portsAttributes": {
+    "3000": { "label": "MALIK-MD web", "onAutoForward": "notify" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint"]
+    }
+  }
+}
