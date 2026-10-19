@@ -7,7 +7,9 @@ const command = {
     alias: ["menu-v2"],
     exec: async (sock, m, args) => {
         try {
-            const imagePath = path.join(__dirname, '..', 'src', 'malikmd.jpeg');
+            // Menu card image: src/menu-card.jpg (nayi branded) -> fallback src/malikmd.jpeg
+            const cardPath = path.join(__dirname, '..', 'src', 'menu-card.jpg');
+            const imagePath = fs.existsSync(cardPath) ? cardPath : path.join(__dirname, '..', 'src', 'malikmd.jpeg');
             const imageBuffer = fs.readFileSync(imagePath);
 
             const isOwner = config.OWNER_NUMBER && m.key.remoteJid.startsWith(config.OWNER_NUMBER);
@@ -15,32 +17,34 @@ const command = {
             // ======================================================
             // MAIN MENU KA TEXT
             // ======================================================
-            const menuCaption = `╭━━━〔 *MALIK-MD* 〕━━━┈⊷
+            const menuCaption = `╭━━━〔 🤖 *MALIK-MD* 〕━━━┈⊷
 ┃★╭──────────────
-┃★│ 👑 Owner : *${config.OWNER_NAME}*
+┃★│ ✨ _The most powerful WhatsApp_
+┃★│ _bot in town!_
+┃★│
+┃★│ 👑 *Owner:* ${config.OWNER_NAME}
+┃★│ ⚡ *Prefix:* ${config.prefix}
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷
-📋 *Choose a category to explore:*
-> _Reply with the matching number to open the menu_
+📋 *Choose a category:*
+> _Reply with the matching number_
 
- ➦✧ -〘 *BOT MENU* 〙 -  ✧━┈⊷
-┃✧ ➦♦⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆✧━┈⊷
-┃✧│  ❶  *AI Menu* 🤖
-┃✧│  ❷  *Downloader Menu* 📥
-┃✧│  ❸  *Islamic Menu* 🕋
-┃✧│  ❹  *Tools Menu* 🛠️
-┃✧│  ❺  *Main Menu* 🏠`;
+╭━━━〔 📂 *Categories* 〕━━━┈⊷
+┃★│ ❶  *AI Menu* 🤖
+┃★│ ❷  *Downloader* 📥
+┃★│ ❸  *Islamic* 🕋
+┃★│ ❹  *Tools* 🛠️
+┃★│ ❺  *Fun* 🎭`;
 
             // Agar user owner hai to Owner Menu ka option dikhana
             let finalMenuCaption = menuCaption;
             if (isOwner) {
-                finalMenuCaption += `\n┃✧│  ❻  *Owner Menu* 👑`;
+                finalMenuCaption += `\n┃★│ ❻  *Owner Menu* 👑`;
             }
 
             finalMenuCaption += `
-┃✧ ➥ ⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆✧━┈⊷
- ➥⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆⋆✧━┈⊷
-> *Powered by 🦋⃟ᴠͥɪͣᴘͫ✮⃝🇲ᗩしᏆᏦ 🇸αнαв𝄟⃝*`;
+╰━━━━━━━━━━━━━━━┈⊷
+> ✨ _Powered by ${config.OWNER_NAME}_`;
 
             // ======================================================
             // HAR CATEGORY KE ANDAR KE COMMANDS
