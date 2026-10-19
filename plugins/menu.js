@@ -109,11 +109,17 @@ const command = {
 ┃★│ • .demote @user
 ┃★│ • .antilink on|off
 ┃★│ • .welcome on|off
+┃★│ • .automod on|off
+┃★│ • .stats
 ┃★╰──────────────
 ┃★╭──────────────
 ┃★│ 🧰 *Utilities*
 ┃★│ • .vv (reply to view-once)
 ┃★│ • .tts [lang] [text]
+┃★│ • .namaz [city]
+┃★│ • .screenshot <url>
+┃★│ • .poll "Q" "opt1" "opt2"
+┃★│ • .assistant on|off (owner, DM only)
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷`
                 },
