@@ -6,7 +6,7 @@ module.exports = {
             // --- APNA AUDIO LINK YAHAN DAALEIN ---
             // Neeche di gayi line me 'YOUR_AUDIO_URL_HERE' ki jagah
             // apni audio file ka direct download link (.mp3, .ogg, etc.) daalein.
-            const audioUrl = "https://files.catbox.moe/8zmfz3.mp3";
+            const audioUrl = "https://files.catbox.moe/9d8sj2.mp3";
 
             // Sending the audio as a voice note
             await sock.sendMessage(
