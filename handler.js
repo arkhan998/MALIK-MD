@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const botEvents = require('./lib/events.js');
+const presence = require('./lib/presence.js');
 const config = require('./config.js');
 const cache = require('./lib/cache.js'); // Bot ki memory ko import karna
 
@@ -98,7 +99,12 @@ botEvents.on('new-message', async ({ sock, m }) => {
             if (command.ownerOnly && !isOwner) {
                 return sock.sendMessage(m.key.remoteJid, { text: "👑 This command is for my owner only." }, { quoted: m });
             }
-            await command.exec(sock, m, args);
+            await presence.showTyping(sock, m.key.remoteJid);
+            try {
+                await command.exec(sock, m, args);
+            } finally {
+                await presence.hideTyping(sock, m.key.remoteJid);
+            }
         }
 
     } catch (error) {
