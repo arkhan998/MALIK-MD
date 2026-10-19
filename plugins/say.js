@@ -40,7 +40,7 @@ function pcmToWav(pcmData, sampleRate = 24000, channels = 1, bitsPerSample = 16)
 
 module.exports = {
     name: "say",
-    alias: ["tts", "speak"],
+    alias: [],
     exec: async (sock, m, args) => {
         try {
             const textToSpeak = args.join(" ");

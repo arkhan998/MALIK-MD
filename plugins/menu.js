@@ -93,6 +93,20 @@ const command = {
 ┃★│ • .news
 ┃★│ • .news urdu
 ┃★╰──────────────
+┃★╭──────────────
+┃★│ 👥 *Group Management* (groups only)
+┃★│ • .tagall [text]
+┃★│ • .kick @user
+┃★│ • .promote @user
+┃★│ • .demote @user
+┃★│ • .antilink on|off
+┃★│ • .welcome on|off
+┃★╰──────────────
+┃★╭──────────────
+┃★│ 🧰 *Utilities*
+┃★│ • .vv (reply to view-once)
+┃★│ • .tts [lang] [text]
+┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷`
                 },
                 '5': {
@@ -115,6 +129,7 @@ const command = {
 ┃★│ • .settings
 ┃★│ • .listusers
 ┃★│ • .simdata [number]
+┃★│ • .antidelete on|off
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷`
                 }

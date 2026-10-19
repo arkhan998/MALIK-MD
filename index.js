@@ -115,10 +115,20 @@ async function connectToWhatsApp() {
     });
 
     sock.ev.on("creds.update", saveCreds);
+    sock.ev.on("group-participants.update", (u) => {
+        // group.js (welcome/goodbye) isay sunta hai
+        botEvents.emit('group-participants-update', { sock, update: u });
+    });
     sock.ev.on("messages.upsert", (mek) => {
         try {
             const m = mek.messages[0];
             if (!m.message) return;
+            // Baileys v7: delete-for-everyone revoke protocolMessage type 0 (REVOKE) ke saath aata hai
+            const proto = m.message.protocolMessage;
+            if (proto && proto.type === 0 && proto.key) {
+                botEvents.emit('message-revoked', { sock, revokedKey: proto.key });
+                return;
+            }
             botEvents.emit('new-message', { sock, m });
         } catch (err) { console.error(chalk.red("Error in messages.upsert:"), err); }
     });
