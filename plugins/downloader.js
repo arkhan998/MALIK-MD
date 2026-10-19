@@ -2,7 +2,7 @@ const axios = require('axios');
 const config = require('../config.js');
 
 const command = {
-    name: "dl",
+    name: "olddl",
     aliases: ["download", "get", "fetch"],
     exec: async (sock, m, args) => {
         try {
