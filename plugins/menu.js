@@ -127,14 +127,24 @@ const command = {
                 },
                 '5': {
                     title: "🏠 *Main Menu* 🏠",
-                    content: `╭━━━〔 *Main Menu* 〕━━━┈⊷
+                    content: `╭━━━〔 🤖 *MALIK-MD* 〕━━━┈⊷
 ┃★╭──────────────
-┃★│ ℹ️ *Bot Info*
-┃★│ • .ping
-┃★│ • .alive
-┃★│ • .owner
+┃★│ ✨ _Welcome to the most powerful_
+┃★│    _WhatsApp bot in town!_
+┃★│
+┃★│ 👑 *Owner:* ${config.OWNER_NAME}
+┃★│ ⚡ *Prefix:* ${config.prefix}
 ┃★╰──────────────
-╰━━━━━━━━━━━━━━━┈⊷`
+╰━━━━━━━━━━━━━━━┈⊷
+╭━━━〔 📋 *Commands* 〕━━━┈⊷
+┃★│ ❶ AI Menu 🤖
+┃★│ ❷ Downloaders 📥
+┃★│ ❸ Islamic ☪️
+┃★│ ❹ Tools 🧰
+┃★│ ❺ Fun 🎭
+┃★│ ❻ Owner 👑
+╰━━━━━━━━━━━━━━━┈⊷
+> _Reply with a number (1-6)_ 👇`
                 },
                 '6': {
                     title: "👑 *Owner Menu* 👑",

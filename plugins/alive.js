@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-// YEH HAI FIX: import ko require se badal diya hai
 const config = require('../config.js');
 
 const command = {
@@ -9,19 +8,41 @@ const command = {
     exec: async (sock, m, args) => {
         try {
             const uptime = process.uptime();
-            const uptimeString = new Date(uptime * 1000).toISOString().substr(11, 8);
+            const hrs = String(Math.floor(uptime / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((uptime % 3600) / 60)).padStart(2, '0');
+            const secs = String(Math.floor(uptime % 60)).padStart(2, '0');
 
-            // Yahan config.OWNER_NAME bilkul theek kaam karega
-            const aliveText = `*Hey, I am MALIK-MD, and I am online!* 🚀\n\n- *Version:* 1.0.1\n- *Uptime:* ${uptimeString}\n- *Developer:* ${config.OWNER_NAME}`;
+            let pluginCount = 0;
+            try {
+                pluginCount = fs.readdirSync(__dirname).filter(f => f.endsWith('.js')).length;
+            } catch (e) { pluginCount = '59+'; }
+
+            let version = '1.0.3';
+            try {
+                version = require('../package.json').version || version;
+            } catch (e) {}
+
+            const aliveText =
+`╭━━━〔 🤖 *MALIK-MD* 〕━━━┈⊷
+┃★╭──────────────
+┃★│ ✅ *Status:* Online & Ready
+┃★│ ⚡ *Version:* ${version}
+┃★│ ⏱️ *Uptime:* ${hrs}:${mins}:${secs}
+┃★│ 🔌 *Plugins:* ${pluginCount}
+┃★│ 🌐 *Mode:* ${config.MODE || 'public'}
+┃★│ 👑 *Owner:* ${config.OWNER_NAME}
+┃★╰──────────────
+╰━━━━━━━━━━━━━━━┈⊷
+> ✨ _"Type .menu to explore the magic!"_ ✨`;
 
             const imagePath = path.join(__dirname, '..', 'src', 'malikmd.jpeg');
-            const imageBuffer = fs.readFileSync(imagePath);
-
-            const message = {
-                image: imageBuffer,
-                caption: aliveText,
-                footer: `Powered by ${config.OWNER_NAME}`,
-            };
+            let message;
+            try {
+                const imageBuffer = fs.readFileSync(imagePath);
+                message = { image: imageBuffer, caption: aliveText, footer: `Powered by ${config.OWNER_NAME} 👑` };
+            } catch (e) {
+                message = { text: aliveText };
+            }
 
             await sock.sendMessage(m.key.remoteJid, message);
 
@@ -33,4 +54,3 @@ const command = {
 };
 
 module.exports = command;
-
