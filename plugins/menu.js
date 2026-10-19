@@ -120,6 +120,7 @@ const command = {
 ┃★│ • .screenshot <url>
 ┃★│ • .poll "Q" "opt1" "opt2"
 ┃★│ • .assistant on|off (owner, DM only)
+┃★│ • .autoreact on|random|❤️|off
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷`
                 },
