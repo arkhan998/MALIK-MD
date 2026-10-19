@@ -31,7 +31,10 @@ const config = {
       reject_call: process.env.REJECT_CALL === 'true',
       auto_status_seen: process.env.AUTO_STATUS_SEEN === 'true',
       auto_read: process.env.AUTO_READ === 'true',
-  }
+  },
+  // Community links (tappable in chat)
+  GROUP_LINK: process.env.GROUP_LINK || "https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc",
+  CHANNEL_LINK: process.env.CHANNEL_LINK || "https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P",
 };
 
 module.exports = config;

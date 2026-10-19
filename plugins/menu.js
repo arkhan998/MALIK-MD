@@ -128,6 +128,7 @@ const command = {
 ┃★│ • .assistant on|off (owner, DM only)
 ┃★│ • .autoreact on|random|❤️|off
 ┃★│ • .autotyping on|off
+┃★│ • .join (group + channel links)
 ┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷`
                 },
