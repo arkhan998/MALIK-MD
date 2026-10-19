@@ -18,10 +18,13 @@ async function loadCommands() {
     for (const file of commandFiles) {
         try {
             const commandModule = require(path.join(pluginsPath, file));
-            if (commandModule && commandModule.name) {
-                commands.set(commandModule.name, commandModule);
-                if (commandModule.alias && Array.isArray(commandModule.alias)) {
-                    commandModule.alias.forEach(alias => commands.set(alias, commandModule));
+            const mods = Array.isArray(commandModule) ? commandModule : [commandModule];
+            for (const mod of mods) {
+                if (mod && mod.name) {
+                    commands.set(mod.name, mod);
+                    if (mod.alias && Array.isArray(mod.alias)) {
+                        mod.alias.forEach(alias => commands.set(alias, mod));
+                    }
                 }
             }
         } catch (error) {

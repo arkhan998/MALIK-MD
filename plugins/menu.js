@@ -55,6 +55,9 @@ const command = {
                     content: `╭━━━〔 *AI Menu* 〕━━━┈⊷
 ┃★╭──────────────
 ┃★│ 🖼️ *Image AI*
+┃★│ • .px [ratio] [prompt] (PixelSter, free!)
+┃★│ • .pximg [prompt] (reply to photo)
+┃★│ • .pxvid [ratio] [prompt] (reply to photo)
 ┃★│ • .fluxai [prompt]
 ┃★│ • .sdiffusion [prompt]
 ┃★│ • .stability [prompt]
