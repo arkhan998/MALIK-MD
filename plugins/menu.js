@@ -61,6 +61,14 @@ const command = {
 ┃★│ • .ai [question]
 ┃★│ • .describe (reply to image)
 ┃★╰──────────────
+┃★╭──────────────
+┃★│ ✨ *Novel AI*
+┃★│ • .summarize (group chat summary)
+┃★│ • .roast @user (funny roast)
+┃★│ • .dream [khwab] (tabeer)
+┃★│ • .tone [style] [text]
+┃★│ • .transcribe (reply to voice note)
+┃★╰──────────────
 ╰━━━━━━━━━━━━━━━┈⊷`
                 },
                 '2': {
