@@ -76,6 +76,8 @@ const command = {
                     content: `╭━━━〔 *Download Menu* 〕━━━┈⊷
 ┃★╭──────────────
 ┃★│ 🌐 *Social Media & Music*
+┃★│ • .dl [link] (all platforms!)
+┃★│ • .dl [link] mp3 (audio)
 ┃★│ • .tiktok [link]
 ┃★│ • .song [song name]
 ┃★│ • .pin [pinterest link]

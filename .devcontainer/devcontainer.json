@@ -1,7 +1,7 @@
 {
   "name": "MALIK-MD",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-  "postCreateCommand": "npm install",
+  "postCreateCommand": "npm install && pip install -U yt-dlp",
   "portsAttributes": {
     "3000": { "label": "MALIK-MD web", "onAutoForward": "notify" }
   },
