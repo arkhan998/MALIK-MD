@@ -9,7 +9,7 @@ const config = {
   OWNER_NAME: process.env.OWNER_NAME || "MALIK SAHAB",
   OWNER_NUMBER: process.env.OWNER_NUMBER || "923322964709",
   SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS ? process.env.SUBSCRIBED_USERS.split(',') : ["923311308116","923124533358"],
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "AIzaSyA_AuZSidaQ7J0-JgYpqikOX_Sz-PuN51k",
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
 // 1. Reminder feature ko ON ya OFF karne ke liye switch
 
     ENABLE_REMINDERS: process.env.ENABLE_REMINDERS === 'true' || true,
