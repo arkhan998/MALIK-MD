@@ -23,7 +23,7 @@ module.exports = {
 
             const prompt = `The user dreamt this (written in Roman Urdu/Urdu): "${khwab}". Give a short Islamic + psychological dream interpretation in Roman Urdu with exactly this structure:\n1) Mumkina matlab (possible meaning)\n2) Ek amli mashwara (one practical advice)\nMax 120 words total. Warm, respectful tone. Do not claim certainty — use words like "ho sakta hai".`;
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.GEMINI_API_KEY}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${config.GEMINI_API_KEY}`;
             const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
 
             if (response.data.candidates && response.data.candidates.length > 0) {

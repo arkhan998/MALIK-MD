@@ -26,7 +26,7 @@ module.exports = {
 
             const prompt = `Rewrite this message in a ${style} tone, in Roman Urdu. Keep the original meaning, max 80 words. Output the rewritten message only, no explanation: "${text}"`;
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.GEMINI_API_KEY}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${config.GEMINI_API_KEY}`;
             const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
 
             if (response.data.candidates && response.data.candidates.length > 0) {

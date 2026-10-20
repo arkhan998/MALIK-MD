@@ -18,7 +18,7 @@ const command = {
             const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "🧠 Thinking..." }, { quoted: m });
 
             // YEH HAI FIX: Google ka naya model istemal kar rahe hain
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.GEMINI_API_KEY}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${config.GEMINI_API_KEY}`;
             
             const requestData = {
                 contents: [{

@@ -33,7 +33,7 @@ botEvents.on('new-message', async ({ sock, m }) => {
 
         const waiting = await sock.sendMessage(jid, { text: '💭 ...' }, { quoted: m });
         const res = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.GEMINI_API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${config.GEMINI_API_KEY}`,
             { contents: [{ parts: [{ text: prompt }] }] },
             { timeout: 20000 }
         );

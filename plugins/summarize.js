@@ -54,7 +54,7 @@ module.exports = {
 
             const prompt = `Summarize this WhatsApp group chat in Roman Urdu. Use bullet points with these sections: main topics, any decisions made, funny moments. Keep it under 150 words.\n\nChat:\n${chatText}`;
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.GEMINI_API_KEY}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${config.GEMINI_API_KEY}`;
             const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
 
             if (response.data.candidates && response.data.candidates.length > 0) {

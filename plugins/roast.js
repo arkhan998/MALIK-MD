@@ -41,7 +41,7 @@ module.exports = {
             const displayName = target.split('@')[0];
             const prompt = `Write a funny, playful, light-hearted roast in Roman Urdu (max 60 words) for a friend (username/number: ${displayName}). Tease about common funny things like late replies, too many selfies, PUBG addiction, or typing "hahaha" on everything. Keep it friendly and funny — no vulgarity, no real insults, nothing hurtful.`;
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.GEMINI_API_KEY}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${config.GEMINI_API_KEY}`;
             const response = await axios.post(apiUrl, { contents: [{ parts: [{ text: prompt }] }] });
 
             if (response.data.candidates && response.data.candidates.length > 0) {

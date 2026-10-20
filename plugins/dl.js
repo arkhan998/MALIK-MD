@@ -20,6 +20,22 @@ function cleanUrl(input) {
     } catch (e) { return null; }
 }
 
+// --print filepath kuch sites (TikTok) par "NA" deta hai —
+// is liye pehle ID, phir fixed naam, phir file dhoondna.
+async function getVideoId(url) {
+    try {
+        const out = await runYtDlp(['--no-playlist', '--no-download', '--print', '%(id)s', url], 45000);
+        const id = out.split('\n')[0].trim().replace(/[^\w-]/g, '');
+        return id || String(Date.now());
+    } catch (e) { return String(Date.now()); }
+}
+
+function findDownloaded(prefix) {
+    return fs.readdirSync(os.tmpdir())
+        .filter(f => f.startsWith(prefix + '.') && !f.endsWith('.part') && !f.endsWith('.ytdl'))
+        .map(f => path.join(os.tmpdir(), f))[0];
+}
+
 module.exports = {
     name: 'dl',
     aliases: ['download', 'ydl'],
@@ -44,22 +60,24 @@ module.exports = {
             }
 
             const waitMsg = await sock.sendMessage(jid, { text: '⏳ _Downloading..._' }, { quoted: m });
-            const outTpl = path.join(os.tmpdir(), `malikdl_%(id)s.%(ext)s`);
 
             try {
                 let file, title = '';
+                const vid = await getVideoId(url);
+                const prefix = `malikdl_${vid}`;
+                const outTpl = path.join(os.tmpdir(), `${prefix}.%(ext)s`);
                 if (wantAudio) {
-                    const out = await runYtDlp(['--no-playlist', '-x', '--audio-format', 'mp3', '--audio-quality', '0',
-                        '-o', outTpl, '--print', 'filepath', url]);
-                    const lines = out.split('\n');
-                    file = lines[lines.length - 1];
+                    await runYtDlp(['--no-playlist', '-x', '--audio-format', 'mp3', '--audio-quality', '0',
+                        '-o', outTpl, url]);
+                    file = findDownloaded(prefix);
+                    if (!file) throw new Error('Downloaded file nahi mili.');
                     await sock.sendMessage(jid, { audio: fs.readFileSync(file), mimetype: 'audio/mpeg', fileName: path.basename(file) }, { quoted: m });
                 } else {
-                    const out = await runYtDlp(['--no-playlist',
+                    await runYtDlp(['--no-playlist',
                         '-f', 'best[ext=mp4][filesize<60M]/best[filesize<60M]/best[ext=mp4]/best',
-                        '-o', outTpl, '--print', 'filepath', url]);
-                    const lines = out.split('\n');
-                    file = lines[lines.length - 1];
+                        '-o', outTpl, url]);
+                    file = findDownloaded(prefix);
+                    if (!file) throw new Error('Downloaded file nahi mili.');
                     const stat = fs.statSync(file);
                     if (stat.size > 64 * 1024 * 1024) {
                         fs.unlinkSync(file);

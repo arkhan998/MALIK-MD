@@ -33,7 +33,7 @@ module.exports = {
             const base64Audio = audioBuffer.toString('base64');
             const mimeType = (quotedMessage.audioMessage.mimetype || 'audio/ogg').split(';')[0];
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.GEMINI_API_KEY}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${config.GEMINI_API_KEY}`;
             const payload = {
                 contents: [{
                     parts: [
