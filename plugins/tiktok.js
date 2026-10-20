@@ -14,7 +14,7 @@ const os = require('os');
 
 function runYtDlp(args, timeoutMs = 180000) {
     return new Promise((resolve, reject) => {
-        execFile('yt-dlp', args, { timeout: timeoutMs, maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
+        execFile('yt-dlp', ['--js-runtimes', 'node', ...args], { timeout: timeoutMs, maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
             if (err) return reject(new Error((stderr || err.message).slice(0, 300)));
             resolve(stdout.trim());
         });
