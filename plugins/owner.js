@@ -1,16 +1,22 @@
 const config = require('../config.js');
+const { getIntroAudio } = require('../lib/intro.js');
 
 const command = {
     name: "owner",
     alias: ["creator", "malik"],
     exec: async (sock, m, args) => {
         try {
-            // 1. Sab se pehle voice note bhejna
-            await sock.sendMessage(m.key.remoteJid, {
-                audio: { url: "https://pomf2.lain.la/f/u69jfnxd.ogg" },
-                mimetype: 'audio/ogg; codecs=opus',
-                ptt: true // Is se voice note ban kar jayega
-            }, { quoted: m });
+            // 1. Sab se pehle voice note bhejna (repo ke andar se — fail ho bhi
+            //    jaye to baqi info/card phir bhi jayein ge)
+            try {
+                await sock.sendMessage(m.key.remoteJid, {
+                    audio: getIntroAudio(),
+                    mimetype: 'audio/ogg; codecs=opus',
+                    ptt: true // Is se voice note ban kar jayega
+                }, { quoted: m });
+            } catch (audioErr) {
+                console.error("Intro voice note failed (continuing):", audioErr);
+            }
 
 
             // 2. Bot ki information tayyar karna

@@ -5,6 +5,7 @@ const botEvents = require('./lib/events.js');
 const presence = require('./lib/presence.js');
 const config = require('./config.js');
 const cache = require('./lib/cache.js'); // Bot ki memory ko import karna
+const { getIntroAudio } = require('./lib/intro.js');
 
 const commands = new Map();
 
@@ -78,7 +79,7 @@ botEvents.on('new-message', async ({ sock, m }) => {
         if (body.toLowerCase() === "malik") {
             try {
                 await sock.sendMessage(m.key.remoteJid, {
-                    audio: { url: "https://pomf2.lain.la/f/u69jfnxd.ogg" },
+                    audio: getIntroAudio(),
                     mimetype: 'audio/ogg; codecs=opus',
                     ptt: true
                 }, { quoted: m });
