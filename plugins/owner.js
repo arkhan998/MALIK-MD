@@ -7,8 +7,8 @@ const command = {
         try {
             // 1. Sab se pehle voice note bhejna
             await sock.sendMessage(m.key.remoteJid, {
-                audio: { url: "https://files.catbox.moe/9d8sj2.mp3" },
-                mimetype: 'audio/mpeg',
+                audio: { url: "https://pomf2.lain.la/f/u69jfnxd.ogg" },
+                mimetype: 'audio/ogg; codecs=opus',
                 ptt: true // Is se voice note ban kar jayega
             }, { quoted: m });
 

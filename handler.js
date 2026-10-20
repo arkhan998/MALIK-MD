@@ -78,8 +78,8 @@ botEvents.on('new-message', async ({ sock, m }) => {
         if (body.toLowerCase() === "malik") {
             try {
                 await sock.sendMessage(m.key.remoteJid, {
-                    audio: { url: "https://files.catbox.moe/9d8sj2.mp3" },
-                    mimetype: 'audio/mpeg',
+                    audio: { url: "https://pomf2.lain.la/f/u69jfnxd.ogg" },
+                    mimetype: 'audio/ogg; codecs=opus',
                     ptt: true
                 }, { quoted: m });
             } catch (err) {
