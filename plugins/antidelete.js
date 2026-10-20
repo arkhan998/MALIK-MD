@@ -89,6 +89,10 @@ botEvents.on('message-revoked', async ({ sock, revokedKey }) => {
     }
 });
 
+
+// .settings ke liye toggle registry
+try { require('../lib/toggles.js').register('antidelete', '🗑️ Anti-Delete', 'global', () => antiDeleteOn); } catch (e) {}
+
 module.exports = {
     name: 'antidelete',
     aliases: ['ad'],

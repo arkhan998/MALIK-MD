@@ -46,6 +46,10 @@ botEvents.on('new-message', async ({ sock, m }) => {
 });
 
 // ---------- command ----------
+
+// .settings ke liye toggle registry
+try { require('../lib/toggles.js').register('assistant', '🤖 AI Assistant', 'chat', (jid) => assistantChats.has(jid)); } catch (e) {}
+
 module.exports = {
     name: 'assistant',
     aliases: ['aichat'],

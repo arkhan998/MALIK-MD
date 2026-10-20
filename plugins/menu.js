@@ -79,11 +79,19 @@ const command = {
                 box("OWNER", ["owner_menu", "ai_menu", "general_menu", "settings", "listusers", "simdata", "send", "send_audio", "send_video", "testreminder", "stock", "stockin", "stockout", "stocklist", "lowstock"]),
             ];
 
+            const channelBox = `╭━━〔 *📢 FOLLOW OUR CHANNEL* 〕━━┈⊷
+┃❖╭─────────────·๏
+┃❖┃ Updates, tips aur naye features
+┃❖┃ sab se pehle yahan milen ge!
+┃❖┃ 👉 ${config.CHANNEL_LINK}
+┃❖└───────────┈⊷
+╰──────────────┈⊷`;
+
             const foot = `\n> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ MALIK-MD*`;
 
             await sock.sendMessage(m.key.remoteJid, {
                 image: imageBuffer,
-                caption: head + "\n" + sections.join("\n") + foot
+                caption: head + "\n" + channelBox + "\n" + sections.join("\n") + foot
             }, { quoted: m });
 
         } catch (e) {

@@ -1,67 +1,59 @@
+const fs = require('fs');
+const path = require('path');
 const config = require('../config.js');
+const toggles = require('../lib/toggles.js');
+const presence = require('../lib/presence.js');
+
+// ======================================================
+// SETTINGS — saare on/off toggles ki current halat
+// .settings (owner only)
+// Har toggle apni halat lib/toggles.js mein register
+// karta hai; ye command bas sab ko ikatha dikhati hai.
+// ======================================================
 
 module.exports = {
     name: "settings",
     alias: ["botsettings"],
     ownerOnly: true,
     exec: async (sock, m, args) => {
+        const jid = m.key.remoteJid;
+        const isGroup = jid.endsWith('@g.us');
+        const onOff = (v) => v ? 'ON 🟢' : 'OFF 🔴';
+        const get = (r) => { try { return !!r.getFn(jid); } catch (e) { return false; } };
+
+        const globals = toggles.all().filter(r => r.scope === 'global');
+        const chats = toggles.all().filter(r => r.scope === 'chat');
+        const groups = toggles.all().filter(r => r.scope === 'group');
+
+        // Morning Card ki halat (data/morning.json -> { enabled: [jid,...] })
+        let morningOn = false;
         try {
-            // Button click ko handle karne ke liye
-            if (args[0] === 'toggle' && args[1]) {
-                const feature = args[1];
-                if (feature in config.TRIGGERS) {
-                    // Setting ko on se off ya off se on karna
-                    config.TRIGGERS[feature] = !config.TRIGGERS[feature];
-                    const status = config.TRIGGERS[feature] ? 'ON ✅' : 'OFF ❌';
-                    const featureName = feature.replace(/_/g, ' ').toUpperCase();
-                    await sock.sendMessage(m.key.remoteJid, { text: `*${featureName}* has been turned *${status}*.` }, { quoted: m });
-                } else {
-                    await sock.sendMessage(m.key.remoteJid, { text: `Unknown feature: ${feature}` }, { quoted: m });
-                }
-                return; 
-            }
+            const store = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'morning.json'), 'utf8'));
+            morningOn = Array.isArray(store.enabled) && store.enabled.includes(jid);
+        } catch (e) { /* file nahi hai = off */ }
 
-            // Settings ka menu dikhane ke liye
-            const { welcome, reject_call, auto_status_seen, auto_read } = config.TRIGGERS;
+        let txt = `╭━━〔 *⚙️ MALIK-MD SETTINGS* 〕━━┈⊷\n`;
+        txt += `┃ 🤖 Mode: *${config.MODE || 'public'}*  •  Prefix: *${config.prefix || '.'}*\n`;
+        txt += `╰━━━━━━━━━━━━━━━━━━┈⊷\n`;
 
-            const menuText = `*⚙️ Bot Settings Panel*\n\nControl bot features from here. These settings will reset when the bot restarts. For permanent changes, update your Heroku Config Vars.`;
+        txt += `\n*🌍 GLOBAL*\n`;
+        txt += `⌨️ Auto-Typing: *${onOff(presence.state.typing)}*\n`;
+        txt += `🎙️ Auto-Recording: *${onOff(presence.state.recording)}*\n`;
+        for (const r of globals) txt += `${r.label}: *${onOff(get(r))}*\n`;
 
-            const buttons = [
-                {
-                    buttonId: `${config.prefix}settings toggle welcome`,
-                    buttonText: { displayText: `Welcome Message: ${welcome ? 'ON ✅' : 'OFF ❌'}` },
-                    type: 1
-                },
-                {
-                    buttonId: `${config.prefix}settings toggle reject_call`,
-                    buttonText: { displayText: `Reject Call: ${reject_call ? 'ON ✅' : 'OFF ❌'}` },
-                    type: 1
-                },
-                {
-                    buttonId: `${config.prefix}settings toggle auto_status_seen`,
-                    buttonText: { displayText: `Auto Status Seen: ${auto_status_seen ? 'ON ✅' : 'OFF ❌'}` },
-                    type: 1
-                },
-                {
-                    buttonId: `${config.prefix}settings toggle auto_read`,
-                    buttonText: { displayText: `Auto Read Msgs: ${auto_read ? 'ON ✅' : 'OFF ❌'}` },
-                    type: 1
-                },
-            ];
+        txt += `\n*💬 IS CHAT KE LIYE*\n`;
+        for (const r of chats) txt += `${r.label}: *${onOff(get(r))}*\n`;
+        txt += `🌅 Morning Card: *${onOff(morningOn)}*\n`;
 
-            const buttonMessage = {
-                text: menuText,
-                footer: `Powered by ${config.OWNER_NAME}`,
-                buttons: buttons,
-                headerType: 1
-            };
-
-            await sock.sendMessage(m.key.remoteJid, buttonMessage);
-
-        } catch (error) {
-            console.error("Error in settings command:", error);
-            await sock.sendMessage(m.key.remoteJid, { text: "An error occurred in settings." });
+        if (isGroup) {
+            txt += `\n*👥 IS GROUP KE LIYE*\n`;
+            for (const r of groups) txt += `${r.label}: *${onOff(get(r))}*\n`;
+        } else {
+            txt += `\nℹ️ Group wale toggles (Anti-Link, Welcome, AutoMod) dekhne ke liye kisi group mein \`.settings\` likhein.`;
         }
+
+        txt += `\n\n_Badlne ke liye har command apne naam ke sath on/off leta hai — jaise_ \`.antilink on\`_,_ \`.autoreact off\`_,_ \`.morning on\``;
+
+        await sock.sendMessage(jid, { text: txt }, { quoted: m });
     }
 };
-

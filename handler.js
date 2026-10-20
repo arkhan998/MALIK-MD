@@ -99,8 +99,9 @@ botEvents.on('new-message', async ({ sock, m }) => {
         const command = commands.get(commandName);
 
         if (command) {
-            const sender = m.key.remoteJid.endsWith('@g.us') ? (m.key.participant || m.participant) : m.key.remoteJid;
-            const isOwner = config.OWNER_NUMBER && sender.startsWith(config.OWNER_NUMBER);
+            const sender = m.key.remoteJid.endsWith('@g.us') ? (m.key.participant || m.participant || m.key.remoteJid) : m.key.remoteJid;
+            // Bot ke apne number se aya message (fromMe) = owner hi hai
+            const isOwner = m.key.fromMe || (config.OWNER_NUMBER && String(sender).startsWith(config.OWNER_NUMBER));
 
             if (command.ownerOnly && !isOwner) {
                 return sock.sendMessage(m.key.remoteJid, { text: "👑 This command is for my owner only." }, { quoted: m });

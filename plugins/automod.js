@@ -78,6 +78,10 @@ botEvents.on('new-message', async ({ sock, m }) => {
 });
 
 // ---------- command ----------
+
+// .settings ke liye toggle registry
+try { require('../lib/toggles.js').register('automod', '🛡️ AutoMod (AI Guard)', 'group', (jid) => !!automodGroups.get(jid)); } catch (e) {}
+
 module.exports = {
     name: 'automod',
     aliases: ['mod'],

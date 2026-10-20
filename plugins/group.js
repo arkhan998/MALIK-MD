@@ -214,6 +214,11 @@ const handlers = {
 
 handlers.tag = handlers.tagall; // .tag bhi .tagall jaisa kaam kare
 
+
+// .settings ke liye toggle registry
+try { require('../lib/toggles.js').register('antilink', '🔗 Anti-Link', 'group', (jid) => !!antilinkGroups.get(jid)); } catch (e) {}
+try { require('../lib/toggles.js').register('welcome', '👋 Welcome / Goodbye', 'group', (jid) => !!welcomeGroups.get(jid)); } catch (e) {}
+
 module.exports = {
     name: 'tagall',
     aliases: ['tag', 'kick', 'promote', 'demote', 'antilink', 'welcome'],

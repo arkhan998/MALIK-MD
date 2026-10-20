@@ -60,6 +60,10 @@ botEvents.on('new-message', async ({ sock, m }) => {
     }
 });
 
+
+// .settings ke liye toggle registry
+try { require('../lib/toggles.js').register('autoreact', '🎭 Auto-React', 'chat', (jid) => state.has(jid)); } catch (e) {}
+
 module.exports = {
     name: 'autoreact',
     aliases: ['ar'],
