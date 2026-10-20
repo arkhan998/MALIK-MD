@@ -117,6 +117,9 @@
 
 `.stock <item>` · `.stockin <item> <qty>` · `.stockout <item> <qty>` · `.stocklist` · `.lowstock` · `.stockadd` — manage a real inventory in Google Sheets straight from WhatsApp, with a full in/out history log.
 
+**Business Toolkit**
+`.invoice Customer | Item, qty, rate` · `.catalog` / `.catalogadd` · `.expense` / `.expense today` · `.order` / `.orders` / `.orderdone` · `.calc` · `.tax` · `.discount` — invoices, a customer price list, a daily expense/income ledger, an order book and quick business math, all inside WhatsApp.
+
 </details>
 
 <details>

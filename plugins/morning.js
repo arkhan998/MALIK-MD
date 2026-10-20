@@ -181,6 +181,7 @@ async function sendCard(sock, jid) {
 // ---------- Scheduler ----------
 let liveSock = null;
 botEvents.on('new-message', ({ sock }) => { if (sock) liveSock = sock; });
+botEvents.on('sock-ready', ({ sock }) => { if (sock) liveSock = sock; });
 
 let cronStarted = false;
 function startCron() {

@@ -56,24 +56,17 @@ const command = {
                           `│💻 Platform: *${os.platform()}*\n` +
                           `│📊 RAM: *${freeMemory} / ${totalMemory}*\n` +
                           `╰─────────────━┈⊷\n\n` +
-                          `I am your personal AI assistant. Please select a category from the buttons below to explore my features.`;
+                          `I am your personal AI assistant. Commands dekhne ke liye:\n\n` +
+                          `📋 *.menu* — Full Menu\n` +
+                          `🤖 *.ai_menu* — AI Commands\n` +
+                          `🛠️ *.general_menu* — Tools\n` +
+                          `👑 *.owner_menu* — Owner Panel`;
 
-            // Clickable Buttons
-            const buttons = [
-                { buttonId: `${config.prefix}ai_menu`, buttonText: { displayText: '🤖 AI Menu' }, type: 1 },
-                { buttonId: `${config.prefix}downloader_menu`, buttonText: { displayText: '📥 Downloader Menu' }, type: 1 },
-                { buttonId: `${config.prefix}more_menu`, buttonText: { displayText: '📚 More Categories' }, type: 1 }
-            ];
-
-            const buttonMessage = {
+            await sock.sendMessage(m.key.remoteJid, {
                 image: imageBuffer,
                 caption: caption,
-                footer: `© Powered by MALIK-MD`,
-                buttons: buttons,
-                headerType: 4
-            };
-
-            await sock.sendMessage(m.key.remoteJid, buttonMessage, { quoted: m });
+                footer: `© Powered by MALIK-MD`
+            }, { quoted: m });
 
         } catch (e) {
             console.error('Help Command Error:', e);

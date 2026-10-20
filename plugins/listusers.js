@@ -2,7 +2,7 @@ const config = require('../config.js');
 
 module.exports = {
     name: "listusers",
-    alias: ["subs", "list"],
+    alias: ["subs"],
     ownerOnly: true, // This makes the command owner-only
     exec: async (sock, m) => {
         try {

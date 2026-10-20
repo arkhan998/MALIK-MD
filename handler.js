@@ -17,13 +17,17 @@ async function loadCommands() {
     const commandFiles = fs.readdirSync(pluginsPath).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
         try {
-            const commandModule = require(path.join(pluginsPath, file));
+            const rawModule = require(path.join(pluginsPath, file));
+            const commandModule = rawModule && rawModule.default ? rawModule.default : rawModule;
             const mods = Array.isArray(commandModule) ? commandModule : [commandModule];
             for (const mod of mods) {
                 if (mod && mod.name) {
                     commands.set(mod.name, mod);
                     if (mod.alias && Array.isArray(mod.alias)) {
                         mod.alias.forEach(alias => commands.set(alias, mod));
+                    }
+                    if (mod.aliases && Array.isArray(mod.aliases)) {
+                        mod.aliases.forEach(alias => commands.set(alias, mod));
                     }
                 }
             }

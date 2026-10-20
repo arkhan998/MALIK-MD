@@ -48,6 +48,9 @@ async function downloadSession() {
     return true;
 }
 
+let activeSock = null;
+let reminderCronStarted = false;
+
 async function connectToWhatsApp() {
     const sessionDownloaded = await downloadSession();
     if (!sessionDownloaded) {
@@ -64,8 +67,10 @@ async function connectToWhatsApp() {
         logger: pino({ level: "silent" }),
         browser: ["MALIK-MD", "Safari", "1.0.0"],
     });
+    activeSock = sock;
 
-    if (config.ENABLE_REMINDERS && config.REMINDER_USERS.length > 0) {
+    if (!reminderCronStarted && config.ENABLE_REMINDERS && config.REMINDER_USERS.length > 0) {
+        reminderCronStarted = true;
         console.log(chalk.magenta('⏰ Daily reminder service is enabled.'));
         cron.schedule('0 5 * * *', async () => {
             console.log(chalk.bgGreen.white('🌅 Running daily reminder job...'));
@@ -73,7 +78,7 @@ async function connectToWhatsApp() {
             for (const user of config.REMINDER_USERS) {
                 const jid = user.trim() + "@s.whatsapp.net";
                 try {
-                    await sock.sendMessage(jid, { text: message });
+                    if (activeSock) await activeSock.sendMessage(jid, { text: message });
                     console.log(chalk.green(`✅ Reminder sent to ${user}`));
                 } catch (err) {
                     console.error(chalk.red(`❌ Failed to send reminder to ${user}:`), err);
@@ -111,6 +116,7 @@ async function connectToWhatsApp() {
             }
         } else if (connection === "open") {
             console.log(chalk.green("✅ Bot is online."));
+            botEvents.emit('sock-ready', { sock });
         }
     });
 

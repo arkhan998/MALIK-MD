@@ -76,6 +76,7 @@ const command = {
                 box("ISLAMIC", ["quran", "quranmenu", "namaz"]),
                 box("GROUP", ["tagall", "kick", "promote", "demote", "antilink", "welcome", "automod", "stats", "poll"]),
                 box("TOOLS", ["weather", "news", "viewonce", "tts", "screenshot", "sticker", "logo", "tourl", "shorturl", "autoreact", "autotyping", "autorecording", "antidelete", "say", "shayari", "animate", "morning"]),
+                box("BUSINESS", ["invoice", "catalog", "catalogadd", "expense", "order", "orders", "calc", "tax", "discount"]),
                 box("OWNER", ["owner_menu", "ai_menu", "general_menu", "settings", "listusers", "simdata", "send", "send_audio", "send_video", "testreminder", "stock", "stockin", "stockout", "stocklist", "lowstock"]),
             ];
 
