@@ -5,7 +5,6 @@ const botEvents = require('./lib/events.js');
 const presence = require('./lib/presence.js');
 const config = require('./config.js');
 const cache = require('./lib/cache.js'); // Bot ki memory ko import karna
-const { getIntroAudio } = require('./lib/intro.js');
 
 const commands = new Map();
 
@@ -75,16 +74,19 @@ botEvents.on('new-message', async ({ sock, m }) => {
         }
         // ======================================================
 
-        // Purana "Malik" auto-reply
+        // "Malik" baghair dot ke bhi — pura .malik command chalega
+        // (voice note + owner info + contact card)
         if (body.toLowerCase() === "malik") {
-            try {
-                await sock.sendMessage(m.key.remoteJid, {
-                    audio: getIntroAudio(),
-                    mimetype: 'audio/ogg; codecs=opus',
-                    ptt: true
-                }, { quoted: m });
-            } catch (err) {
-                console.error("Error sending 'Malik' auto-reply:", err);
+            const malikCmd = commands.get("malik") || commands.get("owner");
+            if (malikCmd) {
+                await presence.showTyping(sock, m.key.remoteJid);
+                try {
+                    await malikCmd.exec(sock, m, []);
+                } catch (err) {
+                    console.error("Error in 'Malik' auto-reply:", err);
+                } finally {
+                    await presence.hideTyping(sock, m.key.remoteJid);
+                }
             }
             return;
         }
