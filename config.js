@@ -34,7 +34,7 @@ const config = {
   },
   // Community links (tappable in chat)
   GROUP_LINK: process.env.GROUP_LINK || "https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc",
-  CHANNEL_LINK: process.env.CHANNEL_LINK || "https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P",
+  CHANNEL_LINK: process.env.CHANNEL_LINK || "https://whatsapp.com/channel/0029VbAf3sx3bbUy90Z9K703",
   // MALIK ERP — Google Sheet stock bridge (Apps Script Web App)
   STOCK_API_URL: process.env.STOCK_API_URL || "",
   STOCK_API_TOKEN: process.env.STOCK_API_TOKEN || "malik-stock-2026",

@@ -21,7 +21,7 @@
 
 <p align="center">
   <a href="https://chat.whatsapp.com/LO2TNmBHfiy8WIiwR6ACnc"><img src="https://img.shields.io/badge/WhatsApp_Public_Group-4CAF50?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp Group"></a>
-  <a href="https://whatsapp.com/channel/0029VaN8WMOHFxP0SLAKKu0P"><img src="https://img.shields.io/badge/Join_WhatsApp_Channel-128C7E?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp Channel"></a>
+  <a href="https://whatsapp.com/channel/0029VbAf3sx3bbUy90Z9K703"><img src="https://img.shields.io/badge/Join_WhatsApp_Channel-128C7E?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp Channel"></a>
 </p>
 
 <p align="center"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Farkhan998%2FMALIK-MD&count_bg=%23FF7A1A&title_bg=%230B0B12&title=visitors&edge_flat=false" alt="MALIK-MD Visitor Count" /></p>
