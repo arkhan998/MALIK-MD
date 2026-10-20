@@ -112,6 +112,14 @@
 </details>
 
 <details>
+<summary><b>📦 Business — Google Sheet Stock (Owner)</b></summary>
+<br>
+
+`.stock <item>` · `.stockin <item> <qty>` · `.stockout <item> <qty>` · `.stocklist` · `.lowstock` · `.stockadd` — manage a real inventory in Google Sheets straight from WhatsApp, with a full in/out history log.
+
+</details>
+
+<details>
 <summary><b>🕋 Islamic</b></summary>
 <br>
 
