@@ -1,1 +1,5 @@
-Node.js ke packages ka foldernode_modules/WhatsApp session files ka foldersessions/Secret keys wali file.env
+node_modules/
+sessions/
+data/
+.env
+*.log
