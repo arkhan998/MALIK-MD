@@ -75,8 +75,8 @@ const command = {
                 box("DOWNLOAD", ["dl", "tiktok", "tiktoksearch", "song", "pindl", "instagram"]),
                 box("ISLAMIC", ["quran", "quranmenu", "namaz"]),
                 box("GROUP", ["tagall", "kick", "promote", "demote", "antilink", "welcome", "automod", "stats", "poll"]),
-                box("TOOLS", ["weather", "news", "viewonce", "tts", "screenshot", "sticker", "logo", "tourl", "shorturl", "autoreact", "autotyping", "autorecording", "antidelete", "say", "shayari", "animate", "morning"]),
-                box("BUSINESS", ["invoice", "catalog", "catalogadd", "expense", "order", "orders", "calc", "tax", "discount"]),
+                box("TOOLS", ["weather", "news", "viewonce", "tts", "screenshot", "sticker", "logo", "tourl", "shorturl", "qr", "autoreact", "autotyping", "autorecording", "antidelete", "say", "shayari", "animate", "morning"]),
+                box("BUSINESS", ["invoice", "catalog", "catalogadd", "expense", "order", "orders", "calc", "tax", "discount", "due", "cust", "quote", "profit", "att", "report", "note", "payinfo", "target"]),
                 box("OWNER", ["owner_menu", "ai_menu", "general_menu", "settings", "listusers", "simdata", "send", "send_audio", "send_video", "testreminder", "stock", "stockin", "stockout", "stocklist", "lowstock"]),
             ];
 
