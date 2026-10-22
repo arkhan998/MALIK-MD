@@ -4,9 +4,21 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-function runYtDlp(args, timeoutMs = 120000) {
+function ytCookiesArgs() {
+    try {
+        const candidates = [
+            process.env.YT_COOKIES_FILE,
+            path.join(__dirname, '..', 'data', 'yt-cookies.txt'),
+            path.join(__dirname, '..', 'yt-cookies.txt')
+        ].filter(Boolean);
+        for (const p of candidates) { if (fs.existsSync(p)) return ['--cookies', p]; }
+    } catch (e) {}
+    return [];
+}
+
+function runYtDlpOnce(args, timeoutMs) {
     return new Promise((resolve, reject) => {
-        execFile('yt-dlp', ['--js-runtimes', 'node:' + process.execPath, ...args], { timeout: timeoutMs, maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
+        execFile('yt-dlp', ['--js-runtimes', 'node:' + process.execPath, ...ytCookiesArgs(), ...args], { timeout: timeoutMs, maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
             if (err) {
                 const rawErr = String(stderr || err.message || '');
                 const errLines = rawErr.split('\n').filter(l => /ERROR/i.test(l));
@@ -17,6 +29,15 @@ function runYtDlp(args, timeoutMs = 120000) {
     });
 }
 
+function runYtDlp(args, timeoutMs = 120000) {
+    return runYtDlpOnce(args, timeoutMs).catch(err => {
+        // YouTube ka IP bot-check aye to ek dafa android_vr client se dobara koshish
+        if (/Sign in to confirm/i.test(err.message) && !args.includes('--extractor-args')) {
+            return runYtDlpOnce([...args, '--extractor-args', 'youtube:player_client=android_vr'], timeoutMs);
+        }
+        throw err;
+    });
+}
 function cleanUrl(input) {
     try {
         const u = new URL(input);

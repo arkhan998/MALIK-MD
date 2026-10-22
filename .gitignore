@@ -3,3 +3,4 @@ sessions/
 data/
 .env
 *.log
+yt-cookies.txt
