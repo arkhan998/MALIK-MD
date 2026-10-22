@@ -107,7 +107,7 @@ const SECTIONS = [
     ["ISLAMIC", ["quran", "quranmenu", "namaz"]],
     ["GROUP", ["tagall", "kick", "promote", "demote", "antilink", "welcome", "automod", "stats", "poll"]],
     ["TOOLS", ["weather", "news", "viewonce", "tts", "screenshot", "sticker", "logo", "tourl", "shorturl", "qr", "autoreact", "autotyping", "autorecording", "antidelete", "say", "shayari", "animate", "morning"]],
-    ["BUSINESS", ["invoice", "catalog", "catalogadd", "expense", "order", "orders", "calc", "tax", "discount", "due", "cust", "quote", "profit", "att", "report", "note", "payinfo", "target"]],
+    ["BUSINESS", ["jadoo", "jadooadd", "invoice", "catalog", "catalogadd", "expense", "order", "orders", "calc", "tax", "discount", "due", "cust", "quote", "profit", "att", "report", "note", "payinfo", "target"]],
     ["OWNER", ["owner_menu", "ai_menu", "general_menu", "settings", "listusers", "simdata", "send", "send_audio", "send_video", "testreminder", "stock", "stockin", "stockout", "stocklist", "lowstock"]]
 ];
 
