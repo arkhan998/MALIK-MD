@@ -15,7 +15,9 @@ module.exports = {
         const city = args.join(' ').trim() || 'Lahore';
         try {
             const waiting = await sock.sendMessage(jid, { text: `🕌 ${city} ke namaz timings la raha hun...` }, { quoted: m });
-            const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=Pakistan&method=2`;
+            // Sunni Hanafi: method=1 (University of Islamic Sciences, Karachi)
+            // + school=1 (Hanafi Asr). Purana method=2 (ISNA America, Shafi Asr) tha — ghalat.
+            const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=Pakistan&method=1&school=1`;
             const res = await axios.get(url, { timeout: 20000 });
             const d = res.data?.data;
             if (!d?.timings) throw new Error('no timings');
@@ -29,11 +31,13 @@ module.exports = {
                 + `┃📅 ${date}${hijri ? `  •  🌙 ${hijri}` : ''}\n`
                 + `┃★╭──────────────\n`
                 + `┃★│ 🌅 Fajr — *${clean(t.Fajr)}*\n`
+                + `┃★│ 🌄 Sunrise — *${clean(t.Sunrise)}*\n`
                 + `┃★│ ☀️ Dhuhr — *${clean(t.Dhuhr)}*\n`
-                + `┃★│ 🌤️ Asr — *${clean(t.Asr)}*\n`
+                + `┃★│ 🌤️ Asr (Hanafi) — *${clean(t.Asr)}*\n`
                 + `┃★│ 🌇 Maghrib — *${clean(t.Maghrib)}*\n`
                 + `┃★│ 🌃 Isha — *${clean(t.Isha)}*\n`
                 + `┃★╰──────────────\n`
+                + `┃ 🕌 Sunni Hanafi • Karachi method\n`
                 + `╰━━━━━━━━━━━━━━━┈⊷`;
 
             await sock.sendMessage(jid, { text: out, edit: waiting.key }, { quoted: m });
