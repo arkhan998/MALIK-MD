@@ -3,10 +3,10 @@ require("dotenv").config();
 
 // Default settings
 const config = {
-  SESSION_ID: process.env.SESSION_ID || "MALIK-MD~7Ec2zYhS#gKxxxGNOpYD9m7Hn9p05btR3milwMT4mBq4z-184GJk",
+  SESSION_ID: process.env.SESSION_ID || "",
   prefix: process.env.PREFIX || ".",
   MODE: process.env.MODE || "public",
-  OWNER_NAME: process.env.OWNER_NAME || "MALIK SAHAB",
+  OWNER_NAME: process.env.OWNER_NAME || "MALIK SAHIB",
   OWNER_NUMBER: process.env.OWNER_NUMBER || "923322964709",
   SUBSCRIBED_USERS: process.env.SUBSCRIBED_USERS ? process.env.SUBSCRIBED_USERS.split(',') : ["923311308116","923124533358"],
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
