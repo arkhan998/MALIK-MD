@@ -6,8 +6,12 @@ const os = require('os');
 
 function runYtDlp(args, timeoutMs = 120000) {
     return new Promise((resolve, reject) => {
-        execFile('yt-dlp', ['--js-runtimes', 'node', ...args], { timeout: timeoutMs, maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
-            if (err) return reject(new Error((stderr || err.message).slice(0, 300)));
+        execFile('yt-dlp', ['--js-runtimes', 'node:' + process.execPath, ...args], { timeout: timeoutMs, maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
+            if (err) {
+                const rawErr = String(stderr || err.message || '');
+                const errLines = rawErr.split('\n').filter(l => /ERROR/i.test(l));
+                return reject(new Error((errLines.length ? errLines.join(' ') : rawErr.slice(-300)).slice(0, 300)));
+            }
             resolve(stdout.trim());
         });
     });
