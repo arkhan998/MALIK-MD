@@ -6,7 +6,7 @@
 
 <div align="center">
   <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Impact&size=48&pause=1000&color=FF7A1A&center=true&vCenter=true&width=910&height=100&lines=THIS+IS+MALIK-MD;MULTI+DEVICE+WHATSAPP+BOT;60%2B+POWERFUL+PLUGINS;CREATED+BY+MALIK+SAHAB" alt="Typing SVG" />
+    <img src="https://readme-typing-svg.demolab.com?font=Impact&size=48&pause=1000&color=FF7A1A&center=true&vCenter=true&width=910&height=100&lines=THIS+IS+MALIK-MD;MULTI+DEVICE+WHATSAPP+BOT;460%2B+COMMANDS+%E2%80%A2+99+PLUGINS;CREATED+BY+MALIK+SAHAB" alt="Typing SVG" />
   </a>
 </div>
 
@@ -14,7 +14,7 @@
   <a href="https://github.com/arkhan998"><img title="Author" src="https://img.shields.io/badge/Author-MALIK%20SAHAB-FF7A1A.svg?style=for-the-badge&logo=github"></a>
   <a href="https://github.com/arkhan998/MALIK-MD/fork"><img title="Forks" src="https://img.shields.io/github/forks/arkhan998/MALIK-MD?color=FF2E88&style=for-the-badge"></a>
   <a href="https://github.com/arkhan998/MALIK-MD/stargazers"><img title="Stars" src="https://img.shields.io/github/stars/arkhan998/MALIK-MD?color=FFD700&style=for-the-badge"></a>
-  <a href="https://github.com/arkhan998/MALIK-MD"><img title="Version" src="https://img.shields.io/badge/Version-1.0.3-00B4FF?style=for-the-badge"></a>
+  <a href="https://github.com/arkhan998/MALIK-MD"><img title="Version" src="https://img.shields.io/badge/Version-2.0.0-00B4FF?style=for-the-badge"></a>
 </p>
 
 <h3 align="center">✨ The most powerful Multi-Device WhatsApp bot — AI, downloaders, group tools & more, all in one place ✨</h3>
@@ -53,7 +53,7 @@
 
 ---
 
-## ✨ Features — 60+ Plugins
+## ✨ Features — 460+ Commands · 99 Plugins
 
 <details open>
 <summary><b>🤖 AI — Powered by Gemini</b></summary>
@@ -117,6 +117,8 @@
 
 `.stock <item>` · `.stockin <item> <qty>` · `.stockout <item> <qty>` · `.stocklist` · `.lowstock` · `.stockadd` — manage a real inventory in Google Sheets straight from WhatsApp, with a full in/out history log.
 
+**🪄 Jadoo Auto-Reply** — `.jadoo on` · `.jadooadd KEY | reply` — keyword auto-DM with AI intent matching: customers write a keyword, the bot serves your file/reply automatically. Built for WhatsApp Business Automation.
+
 **Business Toolkit**
 `.invoice Customer | Item, qty, rate` · `.catalog` / `.catalogadd` · `.expense` / `.expense today` · `.order` / `.orders` / `.orderdone` · `.calc` · `.tax` · `.discount` — invoices, a customer price list, a daily expense/income ledger, an order book and quick business math, all inside WhatsApp.
 
@@ -126,7 +128,26 @@
 <summary><b>🕋 Islamic</b></summary>
 <br>
 
-`.quran <surah>` · `.namaz <city>` · `.dream <khwab>`
+`.quran <surah>` · `.namaz <city>` *(Sunni Hanafi timings)* · `.dream <khwab>` · `.dua` · `.hadith` · `.asma` *(99 names)* · `.tasbeeh` · `.ayatkursi` · `.kalma` *(all 6)* · `.darood` · `.ayah` *(daily ayat)* · `.wazifa` · `.qibla` · `.hijri` · `.ramadan` · `.jummah`
+
+</details>
+
+
+<details open>
+<summary><b>🌍 Public Pack — 100 New Commands (Oct 2026)</b></summary>
+<br>
+
+**🎮 Interactive Games** — `.guess` *(number guessing)* · `.hangman` · `.quiz` *(5-question GK game)* · `.slots` · `.roulette`
+**🛡️ Group Guard** — `.badwords on` *(auto-delete + warn)* · `.antiflood on` *(spam protection)* · `.guard`
+**👥 Group Public Tools** — `.rules` / `.setrules` · `.setwelcome` / `.setbye` · `.reportadmin` · `.btnmenu` *(button menu — tap a category, get its commands; number fallback included)* · `.votemenu`
+**🤖 AI Tools** — `.translate` · `.grammar` · `.kahani` *(story)* · `.nazm` *(poetry)* · `.samjhao` *(explain simply)* · `.ideagen` *(business ideas)* · `.fixcode` · `.cvtip` · `.interviewq` · `.tldr`
+**🖼️ Makers** — `.textimg` · `.qcard` *(quote cards)* · `.meme` · `.color`
+**✍️ Text Tools (22)** — `.upside` · `.vapor` · `.bubble` · `.morse` / `.unmorse` · `.binary` / `.hexcode` · `.emojify` · `.zalgo` · `.charcount` · `.mock` · `.jumble`
+**🧰 Daily Utilities** — `.currency` *(live rates)* · `.sipcalc` · `.tipcalc` · `.task` *(personal task list)* · `.stopwatch` · `.pomodoro` · `.horoscope` · `.zodiac` · `.pwcheck` · `.worldtime` · `.roman` · `.numwords`
+**🎲 Fun Meters** — `.ship` · `.aura` · `.iq` · `.sachmeter` · `.crush` · `.dostmeter` · `.luck` · `.mood` · `.latifa` · `.ghazal` · `.flirt` · `.emojistory`
+**📶 SIM Info** — `.simdata <number>` — offline operator detection (Jazz / Zong / Telenor / Ufone / SCOM). No personal data, prefix-based only.
+**💬 Owner Inbox** — `.feedback` · `.suggestion` — users reach the owner directly from chat.
+**👁️ Auto Status Seen** — `.autostatus on|off` — statuses seen automatically.
 
 </details>
 

@@ -101,7 +101,7 @@ ${cmds.map(c => `│ ⚡ ${fb(c)}`).join("\n")}
 let lastStyle = -1;
 
 const SECTIONS = [
-    ["MAIN", ["menu", "votemenu", "ping", "alive", "owner", "malik", "help", "join"]],
+    ["MAIN", ["menu", "btnmenu", "votemenu", "ping", "alive", "owner", "malik", "help", "join"]],
     ["AI", ["ai", "px", "pximg", "pxvid", "fluxai", "stablediffusion", "stabilityai", "gimage", "describe", "imagine", "summarize", "roast", "dream", "tone", "transcribe", "assistant"]],
     ["DOWNLOAD", ["dl", "tiktok", "tiktoksearch", "song", "pindl", "instagram"]],
     ["ISLAMIC", ["quran", "quranmenu", "namaz", "dua", "hadith", "asma", "tasbeeh", "nextprayer", "hijri"]],
