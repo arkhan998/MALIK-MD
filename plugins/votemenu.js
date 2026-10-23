@@ -21,9 +21,9 @@ try { decryptPollVote = require('@whiskeysockets/baileys').decryptPollVote; } ca
 const CATEGORIES = [
     { label: '🤖 AI Menu', cmds: ['ai', 'px', 'pximg', 'pxvid', 'fluxai', 'stablediffusion', 'stabilityai', 'gimage', 'describe', 'imagine', 'summarize', 'roast', 'dream', 'tone', 'transcribe', 'assistant'] },
     { label: '⬇️ Download Menu', cmds: ['dl', 'tiktok', 'tiktoksearch', 'song', 'pindl', 'instagram'] },
-    { label: '🕌 Islamic Menu', cmds: ['quran', 'quranmenu', 'namaz', 'dua', 'hadith', 'asma', 'tasbeeh'] },
+    { label: '🕌 Islamic Menu', cmds: ['quran', 'quranmenu', 'namaz', 'dua', 'hadith', 'asma', 'tasbeeh', 'nextprayer', 'hijri'] },
     { label: '👥 Group Menu', cmds: ['tagall', 'kick', 'promote', 'demote', 'antilink', 'welcome', 'automod', 'stats', 'poll', 'warn', 'admins', 'hidetag', 'mute', 'unmute', 'grouplink', 'groupinfo', 'members'] },
-    { label: '🧰 Tools Menu', cmds: ['weather', 'news', 'viewonce', 'tts', 'screenshot', 'sticker', 'logo', 'tourl', 'shorturl', 'qr', 'autoreact', 'autotyping', 'autorecording', 'antidelete', 'say', 'shayari', 'animate', 'morning', 'age', 'bmi', 'emi', 'zakat', 'split', 'unit', 'fuel', 'countdown', 'remindme', 'password', 'fancy', 'base64', 'define', 'wiki', 'country', 'motivate', 'joke', 'choose', 'dice', 'team', 'toimg', 'tomp3', 'compress'] },
+    { label: '🧰 Tools Menu', cmds: ['weather', 'news', 'viewonce', 'tts', 'screenshot', 'sticker', 'logo', 'tourl', 'shorturl', 'qr', 'autoreact', 'autotyping', 'autorecording', 'antidelete', 'say', 'shayari', 'animate', 'morning', 'age', 'bmi', 'emi', 'zakat', 'split', 'unit', 'fuel', 'countdown', 'remindme', 'password', 'fancy', 'base64', 'define', 'wiki', 'country', 'motivate', 'joke', 'choose', 'dice', 'team', 'toimg', 'tomp3', 'compress', 'autostatus', 'birthday'] },
     { label: '💼 Business Menu', cmds: ['jadoo', 'jadooadd', 'invoice', 'catalog', 'catalogadd', 'expense', 'order', 'orders', 'calc', 'tax', 'discount', 'due', 'cust', 'quote', 'profit', 'att', 'report', 'note', 'payinfo', 'target', 'payreminder', 'shopcard', 'offer', 'followup', 'warranty'] },
     { label: '👑 Owner Menu', cmds: ['owner_menu', 'ai_menu', 'general_menu', 'settings', 'listusers', 'simdata', 'send', 'send_audio', 'send_video', 'testreminder', 'stock', 'stockin', 'stockout', 'stocklist', 'lowstock'] }
 ];

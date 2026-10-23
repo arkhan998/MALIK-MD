@@ -104,9 +104,9 @@ const SECTIONS = [
     ["MAIN", ["menu", "votemenu", "ping", "alive", "owner", "malik", "help", "join"]],
     ["AI", ["ai", "px", "pximg", "pxvid", "fluxai", "stablediffusion", "stabilityai", "gimage", "describe", "imagine", "summarize", "roast", "dream", "tone", "transcribe", "assistant"]],
     ["DOWNLOAD", ["dl", "tiktok", "tiktoksearch", "song", "pindl", "instagram"]],
-    ["ISLAMIC", ["quran", "quranmenu", "namaz", "dua", "hadith", "asma", "tasbeeh"]],
+    ["ISLAMIC", ["quran", "quranmenu", "namaz", "dua", "hadith", "asma", "tasbeeh", "nextprayer", "hijri"]],
     ["GROUP", ["tagall", "kick", "promote", "demote", "antilink", "welcome", "automod", "stats", "poll", "warn", "admins", "hidetag", "mute", "unmute", "grouplink", "groupinfo", "members"]],
-    ["TOOLS", ["weather", "news", "viewonce", "tts", "screenshot", "sticker", "logo", "tourl", "shorturl", "qr", "autoreact", "autotyping", "autorecording", "antidelete", "say", "shayari", "animate", "morning", "age", "bmi", "emi", "zakat", "split", "unit", "fuel", "countdown", "remindme", "password", "fancy", "base64", "define", "wiki", "country", "motivate", "joke", "choose", "dice", "team", "toimg", "tomp3", "compress"]],
+    ["TOOLS", ["weather", "news", "viewonce", "tts", "screenshot", "sticker", "logo", "tourl", "shorturl", "qr", "autoreact", "autotyping", "autorecording", "antidelete", "say", "shayari", "animate", "morning", "age", "bmi", "emi", "zakat", "split", "unit", "fuel", "countdown", "remindme", "password", "fancy", "base64", "define", "wiki", "country", "motivate", "joke", "choose", "dice", "team", "toimg", "tomp3", "compress", "autostatus", "birthday"]],
     ["BUSINESS", ["jadoo", "jadooadd", "invoice", "catalog", "catalogadd", "expense", "order", "orders", "calc", "tax", "discount", "due", "cust", "quote", "profit", "att", "report", "note", "payinfo", "target", "payreminder", "shopcard", "offer", "followup", "warranty"]],
     ["OWNER", ["owner_menu", "ai_menu", "general_menu", "settings", "listusers", "simdata", "send", "send_audio", "send_video", "testreminder", "stock", "stockin", "stockout", "stocklist", "lowstock"]]
 ];
