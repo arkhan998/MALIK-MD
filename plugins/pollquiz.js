@@ -39,6 +39,29 @@ const Q_TIME_MS = 45000;
 const games = new Map();   // jid -> game
 const pollReg = new Map(); // pollMsgId -> { jid }
 
+// Vote decrypt — WhatsApp ki do pehchan (number-JID aur LID) mein se
+// jis se vote encrypt hua ho, wohi combo chalega; sab try karte hain.
+function tryDecryptVote(vote, pollId, encKey, sock, m) {
+    if (!decryptPollVote || !encKey) return null;
+    const creators = [normJid(sock?.user?.id), normJid(sock?.user?.lid)];
+    if (config.OWNER_NUMBER) creators.push(normJid(config.OWNER_NUMBER + '@s.whatsapp.net'));
+    const voters = [m.key.participant, m.key.participantPn, m.key.remoteJid, m.key.remoteJidAlt].map(normJid);
+    const creatorSet = [...new Set(creators.filter(Boolean))];
+    const voterSet = [...new Set(voters.filter(Boolean))];
+    for (const creatorJid of creatorSet) {
+        for (const voterJid of voterSet) {
+            try {
+                const dec = decryptPollVote(
+                    { encPayload: Buffer.from(vote.encPayload), encIv: Buffer.from(vote.encIv) },
+                    { pollCreatorJid: creatorJid, pollMsgId: pollId, pollEncKey: Buffer.from(encKey), voterJid }
+                );
+                if (dec && Array.isArray(dec.selectedOptions)) return dec;
+            } catch (e) { /* agla combo */ }
+        }
+    }
+    return null;
+}
+
 const digestOf = (s) => crypto.createHash('sha256').update(s).digest();
 const normJid = (j) => {
     if (!j) return '';
@@ -164,18 +187,12 @@ botEvents.on('new-message', async ({ sock, m }) => {
             if (Array.isArray(vote.selectedOptions) && vote.selectedOptions.length) {
                 optIdx = matchIdx(vote.selectedOptions);
             } else if (vote.encPayload && vote.encIv && decryptPollVote && game.encKey) {
-                const voterJid = normJid(m.key.participant || m.key.remoteJid);
-                const creatorJid = normJid(sock?.user?.id) || normJid((config.OWNER_NUMBER || '') + '@s.whatsapp.net');
-                try {
-                    const dec = decryptPollVote(
-                        { encPayload: Buffer.from(vote.encPayload), encIv: Buffer.from(vote.encIv) },
-                        { pollCreatorJid: creatorJid, pollMsgId: pollId, pollEncKey: Buffer.from(game.encKey), voterJid }
-                    );
-                    optIdx = matchIdx(dec?.selectedOptions || []);
-                } catch (e) {
-                    console.error('pollquiz decrypt failed:', e.message);
+                const dec = tryDecryptVote(vote, pollId, game.encKey, sock, m);
+                if (!dec) {
+                    console.error('pollquiz decrypt failed (all JID combos)');
                     return;
                 }
+                optIdx = matchIdx(dec.selectedOptions || []);
             } else return;
             const voterJid = normJid(m.key.participant || m.key.remoteJid);
             return handleAnswer(sock, reg.jid, game, voterJid, m.pushName, optIdx, 'poll');

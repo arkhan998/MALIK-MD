@@ -51,6 +51,31 @@ const normJid = (j) => {
     return user.split(':')[0] + '@' + (domain || 's.whatsapp.net');
 };
 
+// Vote decrypt karne ki koshish — WhatsApp ab do pehchan istemal
+// karta hai: purana number-wala JID aur naya LID. Vote jis pehchan
+// se encrypt hua ho, decrypt bhi usi se hoga — is liye saare
+// mumkin creator/voter combos bari bari try karte hain.
+function tryDecryptVote(vote, pollId, encKey, sock, m) {
+    if (!decryptPollVote || !encKey) return null;
+    const creators = [normJid(sock?.user?.id), normJid(sock?.user?.lid)];
+    if (config.OWNER_NUMBER) creators.push(normJid(config.OWNER_NUMBER + '@s.whatsapp.net'));
+    const voters = [m.key.participant, m.key.participantPn, m.key.remoteJid, m.key.remoteJidAlt].map(normJid);
+    const creatorSet = [...new Set(creators.filter(Boolean))];
+    const voterSet = [...new Set(voters.filter(Boolean))];
+    for (const creatorJid of creatorSet) {
+        for (const voterJid of voterSet) {
+            try {
+                const dec = decryptPollVote(
+                    { encPayload: Buffer.from(vote.encPayload), encIv: Buffer.from(vote.encIv) },
+                    { pollCreatorJid: creatorJid, pollMsgId: pollId, pollEncKey: Buffer.from(encKey), voterJid }
+                );
+                if (dec && Array.isArray(dec.selectedOptions)) return dec;
+            } catch (e) { /* agla combo */ }
+        }
+    }
+    return null;
+}
+
 // Vote (decrypted ya plain) se category index nikaalna
 function matchCategory(selectedOptions) {
     if (!Array.isArray(selectedOptions)) return -1;
@@ -81,19 +106,13 @@ botEvents.on('new-message', async ({ sock, m }) => {
                 // (agar kabhi Baileys khud decrypt karke bheje)
                 catIdx = matchCategory(vote.selectedOptions);
             } else if (vote.encPayload && vote.encIv && decryptPollVote && rec.encKey) {
-                // Vote encrypted hai — poll secret se decrypt karo
-                const voterJid = normJid(m.key.participant || m.key.remoteJid);
-                const creatorJid = normJid(sock?.user?.id) || normJid((config.OWNER_NUMBER || '') + '@s.whatsapp.net');
-                try {
-                    const dec = decryptPollVote(
-                        { encPayload: Buffer.from(vote.encPayload), encIv: Buffer.from(vote.encIv) },
-                        { pollCreatorJid: creatorJid, pollMsgId: pollId, pollEncKey: Buffer.from(rec.encKey), voterJid }
-                    );
-                    catIdx = matchCategory(dec?.selectedOptions || []);
-                } catch (e) {
-                    console.error('votemenu decrypt failed:', e.message);
+                // Vote encrypted hai — saare JID/LID combos se decrypt karo
+                const dec = tryDecryptVote(vote, pollId, rec.encKey, sock, m);
+                if (!dec) {
+                    console.error('votemenu decrypt failed (all JID combos)');
                     return;
                 }
+                catIdx = matchCategory(dec.selectedOptions || []);
             } else {
                 return; // na plain vote, na decryptable data
             }
