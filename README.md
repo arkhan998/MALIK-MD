@@ -139,7 +139,7 @@
 
 **🎮 Interactive Games** — `.guess` *(number guessing)* · `.hangman` · `.quiz` *(5-question GK game)* · `.slots` · `.roulette`
 **🛡️ Group Guard** — `.badwords on` *(auto-delete + warn)* · `.antiflood on` *(spam protection)* · `.guard`
-**👥 Group Public Tools** — `.rules` / `.setrules` · `.setwelcome` / `.setbye` · `.reportadmin` · `.btnmenu` *(button menu — tap a category, get its commands; number fallback included)* · `.votemenu`
+**👥 Group Public Tools** — `.rules` / `.setrules` · `.setwelcome` / `.setbye` · `.reportadmin` · `.btnmenu` *(category menu — number reply ya direct commands: `.aimenu` `.dlmenu` `.islamicmenu` `.groupmenu` `.toolsmenu` `.funmenu` `.bizmenu` `.ownermenu`)* · `.votemenu`
 **🤖 AI Tools** — `.translate` · `.grammar` · `.kahani` *(story)* · `.nazm` *(poetry)* · `.samjhao` *(explain simply)* · `.ideagen` *(business ideas)* · `.fixcode` · `.cvtip` · `.interviewq` · `.tldr`
 **🖼️ Makers** — `.textimg` · `.qcard` *(quote cards)* · `.meme` · `.color`
 **✍️ Text Tools (22)** — `.upside` · `.vapor` · `.bubble` · `.morse` / `.unmorse` · `.binary` / `.hexcode` · `.emojify` · `.zalgo` · `.charcount` · `.mock` · `.jumble`
