@@ -106,19 +106,20 @@ botEvents.on('new-message', async ({ sock, m }) => {
     } catch {}
 });
 
-module.exports = {
-    name: 'btnmenu',
-    alias: ['buttonmenu', 'bmenu', 'listmenu'],
-    exec: async (sock, m) => {
-        const jid = m.key.remoteJid;
-        sessions.set(jid, Date.now());
-        try {
-            await tryButtonMenu(sock, m);
-            // Button ke sath number wala rasta bhi bata do (har phone par button render nahi hota)
-            await send(sock, m, `☝️ Upar wale *📂 Menu Kholo* button se category chuno.\nAgar button na khule to sirf number likho:\n` + CATEGORIES.map((c, i) => `${i + 1}️⃣ ${c.label}`).join('\n'));
-        } catch (e) {
-            // Button fail — seedha numbered menu
+const catCommands = CATEGORIES.map((cat, i) => ({
+    name: ['aimenu', 'dlmenu', 'islamicmenu', 'groupmenu', 'toolsmenu', 'funmenu', 'bizmenu', 'ownermenu'][i],
+    alias: [],
+    exec: async (sock, m) => { sessions.set(m.key.remoteJid, Date.now()); return send(sock, m, submenuText(cat) + '\n\nAur categories: .btnmenu'); }
+}));
+
+module.exports = [
+    {
+        name: 'btnmenu',
+        alias: ['buttonmenu', 'bmenu', 'listmenu', 'catmenu'],
+        exec: async (sock, m) => {
+            sessions.set(m.key.remoteJid, Date.now());
             return send(sock, m, numberedText());
         }
-    }
-};
+    },
+    ...catCommands
+];
