@@ -53,7 +53,7 @@
 
 ---
 
-## ✨ Features — 460+ Commands · 99 Plugins
+## ✨ Features — 527 Commands · 100 Plugins
 
 <details open>
 <summary><b>🤖 AI — Powered by Gemini</b></summary>
@@ -84,6 +84,8 @@
 | `.dl <link> mp3` | Audio-only download |
 | `.song <name>` | Music download |
 | `.tiktok <link>` | TikTok video |
+| `.fb <link>` | Facebook video/reel — multi-source engine, auto-fallback (aliases: `.fbdl`, `.facebook`) |
+| `.twitter <link>` | Twitter / X video (aliases: `.tw`, `.xdl`, `.tweet`) |
 
 </details>
 

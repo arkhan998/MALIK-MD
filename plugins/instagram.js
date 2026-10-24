@@ -3,7 +3,7 @@ const config = require('../config.js');
 
 // Hum 2 alag alag APIs try karenge
 const INSTA_APIS = [
-    `https://api.akuari.my.id/downloader/igdl?link=`,
+    `https://rest-api.akuari.my.id/downloader/igdl?link=`,
     `https://api.maher-zubair.tech/download/instagram?url=`
 ];
 

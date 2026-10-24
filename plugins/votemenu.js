@@ -20,7 +20,7 @@ try { decryptPollVote = require('@whiskeysockets/baileys').decryptPollVote; } ca
 
 const CATEGORIES = [
     { label: '🤖 AI Menu', cmds: ['ai', 'px', 'pximg', 'pxvid', 'fluxai', 'stablediffusion', 'stabilityai', 'gimage', 'describe', 'imagine', 'summarize', 'roast', 'dream', 'tone', 'transcribe', 'assistant'] },
-    { label: '⬇️ Download Menu', cmds: ['dl', 'tiktok', 'tiktoksearch', 'song', 'pindl', 'instagram'] },
+    { label: '⬇️ Download Menu', cmds: ['dl', 'tiktok', 'tiktoksearch', 'song', 'pindl', 'instagram', 'fbdl', 'twitter'] },
     { label: '🕌 Islamic Menu', cmds: ['quran', 'quranmenu', 'namaz', 'dua', 'hadith', 'asma', 'tasbeeh', 'nextprayer', 'hijri'] },
     { label: '👥 Group Menu', cmds: ['tagall', 'kick', 'promote', 'demote', 'antilink', 'welcomecard', 'welcome', 'automod', 'stats', 'poll', 'warn', 'admins', 'hidetag', 'mute', 'unmute', 'grouplink', 'groupinfo', 'members', 'rank', 'myrank'] },
     { label: '🧰 Tools Menu', cmds: ['weather', 'news', 'viewonce', 'tts', 'screenshot', 'sticker', 'logo', 'tourl', 'shorturl', 'qr', 'pair', 'qrpair', 'autoreact', 'autotyping', 'autorecording', 'antidelete', 'say', 'shayari', 'animate', 'morning', 'age', 'bmi', 'emi', 'zakat', 'split', 'unit', 'fuel', 'countdown', 'remindme', 'password', 'fancy', 'base64', 'define', 'wiki', 'country', 'motivate', 'joke', 'choose', 'dice', 'team', 'toimg', 'tomp3', 'compress', 'autostatus', 'birthday', 'quiz', 'pollquiz', 'meme', 'attp', 'wordchain', 'steal', 'ship', '8ball', 'fortune', 'riddle', 'fact', 'cat', 'dog', 'guess', 'hangman', 'slots', 'textimg', 'translate', 'grammar', 'task', 'currency', 'horoscope', 'guard', 'rules', 'botstats'] },

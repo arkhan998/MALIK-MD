@@ -103,7 +103,7 @@ let lastStyle = -1;
 const SECTIONS = [
     ["MAIN", ["menu", "btnmenu", "votemenu", "ping", "alive", "owner", "malik", "help", "join"]],
     ["AI", ["ai", "px", "pximg", "pxvid", "fluxai", "stablediffusion", "stabilityai", "gimage", "describe", "imagine", "summarize", "roast", "dream", "tone", "transcribe", "assistant"]],
-    ["DOWNLOAD", ["dl", "tiktok", "tiktoksearch", "song", "pindl", "instagram"]],
+    ["DOWNLOAD", ["dl", "tiktok", "tiktoksearch", "song", "pindl", "instagram", "fbdl", "twitter"]],
     ["ISLAMIC", ["quran", "quranmenu", "namaz", "dua", "hadith", "asma", "tasbeeh", "nextprayer", "hijri"]],
     ["GROUP", ["tagall", "kick", "promote", "demote", "antilink", "welcome", "welcomecard", "automod", "stats", "poll", "warn", "admins", "hidetag", "mute", "rank", "myrank", "unmute", "grouplink", "groupinfo", "members"]],
     ["TOOLS", ["weather", "news", "viewonce", "tts", "screenshot", "sticker", "logo", "tourl", "shorturl", "qr", "autoreact", "autotyping", "autorecording", "antidelete", "say", "shayari", "animate", "morning", "age", "bmi", "emi", "zakat", "split", "unit", "fuel", "countdown", "remindme", "password", "fancy", "base64", "define", "wiki", "country", "motivate", "joke", "choose", "dice", "team", "toimg", "tomp3", "compress", "autostatus", "birthday", "attp", "quiz", "pollquiz", "meme", "wordchain", "steal", "ship", "8ball", "fortune", "riddle", "fact", "cat", "dog"]],

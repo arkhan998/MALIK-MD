@@ -18,7 +18,7 @@ const command = {
             const waitingMsg = await sock.sendMessage(m.key.remoteJid, { text: "📥 Downloading from Pinterest, please wait..." }, { quoted: m });
             
             // Using a new, reliable API
-            const apiUrl = `https://api.akuari.my.id/downloader/pinterest?link=${encodeURIComponent(link)}`;
+            const apiUrl = `https://rest-api.akuari.my.id/downloader/pinterest?link=${encodeURIComponent(link)}`;
             const { data } = await axios.get(apiUrl);
             
             if (!data || !data.respon) {
