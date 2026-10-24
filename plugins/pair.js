@@ -165,11 +165,11 @@ const pairCmd = {
     exec: async (sock, m, args) => {
         const jid = m.key.remoteJid;
         if (jid.endsWith('@g.us')) {
-            return send(sock, m, '🔒 Pairing sirf *DM* (private chat) mein hoti hai — group mein code sab ko dikh jayega. Bot ko DM mein .pair likho.');
+            return send(sock, jid, '🔒 Pairing sirf *DM* (private chat) mein hoti hai — group mein code sab ko dikh jayega. Bot ko DM mein .pair likho.');
         }
         const phone = String(args[0] || '').replace(/\D/g, '');
         if (!/^\d{10,15}$/.test(phone)) {
-            return send(sock, m, '📱 *Pairing Code*\n\nFormat: `.pair 923xxxxxxxxx`\nNumber country code ke sath, baghair + aur 0 ke.\n\nYa QR se pair karna ho to `.qrpair` likho.');
+            return send(sock, jid, '📱 *Pairing Code*\n\nFormat: `.pair 923xxxxxxxxx`\nNumber country code ke sath, baghair + aur 0 ke.\n\nYa QR se pair karna ho to `.qrpair` likho.');
         }
         try {
             const rec = await startSession(sock, jid, 'code', phone);
@@ -183,10 +183,10 @@ const pairCmd = {
             }
             if (!code) {
                 cleanup(rec.token, 'code failed');
-                return send(sock, m, '❌ Code nahi ban saka: ' + (lastErr?.message || 'unknown') + '\nThori dair baad dobara try karo, ya .qrpair use karo.');
+                return send(sock, jid, '❌ Code nahi ban saka: ' + (lastErr?.message || 'unknown') + '\nThori dair baad dobara try karo, ya .qrpair use karo.');
             }
             const pretty = code.length === 8 ? `${code.slice(0, 4)}-${code.slice(4)}` : code;
-            return send(sock, m,
+            return send(sock, jid,
 `🔑 *MALIK-MD PAIRING CODE*
 
 \`${pretty}\`
@@ -200,7 +200,7 @@ Steps:
 ⏰ Code 4 minute ke andar use kar lena. Pair hote hi SESSION_ID yahi aa jayega.`);
         } catch (e) {
             console.error('pair error:', e.message);
-            return send(sock, m, '❌ Pairing start nahi ho saki. Dobara try karo.');
+            return send(sock, jid, '❌ Pairing start nahi ho saki. Dobara try karo.');
         }
     }
 };
@@ -211,14 +211,14 @@ const qrpairCmd = {
     exec: async (sock, m) => {
         const jid = m.key.remoteJid;
         if (jid.endsWith('@g.us')) {
-            return send(sock, m, '🔒 QR pairing sirf *DM* mein hoti hai. Bot ko DM mein .qrpair likho.');
+            return send(sock, jid, '🔒 QR pairing sirf *DM* mein hoti hai. Bot ko DM mein .qrpair likho.');
         }
         try {
-            await send(sock, m, '📷 QR ban raha hai — chand second mein photo ayegi, usi ko scan kar lena...');
+            await send(sock, jid, '📷 QR ban raha hai — chand second mein photo ayegi, usi ko scan kar lena...');
             await startSession(sock, jid, 'qr', null);
         } catch (e) {
             console.error('qrpair error:', e.message);
-            return send(sock, m, '❌ QR pairing start nahi ho saki. Dobara try karo.');
+            return send(sock, jid, '❌ QR pairing start nahi ho saki. Dobara try karo.');
         }
     }
 };
