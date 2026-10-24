@@ -28,8 +28,9 @@
     "moment-timezone": "^0.5.45",
     "node-cron": "^3.0.3",
     "pino": "^8.21.0",
+    "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
-    "wa-sticker-formatter": "^4.4.4",
-    "sharp": "^0.35.5"
+    "sharp": "^0.35.5",
+    "wa-sticker-formatter": "^4.4.4"
   }
 }
