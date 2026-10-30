@@ -53,7 +53,7 @@
 
 ---
 
-## ✨ Features — 527 Commands · 100 Plugins
+## ✨ Features — 549 Commands · 100 Plugins
 
 <details open>
 <summary><b>🤖 AI — Powered by Gemini</b></summary>
@@ -150,6 +150,20 @@
 **📶 SIM Info** — `.simdata <number>` — offline operator detection (Jazz / Zong / Telenor / Ufone / SCOM). No personal data, prefix-based only.
 **💬 Owner Inbox** — `.feedback` · `.suggestion` — users reach the owner directly from chat.
 **👁️ Auto Status Seen** — `.autostatus on|off` — statuses seen automatically.
+
+</details>
+
+<details open>
+<summary><b>🧮 Hisaab Pack — 20 Roz-ke-Kaam Commands (Oct 2026)</b></summary>
+<br>
+
+Jo kaam log website khol kar karte hain — ab seedha WhatsApp se (zyada tar bilkul offline):
+
+**💡 Ghar & Construction** — `.bijli <units>` *(bill andaza)* · `.solar fan:3 light:4` *(solar size)* · `.ups 200 400` *(backup time)* · `.ac 12 14` *(kitne ton ka AC)* · `.tiles` · `.paint` · `.cement` *(bori andaza)* · `.sarya` *(steel wazan)* · `.carpet`
+**🏡 Zameen** — `.marla 10` *(marla/kanal/sqft/gaz badli)*
+**💰 Hisaab-Kitaab** — `.salary` · `.ot` *(overtime)* · `.markup` · `.comm` *(commission)* · `.rent` · `.flatqist` *(aasan qist plan)* · `.gold 5 tola <rate>`
+**🎓🎓 Sehat & Parhai** — `.gpa 450 500` *(percentage + GPA)* · `.weight 5.8` *(ideal wazan)*
+**🪙 Live Rate** — `.crypto btc` *(CoinGecko se live PKR/USD rate)*
 
 </details>
 
