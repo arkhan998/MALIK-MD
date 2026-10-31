@@ -53,7 +53,7 @@
 
 ---
 
-## ✨ Features — 549 Commands · 100 Plugins
+## ✨ Features — 552 Commands · 101 Plugins
 
 <details open>
 <summary><b>🤖 AI — Powered by Gemini</b></summary>
@@ -164,6 +164,16 @@ Jo kaam log website khol kar karte hain — ab seedha WhatsApp se (zyada tar bil
 **💰 Hisaab-Kitaab** — `.salary` · `.ot` *(overtime)* · `.markup` · `.comm` *(commission)* · `.rent` · `.flatqist` *(aasan qist plan)* · `.gold 5 tola <rate>`
 **🎓🎓 Sehat & Parhai** — `.gpa 450 500` *(percentage + GPA)* · `.weight 5.8` *(ideal wazan)*
 **🪙 Live Rate** — `.crypto btc` *(CoinGecko se live PKR/USD rate)*
+
+</details>
+
+<details open>
+<summary><b>👋 Hi Voice Greeting (Oct 2026)</b></summary>
+<br>
+
+Koi sirf **hi / hii / hello / helo** likhe — DM ho ya group — bot foran mashhoor "Hello" voice note bhej deta hai. Awaz bot ke andar hi mehfooz hai (koi bahar ka link nahi), jumlay ke beech wala "hi" fire nahi hota, aur ek user ko ek chat mein 30 minute mein sirf ek dafa voice milti hai.
+
+**🎛️ Control** — `.hivoice on|off` *(owner — kisi chat mein greeting band/wapas on karne ke liye)*
 
 </details>
 
