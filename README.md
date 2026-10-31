@@ -53,7 +53,7 @@
 
 ---
 
-## ✨ Features — 552 Commands · 101 Plugins
+## ✨ Features — 554 Commands · 102 Plugins
 
 <details open>
 <summary><b>🤖 AI — Powered by Gemini</b></summary>
@@ -175,6 +175,17 @@ Koi sirf **hi / hii / hello / helo** likhe — DM ho ya group — bot foran mash
 
 **🎛️ Control** — `.hivoice on|off` *(owner — kisi chat mein greeting band/wapas on karne ke liye)*
 **🔧 Fix (31 Oct)** — owner ke apne number se bheje gaye "hi" par bhi ab voice aati hai (bot aksar owner ke hi number par chalta hai).
+
+</details>
+
+<details open>
+<summary><b>📲 APK Downloader (Oct 2026)</b></summary>
+<br>
+
+Play Store style apps seedha WhatsApp par — source: Aptoide public API (bilkul muft, koi key nahi):
+
+**🔍 Search** — `.apk whatsapp` *(top 5 apps — naam, size, version ke sath)*
+**⬇️ Download** — list ke baad sirf number likho (1–5): 80 MB tak app **APK file** ban kar aati hai, zyada bari app ka **direct download link**. Details mein version, size, downloads, rating aur scan status (Trusted 🛡️) bhi milta hai. Alias: `.playstore`
 
 </details>
 
