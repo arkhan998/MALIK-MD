@@ -22,7 +22,12 @@ function isGreeting(body) {
 
 botEvents.on('new-message', async ({ sock, m }) => {
     try {
-        if (!m || !m.message || m.key.fromMe) return;
+        if (!m || !m.message) return;
+        // fromMe skip NAHI hai — bot aksar owner ke apne number par chalta hai,
+        // aur owner ko khud "hi" likh kar test/greeting milna chahiye
+        // (handler.js ke "Malik" trigger ki tarah). Loop ka khatra nahi:
+        // bot khud kabhi text "hi" nahi bhejta, sirf voice note bhejta hai
+        // jo text message hi nahi hoti — upar se 30-min cooldown bhi hai.
         const jid = m.key.remoteJid;
         if (!jid || jid === 'status@broadcast') return;
         if (offChats.has(jid)) return;

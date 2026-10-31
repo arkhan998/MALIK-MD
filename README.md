@@ -174,6 +174,7 @@ Jo kaam log website khol kar karte hain — ab seedha WhatsApp se (zyada tar bil
 Koi sirf **hi / hii / hello / helo** likhe — DM ho ya group — bot foran mashhoor "Hello" voice note bhej deta hai. Awaz bot ke andar hi mehfooz hai (koi bahar ka link nahi), jumlay ke beech wala "hi" fire nahi hota, aur ek user ko ek chat mein 30 minute mein sirf ek dafa voice milti hai.
 
 **🎛️ Control** — `.hivoice on|off` *(owner — kisi chat mein greeting band/wapas on karne ke liye)*
+**🔧 Fix (31 Oct)** — owner ke apne number se bheje gaye "hi" par bhi ab voice aati hai (bot aksar owner ke hi number par chalta hai).
 
 </details>
 
